@@ -18,11 +18,11 @@ class NodeGroup:
     def size(self) -> int:
         return len(self.members)
     
-    def add_external_connection(self, target_group: str, ac: float, dc: float):
+    def add_external_connection(self, target_group: str, ac: float, dc: float) -> bool:
         # add to ext con dicts
         pass
 
-    def delete_external_connection(self, target_group: str):
+    def delete_external_connection(self, target_group: str) -> bool:
         # remove from ext con dicts
         pass
     
