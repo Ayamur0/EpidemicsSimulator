@@ -1,5 +1,5 @@
 from typing import List
-from storage.graphs.node_group import NodeGroup
+from storage.networks.node_group import NodeGroup
 
 
 class Network:

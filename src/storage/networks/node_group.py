@@ -1,6 +1,6 @@
 from typing import List
-from storage.graphs.node import Node
-from storage.graphs.network import Network
+from storage.networks.node import Node
+from storage.networks.network import Network
 
 class NodeGroup:
     def __init__(self, network: Network, size: int, aic: float, dic: float):
