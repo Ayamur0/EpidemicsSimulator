@@ -1,6 +1,4 @@
 import statistics
-import sys
-import time
 from typing import List, Optional
 import random
 
@@ -18,8 +16,8 @@ class NodeGroup:
         size: int,
         age: int,
         vaccination_rate: float,
-        aic: float,
-        dic: float,
+        aic: int,
+        dic: int,
     ):
         self.network = network
         self.name = name
@@ -28,7 +26,7 @@ class NodeGroup:
         self.node_id_counter: int = 0
         self.desired_size = size
         # spawn members for size
-        self.members: List[str] = []
+        self.members: List["Node"] = []
         self.avrg_int_con: int = aic
         self.delta_int_con: int = dic
         self.avrg_ext_con: dict = {}  # dict with id of other groups + conn
@@ -46,6 +44,8 @@ class NodeGroup:
         # add to ext con dicts
         self.avrg_ext_con[target_group_id] = ac
         self.delta_ext_con[target_group_id] = dc
+
+        return False
         pass
 
     def delete_external_connection(self, target_group_id: str) -> bool:
@@ -54,8 +54,7 @@ class NodeGroup:
 
     def create_members(self, amount: int) -> None:
         for i in range(0, amount):
-            tmp_member = Node(self)
-            self.members.append(tmp_member.node_id)
+            self.members.append(Node(self))
 
     def _create_connection_number(self, average: int, delta: int):
         # num_of_con = -1 # This constantly hits the perfect delta
@@ -64,48 +63,39 @@ class NodeGroup:
         # return num_of_con
         return random.randint(average - delta, average + delta)
 
-    def _choose_target(self, available_nodes: list[Node]) -> Optional[str]:
+    def _choose_target(self, available_nodes: list[Node]) -> Optional[Node]:
         while True:
             if len(available_nodes) == 0:
                 return
             target = random.choice(available_nodes)
-            target_obj = Node.all_instances_by_id[
-                target
-            ]  # Not using get_member becase of performance (0.013s vs 0.8s)
-            if target_obj.available_connections == -1:
-                target_obj.available_connections = self._create_connection_number(
+            if target.available_internal_connections == -1:
+                target.available_internal_connections = self._create_connection_number(
                     self.avrg_int_con, self.delta_int_con
                 )
                 return target
-            if not target_obj.is_fully_connected():
+            if not target.is_fully_internal_connected():
                 return target
             available_nodes.remove(target)
 
     def _get_nodes_below_max_connections(
         self,
-    ):  # if all nodes are full, select all nodes that are below the max lemit and increase the border by one. This change will be revertetd after all nodes are finished
+    ):  # if all nodes are full, select all nodes that are below the max limit and increase the border by one. This change will be reverted after all nodes are finished
         below_max_connections = []
         for member in self.members:
-            member_obj = Node.all_instances_by_id[
-                member
-            ]  # Not using get_member becase of performance (0.013s vs 0.8s)
             if (
-                member_obj.get_num_of_connections()
+                member.get_num_of_connections()
                 >= self.avrg_int_con + self.delta_int_con
             ):
                 continue
-            member_obj.available_connections += 1
+            member.available_internal_connections += 1
             below_max_connections.append(member)
         return below_max_connections
 
-    def _revert_border_increase(self, unaffacted_nodes: list[Node]):
-        for member in unaffacted_nodes:
-            member_obj = Node.all_instances_by_id[
-                member
-            ]  # Not using get_member becase of performance (0.013s vs 0.8s)
-            if member_obj.available_connections == 0:
+    def _revert_border_increase(self, unaffected_nodes: list[Node]):
+        for member in unaffected_nodes:
+            if member.available_internal_connections == 0:
                 continue  # Should not happen
-            member_obj.available_connections -= 1
+            member.available_internal_connections -= 1
 
     def create_internal_connections(self) -> None:
         available_nodes = self.members.copy()
@@ -116,23 +106,20 @@ class NodeGroup:
             if len(available_nodes) == 0:
                 available_nodes = self._get_nodes_below_max_connections()
                 nodes_were_adjusted = True
-            member_obj = Node.all_instances_by_id[
-                member
-            ]  # Not using get_member becase of performance (0.013s vs 0.8s)
-            if member_obj.available_connections == -1:
-                member_obj.available_connections = self._create_connection_number(
+            if member.available_internal_connections == -1:
+                member.available_internal_connections = self._create_connection_number(
                     self.avrg_int_con, self.delta_int_con
                 )
-            num_of_con = member_obj.available_connections
+            num_of_con = member.available_internal_connections
             if num_of_con == 0:
                 continue
             for i in range(0, num_of_con):
-                target = self._choose_target(available_nodes)
+                target: Node = self._choose_target(available_nodes)
                 if target is None:
                     available_nodes = self._get_nodes_below_max_connections()
                     nodes_were_adjusted = True
                     target = self._choose_target(available_nodes)
-                member_obj.add_connection(target)
+                member.add_connection(target.id)
         if nodes_were_adjusted:
             self._revert_border_increase(available_nodes)
 
@@ -158,13 +145,15 @@ class NodeGroup:
     def reset_connections(self) -> None:
         # clear all connections in members
         for member in self.members:
-            self.get_member(member).clear_connections()
+            member.clear_connections()
 
     def get_member(self, node_id: str) -> Optional[Node]:
         # return member with id
-        if node_id not in self.members:
-            return None
-        return Node.all_instances_by_id[node_id]
+        for member in self.members:
+            if member.id != node_id:
+                continue
+            return member
+        return None
 
     def get_properties_dict(self):
         return {
@@ -178,12 +167,9 @@ class NodeGroup:
 
     def __str__(self):
         con_list = []
-        result = f"Group ID: {self.id}, Member:\n"
+        result = f'Group ID: {self.id}, Member:\n'
         for member in self.members:
-            tmp = Node.all_instances_by_id[member]
-            con_list.append(len(tmp.connections))
-            result += f"\t{tmp},\n"
-        result += (
-            f"Average: {statistics.mean(con_list)}\nDelta: {statistics.stdev(con_list)}"
-        )
+            con_list.append(len(member.connections))
+            result += f'\t{member},\n'
+        result += f'Average: {statistics.mean(con_list)}\nDelta: {statistics.stdev(con_list)}'
         return result
