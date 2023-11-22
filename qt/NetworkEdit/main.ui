@@ -176,7 +176,7 @@ Generation time 20.5s</string>
                 <height>292</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_3" stretch=""/>
+              <layout class="QVBoxLayout" name="verticalLayout_3"/>
              </widget>
             </widget>
            </item>
@@ -224,51 +224,10 @@ Generation time 20.5s</string>
                 <height>292</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout">
-               <item>
-                <widget class="QWidget" name="group_list_item" native="true">
-                 <property name="autoFillBackground">
-                  <bool>false</bool>
-                 </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_2">
-                  <item>
-                   <widget class="QWidget" name="widget" native="true">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_3">
-                     <item>
-                      <widget class="QLabel" name="label">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                         <horstretch>2</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>TextLabel</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                         <horstretch>3</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
+              <layout class="QFormLayout" name="formLayout">
+               <property name="formAlignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               </property>
               </layout>
              </widget>
             </widget>
@@ -293,7 +252,15 @@ Generation time 20.5s</string>
                 <height>291</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_5"/>
+              <layout class="QFormLayout" name="formLayout_2">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </widget>
            </item>
