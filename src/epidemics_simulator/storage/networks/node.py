@@ -6,9 +6,7 @@ class Node:
     all_instances_by_id: dict[str, "Node"] = {}
 
     def __init__(self, group: "node_group.NodeGroup"):
-        self.id: str = (
-            f"{group.id}-{group.node_id_counter}"  # auto set new id
-        )
+        self.id: str = f"{group.id}-{group.node_id_counter}"  # auto set new id
         group.node_id_counter += 1
         self.group: "node_group.NodeGroup" = group
         self.connections: List["Node"] = []  # node ids this node is connected to
@@ -28,9 +26,7 @@ class Node:
 
     def is_fully_internal_connected(self) -> bool:
         if self.available_internal_connections == -1:
-            return (
-                False  # If this number is -1 the all connections have been established
-            )
+            return False  # If this number is -1 then all connections have been established
         return self.available_internal_connections == 0
 
     def add_connection(self, node_id: str, added_on_target: bool = False) -> bool:
@@ -41,9 +37,7 @@ class Node:
             return False
         self.connections.append(target)
         if not added_on_target:
-            target.add_connection(
-                self.id, added_on_target=True
-            )
+            target.add_connection(self.id, added_on_target=True)
         if target.group.id == self.group.id:
             self.available_internal_connections -= 1
         return True
@@ -64,9 +58,7 @@ class Node:
             return False
         self.connections.remove(target)
         if not removed_on_target:
-            target.remove_connection(
-                self.id, removed_on_target=True
-            )
+            target.remove_connection(self.id, removed_on_target=True)
         if target.group.id == self.group.id:
             self.available_internal_connections += 1
         return True
@@ -85,9 +77,9 @@ class Node:
         self.infected = False
 
     def __str__(self):
-        tmp = f'ID: {self.id}, Connections: ['
+        tmp = f"ID: {self.id}, Connections: ["
         for con in self.connections:
-            tmp += f'{con.id}, '
-        if tmp.endswith(', '):
-            tmp = tmp[0: -2]
-        return tmp + ']'
+            tmp += f"{con.id}, "
+        if tmp.endswith(", "):
+            tmp = tmp[0:-2]
+        return tmp + "]"

@@ -1,6 +1,6 @@
+import random
 import statistics
 from typing import List, Optional
-import random
 
 from .network import Network
 from .node import Node
@@ -26,6 +26,7 @@ class NodeGroup:
         self.node_id_counter: int = 0
         self.desired_size = size
         # spawn members for size
+        self.create_members(size)
         self.members: List["Node"] = []
         self.avrg_int_con: int = aic
         self.delta_int_con: int = dic
@@ -35,6 +36,7 @@ class NodeGroup:
         self.vaccination_rate = vaccination_rate
         # other group properties, eg. age etc.
         NodeGroup.all_instances_by_id[self.id] = self
+        self.active = True
 
     @property
     def size(self) -> int:
