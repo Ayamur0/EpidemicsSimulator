@@ -76,6 +76,12 @@ class Node:
     def cure_node(self) -> None:
         self.infected = False
 
+    def remove_group_connection(self, group_id: str) -> None:
+        for con in self.connections.copy():
+            if con.group.id != group_id:
+                continue
+            con.remove_connection(self.id)
+
     def __str__(self):
         tmp = f"ID: {self.id}, Connections: ["
         for con in self.connections:

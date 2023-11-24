@@ -26,8 +26,8 @@ class NodeGroup:
         self.node_id_counter: int = 0
         self.desired_size = size
         # spawn members for size
-        self.create_members(size)
         self.members: List["Node"] = []
+        self.create_members(size)
         self.avrg_int_con: int = aic
         self.delta_int_con: int = dic
         self.avrg_ext_con: dict = {}  # dict with id of other groups + conn
@@ -42,17 +42,38 @@ class NodeGroup:
     def size(self) -> int:
         return len(self.members)
 
-    def add_external_connection(self, target_group_id: str, ac: int, dc: int) -> bool:
+    def add_external_connection(
+        self, target_group_id: str, ac: int, dc: int, added_on_target: bool = False
+    ) -> bool:
+        if target_group_id not in NodeGroup.all_instances_by_id.keys():
+            return False
         # add to ext con dicts
         self.avrg_ext_con[target_group_id] = ac
         self.delta_ext_con[target_group_id] = dc
+        if not added_on_target:
+            target_group_obj = NodeGroup.all_instances_by_id[target_group_id]
+            target_group_obj.add_external_connection(self.id, ac, dc, added_on_target=True)
+            self.create_external_connections()
+        return True
 
-        return False
-        pass
-
-    def delete_external_connection(self, target_group_id: str) -> bool:
+    def delete_external_connection(
+        self, target_group_id: str, removed_on_target: bool = False
+    ) -> bool:
         # remove from ext con dicts
-        pass
+        if target_group_id not in NodeGroup.all_instances_by_id.keys():
+            return False
+        if target_group_id not in self.avrg_ext_con.keys():
+            return False
+        if target_group_id not in self.delta_ext_con.keys():
+            return False
+        del self.avrg_ext_con[target_group_id]
+        del self.delta_ext_con[target_group_id]
+        if not removed_on_target:
+            for member in self.members:
+                member.remove_group_connection(target_group_id)
+            target_group_obj = NodeGroup.all_instances_by_id[target_group_id]
+            target_group_obj.delete_external_connection(self.id, removed_on_target=True)
+        return True
 
     def create_members(self, amount: int) -> None:
         for i in range(0, amount):
@@ -84,10 +105,7 @@ class NodeGroup:
     ):  # if all nodes are full, select all nodes that are below the max limit and increase the border by one. This change will be reverted after all nodes are finished
         below_max_connections = []
         for member in self.members:
-            if (
-                member.get_num_of_connections()
-                >= self.avrg_int_con + self.delta_int_con
-            ):
+            if member.get_num_of_connections() >= self.avrg_int_con + self.delta_int_con:
                 continue
             member.available_internal_connections += 1
             below_max_connections.append(member)
@@ -129,7 +147,16 @@ class NodeGroup:
         # create external connections with avrg and delta for each group
         # ensure connections between group a and b are only created by a or b not two times
         # but are added to both groups members
-        pass
+        for target_group_id in self.avrg_ext_con.keys():
+            group_members = NodeGroup.all_instances_by_id[target_group_id].members
+            ac = self.avrg_ext_con[target_group_id]
+            dc = self.delta_ext_con[target_group_id]
+            for member in self.members:
+                num_of_ext_con = self._create_connection_number(ac, dc)
+                num_of_ext_con = min(num_of_ext_con, len(group_members))
+                con_choice = random.sample(group_members, num_of_ext_con)
+                for choice in con_choice:
+                    member.add_connection(choice.id)
 
     def add_connection(self, member_id: str, target_member_id: str) -> bool:
         # add connection to target member id to member with member id
@@ -169,9 +196,9 @@ class NodeGroup:
 
     def __str__(self):
         con_list = []
-        result = f'Group ID: {self.id}, Member:\n'
+        result = f"Group ID: {self.id}, Member:\n"
         for member in self.members:
             con_list.append(len(member.connections))
-            result += f'\t{member},\n'
-        result += f'Average: {statistics.mean(con_list)}\nDelta: {statistics.stdev(con_list)}'
+            result += f"\t{member},\n"
+        result += f"Average: {statistics.mean(con_list)}\nDelta: {statistics.stdev(con_list)}"
         return result
