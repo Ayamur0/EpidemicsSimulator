@@ -1,9 +1,4 @@
-import time
-
-from storage import NodeGroup, Network, Node
-import gravis as gv
-from tkinterhtml import HtmlFrame
-import tkinter as tk
+from storage import NodeGroup, Network
 
 
 def main():
@@ -24,34 +19,6 @@ def main():
     g1.add_external_connection(g2.id, -1, 2)
     g2.add_external_connection(g3.id, -2, 3)
     g3.add_external_connection(g4.id, -1, 2)
-
-    graph1 = {
-        "graph": {
-            "directed": False,
-            "metadata": {
-                "arrow_size": 5,
-                "background_color": "white",
-                "edge_size": 3,
-                "edge_label_size": 14,
-                "edge_label_color": "black",
-                "node_size": 15,
-            },
-            "nodes": Node.graph_nodes,
-            "edges": Node.graph_edges,
-        }
-    }
-
-    t1 = time.time()
-    fig = gv.three(graph1, show_node_label=True, show_edge_label=False, show_edge=True).display()
-    print(time.time() - t1)
-    # for n in Node.graph_nodes.keys():
-    #     t1 = time.time()
-    #     Node.graph_nodes[n]["metadata"]["color"] = "#00ff00"
-    #     graph1["nodes"] = Node.graph_nodes
-    #
-    #     fig = gv.three(graph1, show_node_label=True, show_edge_label=False).to_html()
-    #     print(fig.to_html())
-    #     print(time.time() - t1)
 
 
 if __name__ == "__main__":
