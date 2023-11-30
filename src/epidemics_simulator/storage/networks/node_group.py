@@ -80,7 +80,7 @@ class NodeGroup:
             self.members.append(Node(self))
 
     def _create_connection_number(self, average: int, delta: int):
-        # num_of_con = -1 # This constantly hits the perfect delta
+        # num_of_con = -1  # This constantly hits the perfect delta
         # while num_of_con < 0:
         #     num_of_con = round(random.normalvariate(self.avrg_int_con, self.delta_int_con))
         # return num_of_con
@@ -153,7 +153,10 @@ class NodeGroup:
             dc = self.delta_ext_con[target_group_id]
             for member in self.members:
                 num_of_ext_con = self._create_connection_number(ac, dc)
+                if num_of_ext_con <= 0:
+                    continue
                 num_of_ext_con = min(num_of_ext_con, len(group_members))
+
                 con_choice = random.sample(group_members, num_of_ext_con)
                 for choice in con_choice:
                     member.add_connection(choice.id)
