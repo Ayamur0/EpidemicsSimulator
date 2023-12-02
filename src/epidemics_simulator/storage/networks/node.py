@@ -5,11 +5,12 @@ class Node:
     # Class variable to store instances
     all_instances_by_id: dict[str, "Node"] = {}
 
-    def __init__(self, group: "node_group.NodeGroup"):
+    def __init__(self, group):
         self.id: str = f"{group.id}-{group.node_id_counter}"  # auto set new id
         group.node_id_counter += 1
-        self.group: "node_group.NodeGroup" = group
-        self.connections: List["Node"] = []  # node ids this node is connected to
+        self.group = group
+        self.int_connections: List["Node"] = []  # node ids this node is connected to
+        self.ext_connections: List["Node"] = []  # node ids this node is connected to
         self.infected: bool = False
         self.num_of_infections: int = 0
         # other properties, e.g. infected, was infected x times, etc.
@@ -21,66 +22,51 @@ class Node:
         # return all siblings from parent group
         return self.connections
 
-    def get_num_of_connections(self) -> int:
-        return len(self.connections)
+    @property
+    def int_conn_amount(self) -> int:
+        return len(self.int_connections)
 
-    def is_fully_internal_connected(self) -> bool:
-        if self.available_internal_connections == -1:
-            return False  # If this number is -1 then all connections have been established
-        return self.available_internal_connections == 0
+    def get_ext_conn_amount(self, to_group: str = None) -> int:
+        if to_group is None:
+            return len(self.ext_connections)
+        else:
+            return len([i for i in self.ext_connections if to_group in i.id])
 
-    def add_connection(self, node_id: str, added_on_target: bool = False) -> bool:
-        if node_id not in Node.all_instances_by_id.keys():
+    def add_int_connection(self, target_id: str) -> bool:
+        if (target := self.group.get_member(target_id)) is None:
+            raise KeyError
+        if target in self.int_connections:
             return False
-        target = Node.all_instances_by_id[node_id]
-        if target in self.connections:
-            return False
-        self.connections.append(target)
-        if not added_on_target:
-            target.add_connection(self.id, added_on_target=True)
-        if target.group.id == self.group.id:
-            self.available_internal_connections -= 1
+        self.int_connections.append(target)
+        target.int_connections.append(self)
         return True
 
-    def has_connection(self, node_id: str) -> bool:
-        if node_id not in Node.all_instances_by_id.keys():
+    def add_ext_connection(self, target_id: str) -> bool:
+        target_group = self.group.network.get_group_by_id(target_id.split("-")[0])
+        if (target := target_group.get_member(target_id)) is None:
+            raise KeyError
+        if target in self.ext_connections:
             return False
-        target = Node.all_instances_by_id[node_id]
-        if target in self.connections:
-            return True
+        self.ext_connections.append(target)
+        target.ext_connections.append(self)
+        return True
+
+    def has_connection(self, target_id: str) -> bool:
+        for node in [self.int_connections, self.ext_connections]:
+            if node.id == target_id:
+                return True
         return False
 
-    def remove_connection(self, node_id: str, removed_on_target: bool = False) -> bool:
-        if node_id not in Node.all_instances_by_id.keys():
-            return False
-        target = Node.all_instances_by_id[node_id]
-        if target not in self.connections:
-            return False
-        self.connections.remove(target)
-        if not removed_on_target:
-            target.remove_connection(self.id, removed_on_target=True)
-        if target.group.id == self.group.id:
-            self.available_internal_connections += 1
-        return True
-
     def clear_connections(self) -> None:
-        for connection in self.connections.copy():
-            self.remove_connection(connection.id)
-        self.available_internal_connections = -1
-        # TODO should the available_connections variable also reset back to -1? If not after a reset the noes will have the same amount of connections
+        self.int_connections.clear()
+        self.ext_connections.clear()
 
-    def infect_node(self) -> None:
+    def infect(self) -> None:
         self.infected = True
         self.num_of_infections += 1
 
-    def cure_node(self) -> None:
+    def cure(self) -> None:
         self.infected = False
-
-    def remove_group_connection(self, group_id: str) -> None:
-        for con in self.connections.copy():
-            if con.group.id != group_id:
-                continue
-            con.remove_connection(self.id)
 
     def __str__(self):
         tmp = f"ID: {self.id}, Connections: ["

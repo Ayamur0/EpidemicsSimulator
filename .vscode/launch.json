@@ -11,7 +11,25 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": "-m",
-            "justMyCode": true
-        }
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "name": "Python: Test debug config",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceRoot}",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}",
+                "PYTEST_ADDOPTS": "--no-cov"
+            },
+            "purpose": [
+                "debug-test"
+            ],
+        },
     ]
 }
