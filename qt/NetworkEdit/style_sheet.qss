@@ -1,0 +1,163 @@
+/* Main Windows styles */
+QMainWindow {
+    background: rgb(61, 61, 61);
+}
+QWidget#centralwidget {
+    background: rgb(61, 61, 61);
+}
+QTabWidget {
+    /* does nothing so far*/
+}
+QTabWidget::pane { /* removes the white outline on the right and bottom tab */
+    border: none; 
+}
+QTabBar::tab {
+    background: rgb(80, 80, 80); /* Set background color for tabs */
+}
+
+QTabBar::tab:selected {
+    background: rgb(70, 110, 180);  /* Set background color for the selected tab */
+}
+/* Network Edit */
+QWidget#network_edit {
+    background: rgb(80, 80, 80);
+}
+/* Frame 1 */
+QFrame#frame_2 {
+    /* currently no need */
+}
+/* Group List */
+#group_list {
+    border: none;
+    background: rgb(80, 80, 80);
+}
+QWidget#group_list_content {
+    background: rgb(61, 61, 61);
+    border-radius: 5px;
+}
+QWidget#group_list_entry {
+    /* no use currently */
+}
+QPushButton#group_list_btn {
+    border: 5px;
+    background: rgb(80, 80, 80);
+    color: white;
+}
+QPushButton#group_list_btn:checked {
+    background: rgb(70, 110, 180);
+}
+QPushButton#group_list_btn:hover {
+    background: rgb(100, 100, 100);
+    /* IDK */
+}
+QPushButton#add_group_btn {
+    border: 5px;
+    background: rgb(80, 80, 80);
+    color: white;
+}
+QPushButton#add_group_btn:checked {
+    background: rgb(70, 110, 180);
+}
+QPushButton#add_group_btn:hover {
+    background: rgb(100, 100, 100);
+    /* IDK */
+}
+/* Group Properties */
+#group_properties {
+    border: none;
+    background: rgb(80, 80, 80);
+}
+QLabel#group_label_properties {
+    color: white;
+}
+QLineEdit#group_line_edit_properties {
+    border: none;
+    background: rgb(80, 80, 80);
+    color: white;
+}
+QWidget#group_properties_content {
+    background: rgb(61, 61, 61);
+    border-radius: 5px;
+}
+QPushButton#save_group_btn {
+    border: 5px;
+    background: rgb(80, 80, 80);
+    color: white;
+}
+QPushButton#save_group_btn:hover {
+    background: rgb(100, 100, 100);
+    /* IDK */
+}
+/* Connection List */
+#connection_list {
+    border: none;
+    background: rgb(80, 80, 80);
+}
+QWidget#connection_list_content {
+    background: rgb(61, 61, 61);
+    border-radius: 5px;
+}
+QPushButton#connection_list_btn {
+    border: 5px;
+    background: rgb(80, 80, 80);
+    color: white;
+}
+QPushButton#connection_list_btn:checked {
+    background: rgb(70, 110, 180);
+}
+QPushButton#connection_list_btn:hover {
+    background: rgb(100, 100, 100);
+    /* IDK */
+}
+/* Connection Properties */
+#connection_properties {
+    border: none;
+    background: rgb(80, 80, 80);
+}
+QWidget#connection_prop_entry {
+    /* Currently no use */
+}
+QLabel#connection_label_properties {
+    color: white;
+}
+QLineEdit#connection_line_edit_properties {
+    border: none;
+    background: rgb(80, 80, 80);
+    color: white;
+}
+QWidget#connection_properties_content {
+    background: rgb(61, 61, 61);
+    border-radius: 5px;
+}
+
+
+QPushButton#pushButton{
+    border: 5px;
+    background: rgb(61, 61, 61);
+    color: white;
+}
+QPushButton#pushButton:hover{
+    background: rgb(80, 80, 80);
+}
+/* Tab2 */
+QWidget#tab_2 {
+    background: rgb(80, 80, 80);
+}
+/* To menu bar styles */
+QMenuBar {
+    background: rgb(50, 50, 50);
+    color: white;
+}
+QMenuBar::item:selected {
+    background: rgb(80, 80, 80);
+}
+QMenu {
+    background: rgb(50, 50, 50);
+    color: white;
+}
+QMenu::item:selected {
+    background: rgb(80, 80, 80);
+}
+QStatusBar {
+    background: rgb(61, 61, 61);
+}
