@@ -30,7 +30,7 @@ class Node:
         if to_group is None:
             return len(self.ext_connections)
         else:
-            return len([i for i in self.ext_connections if to_group in i.id])
+            return len([i for i in self.ext_connections if to_group in i.id.split("-")[0]])
 
     def add_int_connection(self, target_id: str) -> bool:
         if (target := self.group.get_member(target_id)) is None:
