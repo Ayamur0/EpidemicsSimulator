@@ -84,7 +84,7 @@ class NodeGroup:
     def get_properties_dict(self):
         return {
             "name": self.name,
-            "member count": self.desired_size,
+            "member count": self.size,
             "average internal connections": self.avrg_int_con,
             "internal connection delta": self.delta_int_con,
             "age": self.age,

@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="locale">
     <locale language="English" country="UnitedStates"/>
@@ -84,6 +87,9 @@
               </property>
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(Re-)Generate the network image&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
               </property>
               <property name="text">
                <string>Generate</string>
@@ -164,6 +170,9 @@ Generation time 20.5s</string>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
@@ -172,11 +181,28 @@ Generation time 20.5s</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>234</width>
-                <height>292</height>
+                <width>238</width>
+                <height>302</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_3"/>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_3">
+               <item>
+                <layout class="QVBoxLayout" name="group_list_layout">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                </layout>
+               </item>
+              </layout>
              </widget>
             </widget>
            </item>
@@ -188,19 +214,29 @@ Generation time 20.5s</string>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
              </property>
              <widget class="QWidget" name="connection_list_content">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>234</width>
-                <height>291</height>
+                <width>238</width>
+                <height>301</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_6"/>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <layout class="QVBoxLayout" name="con_list_layout"/>
+               </item>
+              </layout>
              </widget>
             </widget>
            </item>
@@ -215,13 +251,16 @@ Generation time 20.5s</string>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
              <widget class="QWidget" name="group_properties_content">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>353</width>
-                <height>292</height>
+                <width>357</width>
+                <height>302</height>
                </rect>
               </property>
               <layout class="QFormLayout" name="formLayout">
@@ -240,6 +279,9 @@ Generation time 20.5s</string>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
@@ -248,19 +290,11 @@ Generation time 20.5s</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>353</width>
-                <height>291</height>
+                <width>357</width>
+                <height>301</height>
                </rect>
               </property>
-              <layout class="QFormLayout" name="formLayout_2">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <layout class="QFormLayout" name="formLayout_2"/>
              </widget>
             </widget>
            </item>
@@ -284,7 +318,7 @@ Generation time 20.5s</string>
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="locale">
