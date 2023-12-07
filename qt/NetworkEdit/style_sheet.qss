@@ -26,6 +26,13 @@ QWidget#network_edit {
 QFrame#frame_2 {
     /* currently no need */
 }
+/* Success message */
+QLabel#success_message {
+    color: green;
+}
+QLabel#error_message {
+    color: red;
+}
 /* Group List */
 #group_list {
     border: none;
@@ -65,6 +72,10 @@ QPushButton#add_group_btn:hover {
 /* Group Properties */
 #group_properties {
     border: none;
+    background: rgb(80, 80, 80);
+}
+QLabel#error_label {
+    color: red;
     background: rgb(80, 80, 80);
 }
 QLabel#group_label_properties {
