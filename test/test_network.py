@@ -15,7 +15,7 @@ class TestInternalConnections(unittest.TestCase):
 
     def test_0_delta(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 5, 0, "red"))
         builder = NetworkBuilder(n)
         builder.build()
         for node in n.groups[0].members:
@@ -28,7 +28,7 @@ class TestInternalConnections(unittest.TestCase):
 
     def test_0_delta_odd(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 101, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 101, 10, 0.1, 1, 5, 0, "red"))
         builder = NetworkBuilder(n)
         builder.build()
         node_4_conn = 0
@@ -49,7 +49,7 @@ class TestInternalConnections(unittest.TestCase):
 
     def test_big_delta(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 15, 10))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 15, 10, "red"))
         builder = NetworkBuilder(n)
         builder.build()
         for node in n.groups[0].members:
@@ -64,7 +64,7 @@ class TestInternalConnections(unittest.TestCase):
 
     def test_delta_equal_avrg(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 15, 15))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 15, 15, "red"))
         builder = NetworkBuilder(n)
         builder.build()
         for node in n.groups[0].members:
@@ -80,7 +80,7 @@ class TestInternalConnections(unittest.TestCase):
     def test_delta_bigger_avrg(self):
         n = Network()
         with self.assertRaises(ValueError):
-            n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 15, 20))
+            n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 15, 20, "red"))
 
 
 class TestExternalConnections(unittest.TestCase):
@@ -92,8 +92,8 @@ class TestExternalConnections(unittest.TestCase):
 
     def test_0_delta(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 5, 0))
-        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 5, 0, "red"))
+        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 1, 5, 0, "red"))
         n.groups[0].add_external_connection("1", 5, 0)
         builder = NetworkBuilder(n)
         builder.build()
@@ -107,8 +107,8 @@ class TestExternalConnections(unittest.TestCase):
 
     def test_0_delta_odd(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 101, 10, 0.1, 5, 0))
-        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 101, 10, 0.1, 1, 5, 0, "red"))
+        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 1, 5, 0, "red"))
         n.groups[0].add_external_connection("1", 5, 0)
         builder = NetworkBuilder(n)
         builder.build()
@@ -130,8 +130,8 @@ class TestExternalConnections(unittest.TestCase):
 
     def test_big_delta(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 5, 0))
-        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 5, 0, "red"))
+        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 1, 5, 0, "red"))
         n.groups[0].add_external_connection("1", 15, 10)
         builder = NetworkBuilder(n)
         builder.build()
@@ -149,8 +149,8 @@ class TestExternalConnections(unittest.TestCase):
 
     def test_delta_equal_avrg(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 5, 0))
-        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 5, 0, "red"))
+        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 1, 5, 0, "red"))
         n.groups[0].add_external_connection("1", 15, 15)
         builder = NetworkBuilder(n)
         builder.build()
@@ -168,9 +168,9 @@ class TestExternalConnections(unittest.TestCase):
 
     def test_multiple_groups(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 5, 0))
-        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 5, 0))
-        n.add_group(NodeGroup(n, "Test3", 100, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 5, 0, "red"))
+        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 1, 5, 0, "red"))
+        n.add_group(NodeGroup(n, "Test3", 100, 10, 0.1, 1, 5, 0, "red"))
         n.groups[0].add_external_connection("1", 15, 10)
         n.groups[0].add_external_connection("2", 15, 10)
         n.groups[1].add_external_connection("2", 15, 10)
@@ -210,8 +210,8 @@ class TestExternalConnections(unittest.TestCase):
 
     def test_delta_bigger_avrg(self):
         n = Network()
-        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 5, 0))
-        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 5, 0))
+        n.add_group(NodeGroup(n, "Test1", 100, 10, 0.1, 1, 5, 0, "red"))
+        n.add_group(NodeGroup(n, "Test2", 100, 10, 0.1, 1, 5, 0, "red"))
         with self.assertRaises(ValueError):
             n.groups[0].add_external_connection("1", 15, 20)
 

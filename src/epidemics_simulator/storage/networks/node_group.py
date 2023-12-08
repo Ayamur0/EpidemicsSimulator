@@ -15,9 +15,11 @@ class NodeGroup:
         name: str,
         size: int,
         age: int,
-        vaccination_rate: float,
+        vaccination_rate: int,
+        max_vaccination_rate: int,
         aic: int,
         dic: int,
+        color: str,
     ):
         if dic > aic:
             raise ValueError
@@ -35,6 +37,8 @@ class NodeGroup:
         self.delta_ext_con: dict = {}
         self.age = age
         self.vaccination_rate = vaccination_rate
+        self.max_vaccination_rate = max_vaccination_rate
+        self.color = color
         self.active = True
 
     @property
@@ -89,6 +93,8 @@ class NodeGroup:
             "internal connection delta": self.delta_int_con,
             "age": self.age,
             "vaccination rate": self.vaccination_rate,
+            "max vaccination rate": self.max_vaccination_rate,
+            "color": self.color,
         }
 
     def __str__(self):

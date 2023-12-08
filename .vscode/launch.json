@@ -12,7 +12,10 @@
             "console": "integratedTerminal",
             "args": "-m",
             "justMyCode": true,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}",
+            },
         },
         {
             "name": "Python: Test debug config",

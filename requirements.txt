@@ -1,3 +1,5 @@
 pyqt5
 plotly
 numpy
+dash
+dash-cytoscape

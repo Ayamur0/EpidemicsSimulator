@@ -35,11 +35,11 @@ class HavelHakimiDual:
         return self.edges
 
     # https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93Gallai_theorem
-    # This should always return true, as the second degree sequence is constructed so the resulting sequences are always graphic
+    # This should always return true, because the second degree sequence is constructed in a way that the resulting sequences are always graphic
     def _erdos_gallai(self) -> bool:
         for n, seq in zip([self.size1, self.size2], [self.deg_seq2, self.deg_seq1]):
             for k in range(1, n + 1):
-                if sum(seq[:k]) > k * (k - 1) + sum([x if x >= k else k for x in seq[k + 1 :]]):
+                if sum(seq[:k]) > k * (k - 1) + sum(min(k, d) for d in seq[k + 1 :]):
                     return False
         return True
 
@@ -124,30 +124,3 @@ class HavelHakimiDual:
             cur = max
         selected_nodes.extend(random.sample(viable_nodes, n - len(selected_nodes)))
         return selected_nodes
-
-
-if __name__ == "__main__":
-    h = HavelHakimiDual(9, 4, 2, 2)
-    h2 = HavelHakimiDual(100, 51, 11, 20)
-    h2.run()
-    print(h2.edges)
-    total = 0
-    for x in h2.edges.values():
-        total += len(x)
-    print(total)
-    print(51 * 15.5)
-    # print(h2.create_sequence_with_sum(100, 750))
-    # h.run()
-    # ids = h.get_highest_n_nodes(20)
-    # x = []
-    # for id in ids:
-    #     y = h.node_id_seq.index(id)
-    #     x.append(h.deg_seq[y])
-    # print(h.deg_seq)
-    h.deg_seq1 = [5, 5, 4, 4, 3, 2, 1, 1, 1]
-    h.deg_seq2 = [9, 6, 5, 4, 2, 0, 0, 0, 0]
-    # total = 0
-    # for conns in h.edges.values():
-    #     if len(conns) > 20:
-    #         print("ERROR2")
-    #     total += 2 * len(conns)

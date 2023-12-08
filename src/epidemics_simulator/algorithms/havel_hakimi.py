@@ -33,9 +33,7 @@ class HavelHakimi:
             return False
         n = self.size
         for k in range(1, n + 1):
-            if sum(self.deg_seq[:k]) > k * (k - 1) + sum(
-                [x if x >= k else k for x in self.deg_seq[k + 1 :]]
-            ):
+            if sum(self.deg_seq[:k]) > k * (k - 1) + sum(min(k, d) for d in self.deg_seq[k + 1 :]):
                 return False
         return True
 
@@ -85,21 +83,3 @@ class HavelHakimi:
             cur = max
         selected_nodes.extend(random.sample(viable_nodes, n - len(selected_nodes)))
         return selected_nodes
-
-
-if __name__ == "__main__":
-    h = HavelHakimi(8, 2, 2)
-    h.run()
-    # ids = h.get_highest_n_nodes(20)
-    # x = []
-    # for id in ids:
-    #     y = h.node_id_seq.index(id)
-    #     x.append(h.deg_seq[y])
-    # print(h.deg_seq)
-    total = 0
-    for conns in h.edges.values():
-        if len(conns) > 20:
-            print("ERROR2")
-        total += 2 * len(conns)
-    print(total)
-    print(h.edges)
