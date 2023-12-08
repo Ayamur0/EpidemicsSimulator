@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import QRegExp
+from PyQt5.QtCore import QRegExp, QTimer
 from PyQt5.QtGui import QRegExpValidator
 import sys
 from storage import Network, NodeGroup
@@ -13,6 +13,25 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.group_buttons: dict = {}
         self.connection_buttons: dict = {}
         self.show()
+        
+    def hide_message(self, label, timer):
+        label.deleteLater()
+        timer.deleteLater()  # Delete the timer to avoid memory leaks
+        
+    def show_message(self, widget, label_text, object_name):
+        label = QtWidgets.QLabel(label_text)
+        label.setObjectName(object_name)
+        widget.layout().addRow(label)
+
+        timer = QTimer()
+        timer.singleShot(2000, lambda: self.hide_message(label, timer))
+        
+    #def show_error(self, message):
+    #    error_box = QtWidgets.QMessageBox(self)
+    #    error_box.setIcon(QtWidgets.QMessageBox.Warning)
+    #    error_box.setText(message)
+    #    error_box.setWindowTitle('Validation Error')
+    #    error_box.exec_()
 
     def load_groups(self, network: Network):
         all_groups = network.groups
@@ -22,12 +41,12 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         btn = QtWidgets.QPushButton('+')
         btn.setObjectName("add_group_btn")
         btn.setCheckable(True)
-        btn.clicked.connect(lambda: self.create_new_group_input())
+        btn.clicked.connect(lambda: self.create_new_group_input(network))
         v_layout.layout().addWidget(btn)
         self.group_buttons['-1'] = btn
         self.group_list_layout.addWidget(v_layout)
         
-    def create_new_group_input(self):
+    def create_new_group_input(self, network: Network):
         self.unload_items_from_layout(self.group_properties_content.layout())
         self.unload_items_from_layout(self.connection_properties_content.layout())
         self.deselect_other_group_buttons('-1', self.group_buttons)
@@ -42,18 +61,70 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         line_edits = self._create_group_prop_input(default_dict)
         btn = QtWidgets.QPushButton('Save')
         btn.setObjectName("save_group_btn")
-        btn.clicked.connect(lambda: self.create_new_group(line_edits))
+        btn.clicked.connect(lambda: self.create_new_group(line_edits, network))
         self.group_properties_content.layout().addRow(btn)
     
-    def create_new_group(self, line_edits):
-        pass
+    def create_new_group(self, line_edits, network: Network):
+        try:
+            name = line_edits['name'].text()
+            size = int(line_edits['member count'].text())
+            age = int(line_edits['age'].text())
+            vaccination_rate = float(line_edits['vaccination rate'].text())
+            aic = int(line_edits['average internal connections'].text())
+            dic = int(line_edits['internal connection delta'].text())
+        except ValueError:
+            self.show_message(self.group_properties_content, "Pleas fill out every input", "error_message")
+            return
+        try:
+            tmp_group = NodeGroup(network, name, size, age, vaccination_rate, aic, dic)
+        except ValueError:
+            self.show_message(self.group_properties_content, "Delta has to be smalller then average", "error_message")
+            return
+        self.error_incomplete_input = False
+        self.error_delta = False
+        self.unload_items_from_layout(self.group_properties_content.layout())
+        self.unload_items_from_layout(self.group_list_layout)
+        network.add_group(tmp_group)
+        self.load_groups(network)
+        self.deselect_other_group_buttons(tmp_group.id, self.group_buttons)
+        self.load_properties(tmp_group) # might cause errors later 
         
-    def save_input(self, line_edits, ext_con_change=False):
-        pass
-        print(line_edits)
-        test = line_edits.items()
-        print(test)
-
+    def save_con_input(self, line_edits, group:NodeGroup, target):
+        try:
+            con_avr = int(line_edits['connection average'].text())
+            con_dc = int(line_edits['connection delta'].text())
+            if con_dc > con_avr:
+                raise ValueError
+        except ValueError:
+            self.show_message(self.connection_properties_content, "Invalid input", "error_message")
+            return
+        if not group.add_external_connection(target, con_avr, con_dc):
+            group.delete_external_connection(target)
+            group.add_external_connection(target, con_avr, con_dc)
+        self.show_message(self.connection_properties_content, "Successfully saved", "success_message")
+        
+    def save_group_input(self, line_edits, group:NodeGroup):      
+        try:
+            name = line_edits['name'].text()
+            size = int(line_edits['member count'].text())
+            age = int(line_edits['age'].text())
+            vaccination_rate = float(line_edits['vaccination rate'].text())
+            aic = int(line_edits['average internal connections'].text())
+            dic = int(line_edits['internal connection delta'].text())
+            if dic > aic:
+                raise ValueError
+        except ValueError:
+            self.show_message(self.group_properties_content, "Invalid input", "error_message")
+            return
+        group.name = name
+        if size != group.size:
+            group.members.clear()
+            group.create_members(size)
+        group.age = age
+        group.vaccination_rate = vaccination_rate
+        group.avrg_int_con = aic
+        group.delta_int_con = dic
+        self.show_message(self.group_properties_content, "Successfully saved", "success_message")
         
         
     def deselect_other_group_buttons(self, sender_id, button_dict):
@@ -81,6 +152,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     
                
     def add_group(self, group: NodeGroup):
+        self.error_incomplete_input = False
+        self.error_delta = False
         v_layout = self._create_hbox_layout_widget("group_list_entry")
         checkbox = QtWidgets.QCheckBox()
         checkbox.setChecked(True)
@@ -106,7 +179,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
         btn = QtWidgets.QPushButton('Save')
         btn.setObjectName("save_group_btn")
-        btn.clicked.connect(lambda: self.save_input(line_edits))
+        btn.clicked.connect(lambda: self.save_group_input(line_edits, group))
         self.group_properties_content.layout().addRow(btn)
         self.load_connections(group)
         
@@ -175,5 +248,5 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             line_edits[p] = line_edit
         btn = QtWidgets.QPushButton('Save')
         btn.setObjectName("save_group_btn")
-        btn.clicked.connect(lambda: self.save_input(line_edits, ext_con_change=True))
+        btn.clicked.connect(lambda: self.save_con_input(line_edits, group_from, group_to))
         self.connection_properties_content.layout().addRow(btn)
