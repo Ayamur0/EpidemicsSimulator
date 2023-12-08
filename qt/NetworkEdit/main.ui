@@ -182,7 +182,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>238</width>
-                <height>302</height>
+                <height>303</height>
                </rect>
               </property>
               <property name="layoutDirection">
@@ -229,12 +229,16 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>238</width>
-                <height>301</height>
+                <height>302</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_6">
                <item>
-                <layout class="QVBoxLayout" name="con_list_layout"/>
+                <layout class="QVBoxLayout" name="con_list_layout">
+                 <property name="spacing">
+                  <number>10</number>
+                 </property>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -260,7 +264,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>357</width>
-                <height>302</height>
+                <height>303</height>
                </rect>
               </property>
               <layout class="QFormLayout" name="formLayout">
@@ -291,7 +295,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>357</width>
-                <height>301</height>
+                <height>302</height>
                </rect>
               </property>
               <layout class="QFormLayout" name="formLayout_2"/>
@@ -318,7 +322,7 @@ Generation time 20.5s</string>
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="locale">

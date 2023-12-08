@@ -99,6 +99,9 @@ QPushButton#save_group_btn:hover {
     background: rgb(100, 100, 100);
     /* IDK */
 }
+QPushButton#color_button{
+    border: 5px;
+}
 /* Connection List */
 #connection_list {
     border: none;

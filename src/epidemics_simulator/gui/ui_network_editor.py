@@ -1,6 +1,7 @@
+import random
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import QRegExp, QTimer
-from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import QRegExp, QTimer, Qt
+from PyQt5.QtGui import QRegExpValidator, QColor
 import sys
 from storage import Network, NodeGroup
 from functools import partial
@@ -10,13 +11,17 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def __init__(self):
         super(UiNetworkEditor, self).__init__()
         uic.loadUi("qt/NetworkEdit/main.ui", self)
+        self.con_list_layout.setAlignment(Qt.AlignTop)
         self.group_buttons: dict = {}
         self.connection_buttons: dict = {}
         self.show()
         
     def hide_message(self, label, timer):
-        label.deleteLater()
-        timer.deleteLater()  # Delete the timer to avoid memory leaks
+        try:
+            label.deleteLater()
+            timer.deleteLater()  # Delete the timer to avoid memory leaks
+        except RuntimeError:
+            return
         
     def show_message(self, widget, label_text, object_name):
         label = QtWidgets.QLabel(label_text)
@@ -25,6 +30,25 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
 
         timer = QTimer()
         timer.singleShot(2000, lambda: self.hide_message(label, timer))
+        
+    #def fade(self, widget):
+    #    effect = QtWidgets.QGraphicsOpacityEffect()
+    #    widget.setGraphicsEffect(effect)
+    #    animation = QPropertyAnimation(effect, b"opacity")
+    #    animation.setDuration(1000)
+    #    animation.setStartValue(1)
+    #    animation.setEndValue(0)
+    #    animation.start()
+
+    #def unfade(self, widget):
+    #    effect = QtWidgets.QGraphicsOpacityEffect()
+    #    widget.setGraphicsEffect(effect)
+
+    #    animation = QPropertyAnimation(effect, b"opacity")
+    #    animation.setDuration(1000)
+    #    animation.setStartValue(0)
+    #    animation.setEndValue(1)
+    #    animation.start()
         
     #def show_error(self, message):
     #    error_box = QtWidgets.QMessageBox(self)
@@ -57,6 +81,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             "internal connection delta": '',
             "age": '',
             "vaccination rate": '',
+            "max vaccination rate": '',
+            "color": ''
         }
         line_edits = self._create_group_prop_input(default_dict)
         btn = QtWidgets.QPushButton('Save')
@@ -72,11 +98,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             vaccination_rate = float(line_edits['vaccination rate'].text())
             aic = int(line_edits['average internal connections'].text())
             dic = int(line_edits['internal connection delta'].text())
+            vac_rate = int(line_edits['max vaccination rate'].text())
+            color = line_edits['color'].text()
         except ValueError:
             self.show_message(self.group_properties_content, "Pleas fill out every input", "error_message")
             return
         try:
-            tmp_group = NodeGroup(network, name, size, age, vaccination_rate, aic, dic)
+            tmp_group = NodeGroup(network, name, size, age, vaccination_rate, vac_rate, aic, dic, color)
         except ValueError:
             self.show_message(self.group_properties_content, "Delta has to be smalller then average", "error_message")
             return
@@ -111,6 +139,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             vaccination_rate = float(line_edits['vaccination rate'].text())
             aic = int(line_edits['average internal connections'].text())
             dic = int(line_edits['internal connection delta'].text())
+            vac_rate = int(line_edits['max vaccination rate'].text())
+            color = line_edits['color'].text()
             if dic > aic:
                 raise ValueError
         except ValueError:
@@ -124,6 +154,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         group.vaccination_rate = vaccination_rate
         group.avrg_int_con = aic
         group.delta_int_con = dic
+        group.max_vaccination_rate = vac_rate
+        group.color = color
         self.show_message(self.group_properties_content, "Successfully saved", "success_message")
         
         
@@ -183,6 +215,21 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.group_properties_content.layout().addRow(btn)
         self.load_connections(group)
         
+    def generate_random_color(self):
+        red = random.randint(0, 255)
+        green = random.randint(0, 255)
+        blue = random.randint(0, 255)
+
+        return QColor(red, green, blue)
+        
+    def show_color_dialog(self, line_edit, color_button):
+        color = QtWidgets.QColorDialog.getColor()
+
+        if color.isValid():
+            hex_color = color.name()
+            line_edit.setText(hex_color)
+            color_button.setStyleSheet(f'background: {hex_color};')
+        
     def _create_group_prop_input(self, properties):
         line_edits = {}
         for p, v in properties.items():
@@ -193,12 +240,22 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
                 reg_ex = QRegExp("^\d+(\.\d+)?$")
                 input_validator = QRegExpValidator(reg_ex, line_edit)
                 line_edit.setValidator(input_validator)
+            elif p == 'color':
+                pick_color_button = QtWidgets.QPushButton()
+                pick_color_button.setObjectName('color_button')
+                pick_color_button.clicked.connect(lambda: self.show_color_dialog(line_edit, pick_color_button))
+                line_edit.setText(str(v))
+                if v == '':
+                    line_edit.setText(self.generate_random_color().name())
+                pick_color_button.setStyleSheet(f'background: {line_edit.text()};')
+                
+                line_edits[p] = line_edit
+                self.group_properties_content.layout().addRow(label, pick_color_button)
+                continue
             elif p != 'name':
                 reg_ex = QRegExp("^[0-9]+$")
                 input_validator = QRegExpValidator(reg_ex, line_edit)
                 line_edit.setValidator(input_validator)
-            
-                
             line_edit.setObjectName("group_line_edit_properties")
             line_edit.setText(str(v))
             self.group_properties_content.layout().addRow(label, line_edit)
@@ -214,15 +271,17 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.connection_buttons.clear()
         
         for g in other_groups:
-            v_layout = self._create_hbox_layout_widget("connection_list_entry")
+            #v_layout = self._create_hbox_layout_widget("connection_list_entry")
+            #v_layout.setFixedSize(QSize(100, 20))
             btn = QtWidgets.QPushButton(g.name)
+            #v_layout.setStyleSheet('background: red;')
             btn.setObjectName("connection_list_btn")
             self.connection_buttons[g.id] = btn
             btn.setCheckable(True)
             btn.clicked.connect(partial(self.load_connection_properties, group, g.id))
             
-            v_layout.layout().addWidget(btn) 
-            self.con_list_layout.addWidget(v_layout)
+            #v_layout.layout().addWidget(btn) 
+            self.con_list_layout.addWidget(btn)
             
             
     def load_connection_properties(self, group_from: NodeGroup, group_to: str):
