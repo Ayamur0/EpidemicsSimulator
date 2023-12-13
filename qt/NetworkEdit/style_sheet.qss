@@ -145,12 +145,12 @@ QWidget#connection_properties_content {
 }
 
 
-QPushButton#pushButton{
+QPushButton#generate_button{
     border: 5px;
     background: rgb(61, 61, 61);
     color: white;
 }
-QPushButton#pushButton:hover{
+QPushButton#generate_button:hover{
     background: rgb(80, 80, 80);
 }
 /* Tab2 */

@@ -22,7 +22,7 @@ class NodeGroup:
         color: str,
     ):
         if dic > aic:
-            raise ValueError
+            raise ValueError('Delta has to be smalller then average')
         self.network = network
         self.name = name
         self.id: str = f"{network.group_id_counter}"  # auto set new id
@@ -35,11 +35,11 @@ class NodeGroup:
         self.delta_int_con: int = dic
         self.avrg_ext_con: dict = {}  # dict with id of other groups + conn
         self.delta_ext_con: dict = {}
-        self.age = age
-        self.vaccination_rate = vaccination_rate
-        self.max_vaccination_rate = max_vaccination_rate
-        self.color = color
-        self.active = True
+        self.age: int = age
+        self.vaccination_rate: float = vaccination_rate
+        self.max_vaccination_rate: float = max_vaccination_rate
+        self.color: str = color
+        self.active: bool = True
 
     @property
     def size(self) -> int:
@@ -96,12 +96,54 @@ class NodeGroup:
             "max vaccination rate": self.max_vaccination_rate,
             "color": self.color,
         }
-
-    def __str__(self):
-        con_list = []
-        result = f"Group ID: {self.id}, Member:\n"
-        for member in self.members:
-            con_list.append(len(member.connections))
-            result += f"\t{member},\n"
-        result += f"Average: {statistics.mean(con_list)}\nDelta: {statistics.stdev(con_list)}"
-        return result
+      
+      
+    def get_values_from_dict(value_dict: dict):
+        name = str(value_dict.get("name"))
+        member_count = int(value_dict.get("member count"))
+        aic = int (value_dict.get("average internal connections"))
+        dic = int(value_dict.get("internal connection delta"))
+        age = int(value_dict.get("age"))
+        vaccination_rate = float(value_dict.get("vaccination rate"))
+        max_vaccination_rate = float(value_dict.get("max vaccination rate"))
+        color = str(value_dict.get("color"))
+        
+        return name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color
+        
+    def set_from_dict(self, value_dict: dict):
+        name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color = NodeGroup.get_values_from_dict(value_dict)
+        if dic > aic:
+            raise ValueError("Delta has to be smalller then average")
+        self.name = name
+        if member_count != self.size:
+            self.members.clear()
+            self.create_members(member_count)
+        self.age = age
+        self.vaccination_rate = vaccination_rate
+        self.max_vaccination_rate = max_vaccination_rate
+        self.avrg_int_con = aic
+        self.delta_int_con = dic
+        self.color = color
+        
+        #if (name := value_dict.get("name")) is not None:
+        #    self.name = str(name)
+        #if (member_count := value_dict.get("member count")) is not None:
+        #    self.members.clear()
+        #    self.create_members(int(member_count))
+        #if (aic := value_dict.get("average internal connections")) is not None and (dic := value_dict.get("average internal connections")) is not None:
+        #    if dic > aic:
+        #        raise ValueError('Delta has to be smalller then average')
+        #    self.avrg_int_con = int(aic)
+        #    self.delta_int_con = int(dic)
+        #if (age := value_dict.get("age")) is not None:
+        #    self.age = int(age)
+        #if (vaccination_rate := value_dict.get("vaccination rate")) is not None:
+        #    self.vaccination_rate = float(vaccination_rate)
+        #if (max_vaccination_rate := value_dict.get("max vaccination rate")) is not None:
+        #    self.max_vaccination_rate = float(max_vaccination_rate)
+        #if (color := value_dict.get("color")) is not None:
+        #    self.color = str(color)
+            
+    def init_from_dict(network, value_dict):
+        name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color = NodeGroup.get_values_from_dict(value_dict)
+        return NodeGroup(network, name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color)
