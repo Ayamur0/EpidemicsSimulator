@@ -10,13 +10,14 @@ class UiNetworkGroups:
         self.network_editor.group_list_content.layout().setAlignment(Qt.AlignTop)
         self.group_buttons: dict = {}
         
-    def add_group(self, group, network):
+    def add_group(self, group: NodeGroup, network: Network):
         self.error_incomplete_input = False
         self.error_delta = False
         
         layout_widget = UiWidgetCreator.create_hbox_widget('group_list_layout')
         
-        checkbox = UiWidgetCreator.create_checkbox('group_list_btn', True)
+        checkbox = UiWidgetCreator.create_checkbox('group_list_btn', group.active)
+        checkbox.stateChanged.connect(lambda: self.change_group_activity(checkbox, group))
         
         group_button = UiWidgetCreator.create_push_button(group.name, 'group_list_btn', True)
         group_button.clicked.connect(lambda: self.load_properties(group, network))
@@ -26,14 +27,17 @@ class UiNetworkGroups:
         layout_widget.layout().addWidget(group_button)
         
         self.network_editor.group_list_content.layout().addWidget(layout_widget)
+        
+    def change_group_activity(self, checkbox: QtWidgets.QCheckBox, group: NodeGroup):
+        group.active = checkbox.isChecked()
     
-    def new_group_button_input(self, network):
+    def new_group_button_input(self, network: Network):
         add_group_button = UiWidgetCreator.create_push_button('+', 'add_group_btn', is_checkable=True)
         add_group_button.clicked.connect(lambda: self.create_new_group_input(network))
         self.network_editor.group_list_content.layout().addWidget(add_group_button)
         self.group_buttons['-1'] = add_group_button
     
-    def create_new_group_input(self, network):
+    def create_new_group_input(self, network: Network):
         self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
         self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
         
@@ -54,7 +58,7 @@ class UiNetworkGroups:
         
         self.save_properties_button(line_edits, None, network)
         
-    def load_properties(self, group, network):
+    def load_properties(self, group: NodeGroup, network: Network):
         self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
         self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
         
@@ -68,7 +72,7 @@ class UiNetworkGroups:
         
         self.save_properties_button(line_edits, group, network)
         
-    def save_properties_button(self, line_edits, group, network):
+    def save_properties_button(self, line_edits: list, group: NodeGroup, network: Network):
         save_btn = UiWidgetCreator.create_push_button('Save', 'save_group_btn')
         save_btn.clicked.connect(lambda: self.save_properties_input(line_edits, group, network))
         self.network_editor.group_properties_content.layout().addRow(save_btn)
@@ -80,34 +84,28 @@ class UiNetworkGroups:
                 group.set_from_dict(updated_dict)
             except ValueError as e:
                 if str(e) == "Delta has to be smalller then average":
-                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, str(e), 'error_message')
+                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, str(e), 'error_message', True)
                 else:
-                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message')
+                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message', True)
                 return
-            self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
-            self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
-            self.network_editor.load_groups(network)
-            self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
-            self.load_properties(group, network) # might cause errors later 
-            UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully saved", "success_message")
         else:
             try:
                 group = NodeGroup.init_from_dict(network, updated_dict)
                 network.add_group(group)
             except ValueError as e:
                 if str(e) == "Delta has to be smalller then average":
-                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, str(e), 'error_message')
+                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, str(e), 'error_message', True)
                 else:
-                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message')
+                    UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message', True)
                 return
-            self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
-            self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
-            self.network_editor.load_groups(network)
-            self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
-            self.load_properties(group, network) # might cause errors later 
+        self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
+        self.network_editor.load_groups(network)
+        self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
+        if group:
+            UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully saved", "success_message", True)
     
 
-    def open_group_properties_input(self, properties):
+    def open_group_properties_input(self, properties: dict):
         line_edits = {}
         for p, v in properties.items():
             label = UiWidgetCreator.create_label(p, 'group_label_properties')
@@ -136,10 +134,15 @@ class UiNetworkGroups:
 
         return QColor(red, green, blue)
     
-    def show_color_dialog(self, line_edit, color_button):
+    def show_color_dialog(self, line_edit: QtWidgets.QLineEdit, color_button: QtWidgets.QPushButton):
         color = QtWidgets.QColorDialog.getColor()
 
         if color.isValid():
             hex_color = color.name()
             line_edit.setText(hex_color)
             color_button.setStyleSheet(f'background: {hex_color};')
+            
+    def unload(self):
+        self.group_buttons.clear()
+        self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
+        self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())

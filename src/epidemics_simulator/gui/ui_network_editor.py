@@ -1,7 +1,8 @@
 #from gui import UiNetworkGroups, UiNetworkConnections
 from .ui_network_groups import UiNetworkGroups
 from .ui_network_connections import UiNetworkConnections
-from .ui_widget_creator import UiWidgetCreator
+from .ui_group_display import UiGroupDisplay
+
 import random
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtCore import QRegExp, QTimer, Qt
@@ -17,13 +18,20 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         uic.loadUi("qt/NetworkEdit/main.ui", self)
         self.groups = UiNetworkGroups(self)
         self.connections = UiNetworkConnections(self)
+        self.display = UiGroupDisplay(self)
         self.show()
         
     def load_groups(self, network: Network):
+        self.current_network = network
         all_groups = network.groups
         for group in all_groups:
             self.groups.add_group(group, network)
         self.groups.new_group_button_input(network)
+        
+    def unload_all_segments(self):
+        self.connections.unload()
+        self.display.unload()
+        self.groups.unload()
         
         
     def unload_items_from_layout(self, layout):

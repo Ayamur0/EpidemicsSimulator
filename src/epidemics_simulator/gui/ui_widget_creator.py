@@ -55,11 +55,13 @@ class UiWidgetCreator:
         except RuntimeError:
             return
         
-    def show_message(widget, label_text, object_name):
+    def show_message(widget, label_text, object_name, remove_last_message: bool):
+        if remove_last_message:
+            last_item =  widget.layout().itemAt(widget.layout().count() - 1).widget()
+            if isinstance(last_item, QtWidgets.QLabel):
+                last_item.deleteLater()
         label = UiWidgetCreator.create_label(label_text, object_name)
         widget.layout().addRow(label)
-        #add_to_func(label)
-
         timer = QTimer()
         timer.singleShot(2000, lambda: UiWidgetCreator.hide_message(label, timer))
         

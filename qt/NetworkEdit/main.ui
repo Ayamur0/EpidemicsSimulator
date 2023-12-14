@@ -72,17 +72,17 @@
                </widget>
               </item>
               <item>
-               <widget class="QScrollArea" name="scrollArea">
+               <widget class="QScrollArea" name="group_display">
                 <property name="widgetResizable">
                  <bool>true</bool>
                 </property>
-                <widget class="QWidget" name="scrollAreaWidgetContents">
+                <widget class="QWidget" name="group_display_content">
                  <property name="geometry">
                   <rect>
                    <x>0</x>
                    <y>0</y>
                    <width>163</width>
-                   <height>485</height>
+                   <height>515</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_2"/>
@@ -174,7 +174,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>238</width>
-                <height>300</height>
+                <height>303</height>
                </rect>
               </property>
               <property name="layoutDirection">
@@ -210,7 +210,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>238</width>
-                <height>299</height>
+                <height>302</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_6"/>
@@ -237,7 +237,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>357</width>
-                <height>300</height>
+                <height>303</height>
                </rect>
               </property>
               <layout class="QFormLayout" name="formLayout_4"/>
@@ -264,7 +264,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>357</width>
-                <height>299</height>
+                <height>302</height>
                </rect>
               </property>
               <layout class="QFormLayout" name="formLayout_3"/>

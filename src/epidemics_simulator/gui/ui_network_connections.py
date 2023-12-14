@@ -54,13 +54,18 @@ class UiNetworkConnections:
             if con_dc > con_avrg:
                 raise ValueError
         except TypeError:
-            UiWidgetCreator.show_message(self.network_editor.connection_properties_content, "Pleas fill out every input", 'error_message')
+            UiWidgetCreator.show_message(self.network_editor.connection_properties_content, "Pleas fill out every input", 'error_message', True)
             return
         except ValueError:
-            UiWidgetCreator.show_message(self.network_editor.connection_properties_content, "Delta has to be smalller then average", 'error_message')
+            UiWidgetCreator.show_message(self.network_editor.connection_properties_content, "Delta has to be smalller then average", 'error_message', True)
             return
         if not group_from.add_external_connection(group_to, con_avrg, con_dc):
             group_from.delete_external_connection(group_to)
             group_from.add_external_connection(group_to, con_avrg, con_dc)
-        UiWidgetCreator.show_message(self.network_editor.connection_properties_content, "Successfully saved", "success_message")
+        UiWidgetCreator.show_message(self.network_editor.connection_properties_content, "Successfully saved", "success_message", True)
+        
+    def unload(self):
+        self.connection_buttons.clear()
+        self.network_editor.unload_items_from_layout(self.network_editor.connection_list_content.layout())
+        self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
             
