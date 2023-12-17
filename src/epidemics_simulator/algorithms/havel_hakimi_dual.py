@@ -46,18 +46,14 @@ class HavelHakimiDual:
     # always connect from smaller group
     def _connect_highest_deg_node(self):
         if self.size1 <= self.size2:
-            node = self.node_id_seq1[0]
-            deg = self.deg_seq1[0]
-            self.node_id_seq1.pop(0)
-            self.deg_seq1.pop(0)
+            node = self.node_id_seq1.pop(0)
+            deg = self.deg_seq1.pop(0)
             targets = self._get_highest_n_nodes(deg, self.deg_seq2, self.node_id_seq2)
             for target in targets:
                 self.deg_seq2[self.node_id_seq2.index(target)] -= 1
         else:
-            node = self.node_id_seq2[0]
-            deg = self.deg_seq2[0]
-            self.node_id_seq2.pop(0)
-            self.deg_seq2.pop(0)
+            node = self.node_id_seq2.pop(0)
+            deg = self.deg_seq2.pop(0)
             targets = self._get_highest_n_nodes(deg, self.deg_seq1, self.node_id_seq1)
             for target in targets:
                 self.deg_seq1[self.node_id_seq1.index(target)] -= 1

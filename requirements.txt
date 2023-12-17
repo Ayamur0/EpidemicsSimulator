@@ -3,3 +3,5 @@ plotly
 numpy
 dash
 dash-cytoscape
+networkx
+matplotlib

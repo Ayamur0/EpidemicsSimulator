@@ -38,10 +38,8 @@ class HavelHakimi:
         return True
 
     def _connect_highest_deg_node(self):
-        node = self.node_id_seq[0]
-        deg = self.deg_seq[0]
-        self.node_id_seq.pop(0)
-        self.deg_seq.pop(0)
+        node = self.node_id_seq.pop(0)
+        deg = self.deg_seq.pop(0)
         targets = self._get_highest_n_nodes(deg)
         for target in targets:
             self.deg_seq[self.node_id_seq.index(target)] -= 1
