@@ -1,17 +1,22 @@
 import itertools
 import math
 import random
+import time
 from dash import Dash, html, dcc, callback_context
 import plotly.express as px
 from dash.dependencies import Input, Output
 from src.epidemics_simulator.storage import Network, NodeGroup
 import matplotlib.pyplot as plt
 from src.epidemics_simulator.algorithms import CircleGrid
+import threading
+import dash_bootstrap_components as dbc
+import os
 
 
 # https://stackoverflow.com/questions/69498713/how-to-update-a-networkx-drawing
 # https://pygraphviz.github.io/documentation/stable/install.html
 # https://community.plotly.com/t/set-specific-color-to-scatter-3d-points/67443
+# https://community.plotly.com/t/updating-colours-on-an-animation-using-html-and-then-refreshing-the-animation-slider/70911
 
 
 class Individual:
@@ -20,6 +25,8 @@ class Individual:
     INFECTED = "rgb(0.659, 0, 0)"
     VACCINATED = "rgb(0.067, 0, 0.941)"
     DECEASED = "rgb(0.012, 0.012, 0.012)"
+
+    PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
 
     def __init__(self) -> None:
         self.X = []
@@ -78,8 +85,56 @@ class Individual:
         # with plot_widget:
         #     fig3.show()
         fig3["layout"]["uirevision"] = "0"
-        app = Dash()
-        app.layout = html.Div(
+        print(os.listdir(os.getcwd() + "/src/epidemics_simulator/visualization/networks/assets"))
+        app = Dash(
+            external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
+            assets_folder=os.getcwd() + "/assets",
+        )
+
+        sidebar = html.Div(
+            [
+                html.Div(
+                    [
+                        # width: 3rem ensures the logo is the exact width of the
+                        # collapsed sidebar (accounting for padding)
+                        html.Img(src=self.PLOTLY_LOGO, style={"width": "3rem"}),
+                        html.H2("Sidebar"),
+                    ],
+                    className="sidebar-header",
+                ),
+                html.Hr(),
+                dbc.Nav(
+                    [
+                        dbc.NavLink(
+                            [html.I(className="fas fa-home me-2"), html.Span("All")],
+                            href="/",
+                            active="exact",
+                        ),
+                        dbc.NavLink(
+                            [
+                                html.I(className="fas fa-calendar-alt me-2"),
+                                html.Span("Group1"),
+                            ],
+                            href="/calendar",
+                            active="exact",
+                        ),
+                        dbc.NavLink(
+                            [
+                                html.I(className="fas fa-envelope-open-text me-2"),
+                                html.Span("Group2"),
+                            ],
+                            href="/messages",
+                            active="exact",
+                        ),
+                    ],
+                    vertical=True,
+                    pills=True,
+                ),
+            ],
+            className="sidebar",
+        )
+
+        content = html.Div(
             [
                 dcc.Graph(
                     figure=fig3,
@@ -91,6 +146,20 @@ class Individual:
             ],
             style={"height": "80vh"},
         )
+
+        # app.layout = html.Div(
+        #     [
+        #         dcc.Graph(
+        #             figure=fig3,
+        #             id="live-graph",
+        #             style={"height": "80vh"},
+        #         ),
+        #         dcc.Interval(id="update-color", interval=10 * 1000, n_intervals=0),
+        #         html.Button("Update Graph", id="update-button", n_clicks=0),
+        #     ],
+        #     style={"height": "80vh"},
+        # )
+        app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
         @app.callback(
             Output("live-graph", "figure"),
@@ -107,11 +176,19 @@ class Individual:
                 new_color_sequence = random.choices(
                     [self.CURED, self.HEALTHY, self.VACCINATED, self.INFECTED, self.DECEASED], k=100
                 )
+                # new_color_sequence = self.color_seq
             else:
                 new_color_sequence = random.choices(["pink"], k=100)
             fig3.update_traces(marker=dict(color=new_color_sequence))
             fig3["layout"]["uirevision"] = "0"
             return fig3
+
+        # def test():
+        #     time.sleep(10)
+        #     self.color_seq = random.choices(["purple", "blue"], k=100)
+
+        # t = threading.Thread(target=test)
+        # t.run()
 
         # @app.callback(
         #     Output("live-graph", "figure", allow_duplicate=True),
