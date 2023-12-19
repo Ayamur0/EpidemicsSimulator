@@ -1,15 +1,8 @@
-#from gui import UiNetworkGroups, UiNetworkConnections
-from .ui_network_groups import UiNetworkGroups
-from .ui_network_connections import UiNetworkConnections
-from .ui_group_display import UiGroupDisplay
-
-import random
+from src.epidemics_simulator.gui.ui_network_groups import UiNetworkGroups
+from src.epidemics_simulator.gui.ui_network_connections import UiNetworkConnections
+from src.epidemics_simulator.gui.ui_group_display import UiGroupDisplay
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import QRegExp, QTimer, Qt
-from PyQt5.QtGui import QRegExpValidator, QColor
-import sys
-from storage import Network, NodeGroup
-from functools import partial
+from storage import Network
 
 
 class UiNetworkEditor(QtWidgets.QMainWindow):
@@ -50,4 +43,11 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             if not btn_object.isChecked():
                 continue
             btn_object.setChecked(False)
+            
+    def get_selected_button(self, button_dict):
+        for button in button_dict:
+            btn_object = button_dict[button]
+            if not btn_object.isChecked():
+                continue
+            return btn_object
         

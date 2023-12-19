@@ -13,7 +13,7 @@ class Network:
         return True
 
     def delete_group(self, group_id: str) -> bool:
-        ret = any(g.group_id == group_id for g in self.groups)
+        ret = any(g.id == group_id for g in self.groups)
         self.groups = [group for group in self.groups if group.id != group_id]
         return ret
 

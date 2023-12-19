@@ -1,15 +1,18 @@
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import QRegExp, QTimer, Qt
-from PyQt5.QtGui import QRegExpValidator, QColor
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QRegExp, QTimer
+from PyQt5.QtGui import QRegExpValidator
+from src.epidemics_simulator.gui.cutsom_widgets import *
 
 class UiWidgetCreator:
     def create_label(content: str, object_name: str, style_sheet=None):
+        #label = DefaultLabel()
         label = QtWidgets.QLabel()
         label.setObjectName(object_name)
         label.setText(content)
         return label
     
     def create_push_button(content: str, object_name: str, is_checkable=False, is_checked=False, style_sheet=None):
+        #button = DefaultButton()
         button = QtWidgets.QPushButton()
         button.setObjectName(object_name)
         button.setText(content)
@@ -30,6 +33,7 @@ class UiWidgetCreator:
         return checkbox
     
     def create_line_edit(content: str, object_name: str, regex_validator = '.*', style_sheet=None):
+        #line_edit = DefaultLineEdit()
         line_edit = QtWidgets.QLineEdit()
         line_edit.setObjectName(object_name)
         reg_ex = QRegExp(regex_validator)
@@ -98,3 +102,17 @@ class UiWidgetCreator:
     #    error_box.setText(message)
     #    error_box.setWindowTitle('Validation Error')
     #    error_box.exec_()
+    
+    def create_delete_dialog(content: str):
+        msg_box = QtWidgets.QMessageBox()
+        msg_box.setIcon(QtWidgets.QMessageBox.Question)
+        msg_box.setWindowTitle('Delete Confirmation')
+        msg_box.setText(content)
+        
+        
+        yes_button = msg_box.addButton('Yes', QtWidgets.QMessageBox.AcceptRole)
+        cancel_button = msg_box.addButton('Cancel', QtWidgets.QMessageBox.RejectRole)
+        
+        msg_box.setDefaultButton(cancel_button)
+        
+        return msg_box
