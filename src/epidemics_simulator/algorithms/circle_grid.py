@@ -45,5 +45,14 @@ class CircleGrid:
                 break
         while len(points := CircleGrid._calculate_points_3D(radius)) < amount:
             radius += 1
-            points = CircleGrid._calculate_points_3D(radius)
         return points[:amount]
+
+    def calculate_radius_3D(amount: int):
+        radius = -1
+        for i in range(0, 100):
+            if CircleGrid._estimate_points_3D(i) >= amount:
+                radius = i - 1
+                break
+        while len(points := CircleGrid._calculate_points_3D(radius)) < amount:
+            radius += 1
+        return radius
