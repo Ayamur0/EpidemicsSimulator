@@ -22,8 +22,6 @@ class HavelHakimiDual:
         self.edges = {}
         self._create_sequence()
         self._sort_sequence()
-        print(self.deg_seq1)
-        print(self.deg_seq2)
         self.node_id_seq1 = list(range(0, self.size1))
         self.node_id_seq2 = list(range(0, self.size2))
         random.shuffle(self.node_id_seq1)

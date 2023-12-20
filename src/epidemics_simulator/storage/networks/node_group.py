@@ -22,7 +22,7 @@ class NodeGroup:
         color: str,
     ):
         if dic > aic:
-            raise ValueError('Delta has to be smalller then average')
+            raise ValueError("Delta has to be smalller then average")
         self.network = network
         self.name = name
         self.id: str = f"{network.group_id_counter}"  # auto set new id
@@ -40,10 +40,21 @@ class NodeGroup:
         self.max_vaccination_rate: float = max_vaccination_rate
         self.color: str = color
         self.active: bool = True
+        self.internal_edges = set()
+        self.external_edges = {}
 
     @property
     def size(self) -> int:
         return len(self.members)
+
+    def add_internal_edge(self, _from: str, to: str):
+        self.internal_edges.add(f"{_from}/{to}")
+
+    def add_external_edge(self, _from: str, to: str):
+        to_group = to.split("-")[0]
+        if to_group not in self.external_edges:
+            self.external_edges[to_group] = set()
+        self.external_edges[to_group].add(f"{_from}/{to}")
 
     def add_external_connection(self, target_group_id: str, ac: int, dc: int) -> bool:
         if dc > ac:
@@ -75,6 +86,8 @@ class NodeGroup:
             self.members.append(Node(self))
 
     def clear_connections(self) -> None:
+        self.internal_edges.clear()
+        self.external_edges.clear()
         # clear all connections in members
         for member in self.members:
             member.clear_connections()
@@ -96,22 +109,30 @@ class NodeGroup:
             "max vaccination rate": self.max_vaccination_rate,
             "color": self.color,
         }
-      
-      
+
     def get_values_from_dict(value_dict: dict):
         name = str(value_dict.get("name"))
         member_count = int(value_dict.get("member count"))
-        aic = int (value_dict.get("average internal connections"))
+        aic = int(value_dict.get("average internal connections"))
         dic = int(value_dict.get("internal connection delta"))
         age = int(value_dict.get("age"))
         vaccination_rate = float(value_dict.get("vaccination rate"))
         max_vaccination_rate = float(value_dict.get("max vaccination rate"))
         color = str(value_dict.get("color"))
-        
+
         return name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color
-        
+
     def set_from_dict(self, value_dict: dict):
-        name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color = NodeGroup.get_values_from_dict(value_dict)
+        (
+            name,
+            member_count,
+            age,
+            vaccination_rate,
+            max_vaccination_rate,
+            aic,
+            dic,
+            color,
+        ) = NodeGroup.get_values_from_dict(value_dict)
         if dic > aic:
             raise ValueError("Delta has to be smalller then average")
         self.name = name
@@ -124,26 +145,45 @@ class NodeGroup:
         self.avrg_int_con = aic
         self.delta_int_con = dic
         self.color = color
-        
-        #if (name := value_dict.get("name")) is not None:
+
+        # if (name := value_dict.get("name")) is not None:
         #    self.name = str(name)
-        #if (member_count := value_dict.get("member count")) is not None:
+        # if (member_count := value_dict.get("member count")) is not None:
         #    self.members.clear()
         #    self.create_members(int(member_count))
-        #if (aic := value_dict.get("average internal connections")) is not None and (dic := value_dict.get("average internal connections")) is not None:
+        # if (aic := value_dict.get("average internal connections")) is not None and (dic := value_dict.get("average internal connections")) is not None:
         #    if dic > aic:
         #        raise ValueError('Delta has to be smalller then average')
         #    self.avrg_int_con = int(aic)
         #    self.delta_int_con = int(dic)
-        #if (age := value_dict.get("age")) is not None:
+        # if (age := value_dict.get("age")) is not None:
         #    self.age = int(age)
-        #if (vaccination_rate := value_dict.get("vaccination rate")) is not None:
+        # if (vaccination_rate := value_dict.get("vaccination rate")) is not None:
         #    self.vaccination_rate = float(vaccination_rate)
-        #if (max_vaccination_rate := value_dict.get("max vaccination rate")) is not None:
+        # if (max_vaccination_rate := value_dict.get("max vaccination rate")) is not None:
         #    self.max_vaccination_rate = float(max_vaccination_rate)
-        #if (color := value_dict.get("color")) is not None:
+        # if (color := value_dict.get("color")) is not None:
         #    self.color = str(color)
-            
+
     def init_from_dict(network, value_dict):
-        name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color = NodeGroup.get_values_from_dict(value_dict)
-        return NodeGroup(network, name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color)
+        (
+            name,
+            member_count,
+            age,
+            vaccination_rate,
+            max_vaccination_rate,
+            aic,
+            dic,
+            color,
+        ) = NodeGroup.get_values_from_dict(value_dict)
+        return NodeGroup(
+            network,
+            name,
+            member_count,
+            age,
+            vaccination_rate,
+            max_vaccination_rate,
+            aic,
+            dic,
+            color,
+        )

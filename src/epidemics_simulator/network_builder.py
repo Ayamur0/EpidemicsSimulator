@@ -33,9 +33,9 @@ class NetworkBuilder:
         for node_id in h.edges.keys():
             source_node: Node = group.get_member(group.id + "-" + str(node_id))
             for target_node_id in h.edges[node_id]:
-                target_node: Node = group.get_member(group.id + "-" + str(target_node_id))
+                # target_node: Node = group.get_member(group.id + "-" + str(target_node_id))
                 source_node.add_int_connection(group.id + "-" + str(target_node_id))
-                target_node.add_int_connection(group.id + "-" + str(node_id))
+                # target_node.add_int_connection(group.id + "-" + str(node_id))
 
     def _create_ext_conns(self):
         all = self._collect_ext_conns(self.network)
@@ -65,11 +65,11 @@ class NetworkBuilder:
         for node_id in h.edges.keys():
             source_node: Node = key_group.get_member(key_group.id + "-" + str(node_id))
             for target_node_id in h.edges[node_id]:
-                target_node: Node = value_group.get_member(
-                    value_group.id + "-" + str(target_node_id)
-                )
+                # target_node: Node = value_group.get_member(
+                #     value_group.id + "-" + str(target_node_id)
+                # )
                 source_node.add_ext_connection(value_group.id + "-" + str(target_node_id))
-                target_node.add_ext_connection(key_group.id + "-" + str(node_id))
+                # target_node.add_ext_connection(key_group.id + "-" + str(node_id))
 
     # creates dict of all connections between groups
     # contains tuples of (target_id, avrg, delta)

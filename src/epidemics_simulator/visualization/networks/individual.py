@@ -12,6 +12,7 @@ import threading
 import dash_bootstrap_components as dbc
 import os
 from .html_network_view import HTMLNetworkView
+import plotly.graph_objs as go
 
 
 # https://stackoverflow.com/questions/69498713/how-to-update-a-networkx-drawing
@@ -30,57 +31,21 @@ class Individual:
     PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
 
     def __init__(self) -> None:
-        self.X = []
-        self.Y = []
-        self.Z = []
-        self.color_seq = []
+        self.Xn = []
+        self.Yn = []
+        self.Zn = []
         self.nodes = []
-        self.stylesheet = []
-        self.next_node_id = 0
-
-    def flask(self):
-        from flask import Flask, render_template
-        import time
-        import json
-
-        x = []
-        y = []
-        z = []
-        pts = CircleGrid.get_points_3D(100)
-        x, y, z = zip(*pts)
-
-        app = Flask(__name__)
-
-        @app.route("/")
-        def index():
-            # Create the initial scatter plot
-            fig3 = px.scatter_3d(x=x, y=y, z=z, color_discrete_sequence=["red"] * 100)
-
-            # Convert Plotly figure to JSON
-            initial_plot = fig3.to_json()
-
-            return render_template("index.html", initial_plot=initial_plot)
-
-        app.run(debug=True)
+        self.group_coords = {}
+        self.hidden_groups = []
+        self.node_id_map = {}
+        self.edges_map = {}
+        self.show_internal_edges = False
+        self.show_external_edges = True
+        self.show_grid = True
 
     def plot(self, network: Network):
-        self.X.clear()
-        self.Y.clear()
-        self.Z.clear()
         self.add_network_points(network)
-        fig = px.scatter_3d(
-            x=self.X,
-            y=self.Y,
-            z=self.Z,
-            color_discrete_sequence=self.color_seq
-            # color=elem,
-            # color_discrete_sequence=[
-            #     "rgb(1.0,0.2663545845364998,0.0)",
-            #     "rgb(0.6694260712462251,0.7779863207340414,1.0)",
-            #     "rgb(1.0,0.9652869470673199,0.9287833665638421)",
-            # ],
-        )
-        fig["layout"]["uirevision"] = "0"
+        fig = self.build(network)
 
         html_view = HTMLNetworkView(fig)
         app = html_view.app
@@ -91,15 +56,13 @@ class Individual:
             prevent_initial_call=True,
         )
         def update_graph_scatter(n_intervals, x):
-            print(n_intervals)
-            print(x)
             trigger_id = callback_context.triggered_id
             if trigger_id and "update-button" in trigger_id:
-                new_color_sequence = random.choices(["purple", "blue"], k=len(self.X))
+                new_color_sequence = random.choices(["purple", "blue"], k=len(self.Xn))
             elif trigger_id and "update-color" in trigger_id:
                 new_color_sequence = random.choices(
                     [self.CURED, self.HEALTHY, self.VACCINATED, self.INFECTED, self.DECEASED],
-                    k=len(self.X),
+                    k=len(self.Xn),
                 )
                 # new_color_sequence = self.color_seq
             else:
@@ -110,7 +73,100 @@ class Individual:
 
         app.run_server(debug=True, use_reloader=True)
 
-        plt.pause(1)
+    def build(self, network: Network):
+        aXn, aYn, aZn = [], [], []
+        colors = []
+        for group in network.groups:
+            if group.id not in self.hidden_groups:
+                x, y, z = zip(*self.group_coords[group.id])
+                aXn.extend(x)
+                aYn.extend(y)
+                aZn.extend(z)
+                colors.extend([group.color] * group.size)
+        aXe, aYe, aZe = self.add_edges(network)
+
+        trace1 = go.Scatter3d(
+            x=aXn,
+            y=aYn,
+            z=aZn,
+            mode="markers",
+            marker=dict(
+                symbol="circle", size=6, color=colors, line=dict(color="rgb(50,50,50)", width=0.5)
+            ),
+            uirevision="0",
+        )
+
+        trace2 = go.Scatter3d(
+            x=aXe,
+            y=aYe,
+            z=aZe,
+            mode="lines",
+            uirevision="0",
+            line=dict(color="rgb(125,125,125)", width=1),
+            hoverinfo="none",
+        )
+
+        axis = dict(
+            showbackground=self.show_grid,
+            showline=self.show_grid,
+            zeroline=self.show_grid,
+            showgrid=self.show_grid,
+            showticklabels=self.show_grid,
+            title="",
+        )
+
+        layout = go.Layout(
+            title="Network Title",
+            showlegend=False,
+            margin=dict(t=100),
+            hovermode="closest",
+            scene=dict(
+                xaxis=dict(axis),
+                yaxis=dict(axis),
+                zaxis=dict(axis),
+            ),
+            annotations=[
+                dict(
+                    showarrow=False,
+                    text="Data source: <a href='http://bost.ocks.org/mike/miserables/miserables.json'>[1] miserables.json</a>",
+                    xref="paper",
+                    yref="paper",
+                    x=0,
+                    y=0.1,
+                    xanchor="left",
+                    yanchor="bottom",
+                    font=dict(size=14),
+                )
+            ],
+        )
+
+        data = [trace1, trace2]
+        fig = go.Figure(data=data, layout=layout)
+        fig["layout"]["uirevision"] = "0"
+        return fig
+
+    def add_edges(self, network: Network):
+        aXe, aYe, aZe = [], [], []
+        for group in network.groups:
+            if group.id in self.hidden_groups:
+                continue
+            if self.show_internal_edges:
+                edges = list(group.internal_edges)
+            else:
+                edges = []
+            if self.show_external_edges:
+                for target in group.external_edges:
+                    print(target)
+                    if target not in self.hidden_groups:
+                        edges.extend(group.external_edges[target])
+            for edge in edges:
+                _from, to = edge.split("/")
+                from_ind = self.node_id_map[_from]
+                to_ind = self.node_id_map[to]
+                aXe.extend([self.Xn[from_ind], self.Xn[to_ind], None])
+                aYe.extend([self.Yn[from_ind], self.Yn[to_ind], None])
+                aZe.extend([self.Zn[from_ind], self.Zn[to_ind], None])
+        return aXe, aYe, aZe
 
     def get_cube_coords(self, network: Network):
         max_group_size = 0
@@ -141,10 +197,12 @@ class Individual:
     def add_network_points(self, network: Network):
         cube_coords = self.get_cube_coords(network)
         for group in network.groups:
-            self.color_seq.extend([group.color] * group.size)
             node_coords = CircleGrid.get_points_3D(group.size)
             node_coords = self.adjust_node_coords(cube_coords, node_coords)
+            self.group_coords[group.id] = node_coords
+            for i, node in zip(range(len(self.Xn), len(self.Xn) + len(node_coords)), group.members):
+                self.node_id_map[node.id] = i
             x, y, z = zip(*node_coords)
-            self.X.extend(x)
-            self.Y.extend(y)
-            self.Z.extend(z)
+            self.Xn.extend(x)
+            self.Yn.extend(y)
+            self.Zn.extend(z)

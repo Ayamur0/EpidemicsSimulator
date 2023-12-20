@@ -3,8 +3,11 @@ from typing import List
 
 class Network:
     def __init__(self) -> None:
+        from src.epidemics_simulator.network_builder import NetworkBuilder
+
         self.group_id_counter: int = 0
         self.groups = []
+        self.builder = NetworkBuilder(self)
 
     def add_group(self, group) -> bool:
         if group in self.groups:
@@ -22,3 +25,6 @@ class Network:
             if group.id == id:
                 return group
         return None
+
+    def build(self):
+        self.builder.build()

@@ -39,6 +39,7 @@ class Node:
             return False
         self.int_connections.append(target)
         target.int_connections.append(self)
+        self.group.add_internal_edge(self.id, target_id)
         return True
 
     def add_ext_connection(self, target_id: str) -> bool:
@@ -49,6 +50,7 @@ class Node:
             return False
         self.ext_connections.append(target)
         target.ext_connections.append(self)
+        self.group.add_external_edge(self.id, target_id)
         return True
 
     def has_connection(self, target_id: str) -> bool:
