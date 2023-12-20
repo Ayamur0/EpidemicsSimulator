@@ -1,14 +1,17 @@
 import random
 from storage import Network, NodeGroup
 from PyQt5 import QtWidgets
+from functools import partial
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
-from .ui_widget_creator import UiWidgetCreator
+from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 class UiNetworkGroups:
     def __init__(self, network_editor) -> None:
         self.network_editor = network_editor
         self.network_editor.group_list_content.layout().setAlignment(Qt.AlignTop)
         self.group_buttons: dict = {}
+        self.group_layouts: dict = {}
+        self.network_editor.save_properties_btn.hide()
         
     def add_group(self, group: NodeGroup, network: Network):
         self.error_incomplete_input = False
@@ -23,23 +26,45 @@ class UiNetworkGroups:
         group_button.clicked.connect(lambda: self.load_properties(group, network))
         self.group_buttons[group.id] = group_button
         
+        delete_button = UiWidgetCreator.create_push_button('del', 'group_del_btn')
+        delete_button.clicked.connect(lambda: self.delete_group(group, network))
+        
         layout_widget.layout().addWidget(checkbox)
         layout_widget.layout().addWidget(group_button)
+        layout_widget.layout().addWidget(delete_button)
         
+        self.group_layouts[group.id] = layout_widget
         self.network_editor.group_list_content.layout().addWidget(layout_widget)
+        
+    def delete_group(self, group: NodeGroup, network: Network):
+        msg_box  = UiWidgetCreator.create_delete_dialog(f'Are you sure you want to delete the group "{group.name}"?')
+        result = msg_box.exec_()
+        if result == QtWidgets.QMessageBox.AcceptRole:
+            index = self.network_editor.group_list_content.layout().indexOf(self.group_layouts[group.id])
+            if index == -1:
+                raise ValueError
+            selected_button = self.network_editor.get_selected_button(self.group_buttons)
+            widget_item = self.network_editor.group_list_content.layout().takeAt(index)
+            widget_item.widget().deleteLater()
+            if selected_button == self.group_buttons[group.id]:
+                self.reset_group_view()
+            del self.group_buttons[group.id]
+            del self.group_layouts[group.id]
+            network.delete_group(group.id)
+            return
+
         
     def change_group_activity(self, checkbox: QtWidgets.QCheckBox, group: NodeGroup):
         group.active = checkbox.isChecked()
     
     def new_group_button_input(self, network: Network):
-        add_group_button = UiWidgetCreator.create_push_button('+', 'add_group_btn', is_checkable=True)
+        add_group_button = self.network_editor.new_group_btn
         add_group_button.clicked.connect(lambda: self.create_new_group_input(network))
-        self.network_editor.group_list_content.layout().addWidget(add_group_button)
         self.group_buttons['-1'] = add_group_button
     
     def create_new_group_input(self, network: Network):
         self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
-        self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
+        self.network_editor.connections.unload()
         
         self.network_editor.deselect_other_buttons('-1', self.group_buttons)
         
@@ -60,7 +85,7 @@ class UiNetworkGroups:
         
     def load_properties(self, group: NodeGroup, network: Network):
         self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
-        self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
+        self.network_editor.connections.unload()
         
         self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
         
@@ -73,9 +98,12 @@ class UiNetworkGroups:
         self.save_properties_button(line_edits, group, network)
         
     def save_properties_button(self, line_edits: list, group: NodeGroup, network: Network):
-        save_btn = UiWidgetCreator.create_push_button('Save', 'save_group_btn')
+        save_btn = self.network_editor.save_properties_btn
+        try:
+            save_btn.clicked.disconnect()
+        except TypeError:
+            pass
         save_btn.clicked.connect(lambda: self.save_properties_input(line_edits, group, network))
-        self.network_editor.group_properties_content.layout().addRow(save_btn)
         
     def save_properties_input(self, line_edits: dict, group: NodeGroup, network: Network):
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
@@ -106,6 +134,7 @@ class UiNetworkGroups:
     
 
     def open_group_properties_input(self, properties: dict):
+        self.network_editor.save_properties_btn.show()
         line_edits = {}
         for p, v in properties.items():
             label = UiWidgetCreator.create_label(p, 'group_label_properties')
@@ -142,7 +171,15 @@ class UiNetworkGroups:
             line_edit.setText(hex_color)
             color_button.setStyleSheet(f'background: {hex_color};')
             
+    def reset_group_view(self):
+        self.network_editor.save_properties_btn.hide()
+        self.network_editor.connections.unload()
+        self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
+        
+
+            
     def unload(self):
         self.group_buttons.clear()
+        self.network_editor.save_properties_btn.hide()
         self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
         self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())

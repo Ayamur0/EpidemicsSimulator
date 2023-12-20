@@ -1,12 +1,13 @@
-from .ui_widget_creator import UiWidgetCreator
+from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from functools import partial
 from PyQt5.QtCore import Qt
-from storage import Network, NodeGroup
+from storage import NodeGroup
 class UiNetworkConnections:
     def __init__(self, network_editor) -> None:
         self.network_editor = network_editor
         self.network_editor.connection_list_content.layout().setAlignment(Qt.AlignTop)
         self.connection_buttons: dict = {}
+        self.network_editor.save_connections_btn.hide()
         
     def load_connections(self, group: NodeGroup):
         self.network_editor.unload_items_from_layout(self.network_editor.connection_list_content.layout())
@@ -29,11 +30,15 @@ class UiNetworkConnections:
         
         line_edits = self.open_connection_properties_input(group_from, group_to)
         
-        save_button = UiWidgetCreator.create_push_button('Save', 'save_group_btn')
-        save_button.clicked.connect(lambda: self.save_connection_input(line_edits, group_from, group_to))
-        self.network_editor.connection_properties_content.layout().addRow(save_button)
+        save_btn = self.network_editor.save_connections_btn
+        try:
+            save_btn.clicked.disconnect()
+        except TypeError:
+            pass
+        save_btn.clicked.connect(lambda: self.save_connection_input(line_edits, group_from, group_to))
         
     def open_connection_properties_input(self, group_from: NodeGroup, group_to: str):
+        self.network_editor.save_connections_btn.show()
         line_edits = {}
         for p, v in [
             ("connection average", group_from.avrg_ext_con.get(group_to, 0)),
@@ -49,6 +54,8 @@ class UiNetworkConnections:
     def save_connection_input(self, line_edits, group_from, group_to):
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         try:
+            if updated_dict.get('connection average') == '' or updated_dict.get('connection delta') == '':
+                raise TypeError
             con_avrg = int(updated_dict.get('connection average'))
             con_dc = int(updated_dict.get('connection delta'))
             if con_dc > con_avrg:
@@ -66,6 +73,7 @@ class UiNetworkConnections:
         
     def unload(self):
         self.connection_buttons.clear()
+        self.network_editor.save_connections_btn.hide()
         self.network_editor.unload_items_from_layout(self.network_editor.connection_list_content.layout())
         self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
             
