@@ -1,6 +1,9 @@
 from src.epidemics_simulator.gui.ui_network_groups import UiNetworkGroups
 from src.epidemics_simulator.gui.ui_network_connections import UiNetworkConnections
 from src.epidemics_simulator.gui.ui_group_display import UiGroupDisplay
+from src.epidemics_simulator.gui.ui_illness_editor import UiIllnessEditor
+from src.epidemics_simulator.gui.ui_simulation import UiSimulation
+from src.epidemics_simulator.gui.ui_stat_simulation import UiSimulationStats
 from PyQt5 import QtWidgets, uic
 from storage import Network
 
@@ -12,6 +15,9 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.groups = UiNetworkGroups(self)
         self.connections = UiNetworkConnections(self)
         self.display = UiGroupDisplay(self)
+        self.illness = UiIllnessEditor(self)
+        self.simulation = UiSimulation(self)
+        self.simulation_stats = UiSimulationStats(self)
         self.show()
         
     def load_groups(self, network: Network):

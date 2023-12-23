@@ -39,72 +39,28 @@ QTabBar::tab:hover {
 QTabBar::tab:selected {
     background: rgb(70, 120, 190); /* Set background color for the selected tab */
 }
-QScrollArea{
+QScrollArea {
     border: none;
     background: transparent;
 }
-#select_frame QWidget {
+#centralwidget QWidget {
+    border: none;
+    background: rgb( 100, 100, 100);
+}
+#select_frame QWidget,
+#info_frame QWidget,
+#illness_content QWidget,
+#simulation QWidget,
+#stats_content QWidget,
+#control_info_widget QWidget{
     border: none;
     background: rgb(80, 80, 80);
     border-radius: 5px;
 }
-#select_frame QLineEdit {
-    color: white;
-    background: rgb(60, 60, 60);
-}
-#select_frame QPushButton {
-    border: 1px;
-    color: white;
-    background: rgb(60, 60, 60);
-    border-radius: 0px;
-}
-#select_frame QPushButton:hover {
-    background: rgb( 100, 100, 100);
-}
-#select_frame QPushButton:checked {
-    background: rgb(70, 120, 190);
-}
-#info_frame QWidget {
+QWidget#control_info_widget{
     border: none;
     background: rgb(80, 80, 80);
     border-radius: 5px;
-}
-#info_frame QPushButton {
-    border: 1px;
-    color: white;
-    background: rgb(60, 60, 60);
-    border-radius: 0px;
-}
-#info_frame QPushButton:hover {
-    background: rgb( 100, 100, 100);
-}
-#group_display QWidget{
-    border: none;
-    background: rgb(80, 80, 80);
-    border-radius: 5px;
-}
-#group_display QPushButton {
-    border: 1px;
-    color: white;
-    background: rgb(60, 60, 60);
-    border-radius: 0px;
-}
-#group_display QPushButton:hover {
-    background: rgb( 100, 100, 100);
-}
-#group_display QPushButton:checked {
-    background: rgb(70, 120, 190);
-}
-
-QLabel {
-    color: white;
-    background: transparent;
-}
-QLabel#success_message {
-    color: green;
-}
-QLabel#error_message {
-    color: red;
 }
 QPushButton {
     border: 1px;
@@ -119,6 +75,49 @@ QPushButton:checked {
 }
 QPushButton:hover {
     background: rgb( 100, 100, 100);
+}
+#select_frame QPushButton,
+#info_frame QPushButton,
+#group_display QPushButton,
+#illness_content QPushButton,
+#simulation QPushButton, 
+#simulation_stats_frame QPushButton  {
+    border: 1px;
+    color: white;
+    background: rgb(60, 60, 60);
+    border-radius: 0px;
+}
+#select_frame QPushButton:hover,
+#info_frame QPushButton:hover,
+#group_display QPushButton:hover,
+#illness_content QPushButton:hover,
+#simulation QPushButton:hover,
+#simulation_stats_frame QPushButton:hover {
+    background: rgb( 100, 100, 100);
+}
+#select_frame QPushButton:checked,
+#info_frame QPushButton:checked,
+#group_display QPushButton:checked {
+    background: rgb(70, 120, 190);
+}
+QLineEdit, QSpinBox {
+    color: white;
+    background: rgb(60, 60, 60);
+}
+#select_frame QLineEdit,
+#illness_list QLineEdit {
+    color: white;
+    background: rgb(60, 60, 60);
+}
+QLabel {
+    color: white;
+    background: transparent;
+}
+QLabel#success_message {
+    color: green;
+}
+QLabel#error_message {
+    color: red;
 }
 QMessageBox {
     background: rgb(80, 80, 80);

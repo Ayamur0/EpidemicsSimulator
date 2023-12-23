@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -166,7 +166,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>274</width>
-                   <height>246</height>
+                   <height>253</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_3"/>
@@ -212,7 +212,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>280</width>
-                   <height>246</height>
+                   <height>253</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_4"/>
@@ -261,7 +261,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>275</width>
-                   <height>246</height>
+                   <height>253</height>
                   </rect>
                  </property>
                  <property name="layoutDirection">
@@ -322,7 +322,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>275</width>
-                   <height>279</height>
+                   <height>282</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6"/>
@@ -337,10 +337,163 @@ Generation time 20.5s</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="illness_edit">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>Illness Editor</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_12">
+        <item>
+         <widget class="QFrame" name="illness_frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <item>
+            <widget class="QScrollArea" name="illness_list">
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="illness_content">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1234</width>
+                <height>612</height>
+               </rect>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_3"/>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="simulation">
+       <attribute name="title">
+        <string>Simulation</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_15">
+        <item>
+         <widget class="QFrame" name="simulation_frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_13">
+           <item>
+            <widget class="QWidget" name="simulation_view" native="true">
+             <layout class="QVBoxLayout" name="verticalLayout_11"/>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="open_browser_button">
+             <property name="text">
+              <string>Open in browser</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="simulation_stats">
+       <attribute name="title">
+        <string>Simulation Stats</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_14">
+        <item>
+         <widget class="QFrame" name="simulation_stats_frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_17">
+           <item>
+            <widget class="QScrollArea" name="stats_list">
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="stats_content">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1234</width>
+                <height>528</height>
+               </rect>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_2"/>
+             </widget>
+            </widget>
+           </item>
+           <item>
+            <widget class="QWidget" name="control_info_widget" native="true">
+             <layout class="QVBoxLayout" name="verticalLayout_16">
+              <item>
+               <widget class="QWidget" name="control_widget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QPushButton" name="reset_button">
+                   <property name="text">
+                    <string>Reset</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="decrease_button">
+                   <property name="text">
+                    <string>&lt;&lt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="start_stop_button">
+                   <property name="text">
+                    <string>Start</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="increase_button">
+                   <property name="text">
+                    <string>&gt;&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="speed_label">
+                <property name="text">
+                 <string>Simulation speed: 0</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="indent">
+                 <number>20</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -363,11 +516,10 @@ Generation time 20.5s</string>
      <string>File</string>
     </property>
     <addaction name="actionNew"/>
-    <addaction name="actionSave_STRG_S"/>
+    <addaction name="actionSave"/>
     <addaction name="actionOpen"/>
     <addaction name="actionImport"/>
     <addaction name="actionExport"/>
-    <addaction name="actionExport_Image"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -376,34 +528,58 @@ Generation time 20.5s</string>
     <locale language="English" country="UnitedStates"/>
    </property>
   </widget>
-  <action name="actionSave_STRG_S">
+  <action name="actionSave">
    <property name="text">
-    <string>Save STRG+S</string>
+    <string>Save</string>
+   </property>
+   <property name="iconText">
+    <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+S</string>
    </property>
   </action>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionImport">
    <property name="text">
     <string>Import Network</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="actionExport">
    <property name="text">
     <string>Export Network</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
   </action>
   <action name="actionExport_Image">
    <property name="text">
     <string>Export Image</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
   </action>
   <action name="actionNew">
    <property name="text">
     <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

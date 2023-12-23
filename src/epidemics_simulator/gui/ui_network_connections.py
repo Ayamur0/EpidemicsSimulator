@@ -10,7 +10,8 @@ class UiNetworkConnections:
         self.network_editor.save_connections_btn.hide()
         
     def load_connections(self, group: NodeGroup):
-        self.network_editor.unload_items_from_layout(self.network_editor.connection_list_content.layout())
+        self.unload_connection_list()
+        #self.network_editor.unload_items_from_layout(self.network_editor.connection_list_content.layout())
         
         other_groups = [g for g in group.network.groups if g.id != group.id]
         self.connection_buttons.clear()
@@ -24,7 +25,8 @@ class UiNetworkConnections:
         
             
     def load_connection_properties(self, group_from: NodeGroup, group_to: str):
-        self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
+        self.unload_connection_properties()
+        #self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
         
         self.network_editor.deselect_other_buttons(group_to, self.connection_buttons)
         
@@ -71,9 +73,19 @@ class UiNetworkConnections:
             group_from.add_external_connection(group_to, con_avrg, con_dc)
         UiWidgetCreator.show_message(self.network_editor.connection_properties_content, "Successfully saved", "success_message", True)
         
-    def unload(self):
+    def unload_connection_list(self):
         self.connection_buttons.clear()
-        self.network_editor.save_connections_btn.hide()
         self.network_editor.unload_items_from_layout(self.network_editor.connection_list_content.layout())
+    
+    def unload_connection_properties(self):
+        self.network_editor.save_connections_btn.hide()
         self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
+        
+    def unload(self):
+        self.unload_connection_list()
+        self.unload_connection_properties()
+        #self.connection_buttons.clear()
+        #self.network_editor.save_connections_btn.hide()
+        #self.network_editor.unload_items_from_layout(self.network_editor.connection_list_content.layout())
+        #self.network_editor.unload_items_from_layout(self.network_editor.connection_properties_content.layout())
             

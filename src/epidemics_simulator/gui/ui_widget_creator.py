@@ -1,6 +1,7 @@
+import random
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRegExp, QTimer
-from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtGui import QRegExpValidator, QColor
 from src.epidemics_simulator.gui.cutsom_widgets import *
 
 class UiWidgetCreator:
@@ -8,7 +9,7 @@ class UiWidgetCreator:
         #label = DefaultLabel()
         label = QtWidgets.QLabel()
         label.setObjectName(object_name)
-        label.setText(content)
+        label.setText(str(content))
         return label
     
     def create_push_button(content: str, object_name: str, is_checkable=False, is_checked=False, style_sheet=None):
@@ -44,13 +45,14 @@ class UiWidgetCreator:
             line_edit.setStyleSheet(style_sheet)
         return line_edit
     
-    def create_hbox_widget(object_name: str, style_sheet=None):
-        layout = QtWidgets.QWidget()
-        layout.setObjectName(object_name)
-        layout.setLayout(QtWidgets.QHBoxLayout())
+    def create_layout_widget(object_name: str, layout: QtWidgets.QBoxLayout, style_sheet=None):
+        layout_widget = QtWidgets.QWidget()
+        layout_widget.setObjectName(object_name)
+        layout_widget.setLayout(layout)
+        #layout_widget.setLayout(QtWidgets.QHBoxLayout())
         if style_sheet:
-            layout.setStyleSheet(style_sheet)
-        return layout
+            layout_widget.setStyleSheet(style_sheet)
+        return layout_widget
     
     def hide_message(label, timer):
         try:
@@ -68,6 +70,13 @@ class UiWidgetCreator:
         widget.layout().addRow(label)
         timer = QTimer()
         timer.singleShot(2000, lambda: UiWidgetCreator.hide_message(label, timer))
+        
+    def generate_random_color():
+        red = random.randint(0, 255)
+        green = random.randint(0, 255)
+        blue = random.randint(0, 255)
+
+        return QColor(red, green, blue)
         
     def show_color_dialog(line_edit, color_button):
         color = QtWidgets.QColorDialog.getColor()
@@ -116,3 +125,20 @@ class UiWidgetCreator:
         msg_box.setDefaultButton(cancel_button)
         
         return msg_box
+    
+    def move_grid_widgets_right(grid, starting_pos, row_size):
+        total_widgets = grid.layout().count()
+        for i in range(total_widgets - 1, -1 + starting_pos, -1):
+            row, col, _, _ = grid.layout().getItemPosition(i)
+            if col == row_size - 1:
+                row += 1
+                col = 0
+            else:
+                col += 1
+            grid.layout().addWidget(grid.layout().itemAt(i).widget(), row, col)
+            
+    def pop_grid_widget_at(grid, index):
+        total_widgets = grid.layout().count()
+        for i in range(index, total_widgets - 2):
+            grid.layout().addWidget(grid.layout().getItemPosition(i + 1))
+            

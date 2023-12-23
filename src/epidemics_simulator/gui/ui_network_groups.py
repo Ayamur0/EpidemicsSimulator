@@ -3,7 +3,7 @@ from storage import Network, NodeGroup
 from PyQt5 import QtWidgets
 from functools import partial
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
+
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 class UiNetworkGroups:
     def __init__(self, network_editor) -> None:
@@ -17,7 +17,7 @@ class UiNetworkGroups:
         self.error_incomplete_input = False
         self.error_delta = False
         
-        layout_widget = UiWidgetCreator.create_hbox_widget('group_list_layout')
+        layout_widget = UiWidgetCreator.create_layout_widget('group_list_layout', QtWidgets.QHBoxLayout())
         
         checkbox = UiWidgetCreator.create_checkbox('group_list_btn', group.active)
         checkbox.stateChanged.connect(lambda: self.change_group_activity(checkbox, group))
@@ -63,7 +63,8 @@ class UiNetworkGroups:
         self.group_buttons['-1'] = add_group_button
     
     def create_new_group_input(self, network: Network):
-        self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
+        self.unload_group_properties()
+        #self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
         self.network_editor.connections.unload()
         
         self.network_editor.deselect_other_buttons('-1', self.group_buttons)
@@ -84,7 +85,8 @@ class UiNetworkGroups:
         self.save_properties_button(line_edits, None, network)
         
     def load_properties(self, group: NodeGroup, network: Network):
-        self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
+        self.unload_group_properties()
+        #self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
         self.network_editor.connections.unload()
         
         self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
@@ -116,6 +118,9 @@ class UiNetworkGroups:
                 else:
                     UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message', True)
                 return
+            self.unload_group_list()
+            self.network_editor.load_groups(network)
+            UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully saved", "success_message", True)
         else:
             try:
                 group = NodeGroup.init_from_dict(network, updated_dict)
@@ -126,11 +131,12 @@ class UiNetworkGroups:
                 else:
                     UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message', True)
                 return
-        self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
-        self.network_editor.load_groups(network)
+            self.unload()
+            self.network_editor.load_groups(network)
+            self.load_properties(group, network)
+        #self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
+            
         self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
-        if group:
-            UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully saved", "success_message", True)
     
 
     def open_group_properties_input(self, properties: dict):
@@ -142,7 +148,7 @@ class UiNetworkGroups:
             if p == 'vaccination rate' or p == 'max vaccination rate':
                 regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
             elif p == 'color':
-                color = self.generate_random_color().name() if not v else v
+                color = UiWidgetCreator.generate_random_color().name() if not v else v
                 color_button = UiWidgetCreator.create_push_button(None, 'color_button', style_sheet=f'background: {color};')
                 color_button.clicked.connect(lambda: UiWidgetCreator.show_color_dialog(line_edit, color_button))
                 line_edit = UiWidgetCreator.create_line_edit(color, 'group_line_edit_properties', regex_validator=regex_validator)
@@ -155,13 +161,6 @@ class UiNetworkGroups:
             self.network_editor.group_properties_content.layout().addRow(label, line_edit)
             line_edits[p] = line_edit
         return line_edits
-
-    def generate_random_color(self):
-        red = random.randint(0, 255)
-        green = random.randint(0, 255)
-        blue = random.randint(0, 255)
-
-        return QColor(red, green, blue)
     
     def show_color_dialog(self, line_edit: QtWidgets.QLineEdit, color_button: QtWidgets.QPushButton):
         color = QtWidgets.QColorDialog.getColor()
@@ -172,14 +171,20 @@ class UiNetworkGroups:
             color_button.setStyleSheet(f'background: {hex_color};')
             
     def reset_group_view(self):
-        self.network_editor.save_properties_btn.hide()
-        self.network_editor.connections.unload()
-        self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
         
-
+        #self.network_editor.save_properties_btn.hide()
+        self.network_editor.connections.unload()
+        self.unload_group_properties()
+        #self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
+        
+    def unload_group_list(self):
+        self.group_buttons.clear()
+        self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
+           
+    def unload_group_properties(self):
+        self.network_editor.save_properties_btn.hide()
+        self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
             
     def unload(self):
-        self.group_buttons.clear()
-        self.network_editor.save_properties_btn.hide()
-        self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
-        self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
+        self.unload_group_list()
+        self.unload_group_properties()
