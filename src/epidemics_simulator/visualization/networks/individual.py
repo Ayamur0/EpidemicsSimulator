@@ -47,7 +47,7 @@ class Individual:
         self.add_network_points(network)
         fig = self.build(network)
 
-        html_view = HTMLNetworkView(fig)
+        html_view = HTMLNetworkView(fig, network.groups)
         app = html_view.app
 
         @app.callback(
