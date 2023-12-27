@@ -5,6 +5,7 @@ class Network:
     def __init__(self) -> None:
         from src.epidemics_simulator.network_builder import NetworkBuilder
 
+        self.name = "TODO SET NAME"  # TODO set name from UI
         self.group_id_counter: int = 0
         self.groups = []
         self.builder = NetworkBuilder(self)

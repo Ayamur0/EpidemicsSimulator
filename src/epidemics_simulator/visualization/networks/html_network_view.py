@@ -12,39 +12,205 @@ class HTMLNetworkView:
 
     SPACER = html.Hr(className="spacer")
 
-    def __init__(self, figure, groups) -> None:
+    def __init__(
+        self,
+        figure,
+        groups,
+        hidden_groups,
+        on_reload,
+    ) -> None:
         self.app = Dash(
             external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
             assets_folder=os.getcwd() + "/assets",
         )
         self.show_grid = True
-        self.show_internal_edges = True
+        self.show_internal_edges = False
         self.show_external_edges = True
         self.show_group_colors = True
         self.shown_groups = {}
+        self.group_divs = []
+        self.on_grid_changed = None
+        self.on_show_group_colors_changed = None
+        self.on_show_internal_edge_changed = None
+        self.on_show_external_edge_changed = None
+        self.on_node_percent_changed = None
+        self.on_show_group_changed = {}
+        self.on_reload = on_reload
 
-        group_divs = []
+        self.update_groups(groups, hidden_groups)
+        self.set_callbacks()
+
+        self.app.layout = lambda: self.get_layout(figure)
+
+    def get_layout(self, figure):
+        if not self.on_reload:
+            raise ValueError
+        groups, hidden_groups = self.on_reload()
+        self.show_grid = True
+        self.show_internal_edges = False
+        self.show_external_edges = True
+        self.show_group_colors = True
+        sidebar = self._build_sidebar()
+        self.update_groups(groups, hidden_groups)
+
+        content = html.Div(
+            [
+                dcc.Graph(
+                    figure=figure,
+                    id="live-graph",
+                    style={"height": "80vh"},
+                ),
+                dcc.Interval(id="update-color", interval=10 * 1000, n_intervals=0),
+                html.Button("Update Graph", id="update-button", n_clicks=0),
+            ],
+            style={"height": "80vh"},
+        )
+        return html.Div([dcc.Location(id="url"), sidebar, content])
+
+    def set_callbacks(self):
+        # this function is used to toggle the is_open property of each Collapse
+        def toggle_collapse(n, is_open):
+            if n:
+                return not is_open
+            return is_open
+
+        # this function applies the "open" class to rotate the chevron
+        def set_navitem_class(is_open):
+            if is_open:
+                return "open"
+            return ""
+
+        def toggle_grid(_):
+            self.show_grid = not self.show_grid
+            if self.on_grid_changed:
+                return {
+                    "background-color": self.ENABLED_COLOR
+                    if self.show_grid
+                    else self.BACKGROUND_COLOR
+                }, self.on_grid_changed(self.show_grid)
+
+        def toggle_color(_):
+            self.show_group_colors = not self.show_group_colors
+            if self.on_show_group_colors_changed:
+                return {
+                    "background-color": self.ENABLED_COLOR
+                    if self.show_group_colors
+                    else self.BACKGROUND_COLOR
+                }, self.on_show_group_colors_changed(self.show_group_colors)
+
+        def toggle_internal_edges(_):
+            self.show_internal_edges = not self.show_internal_edges
+            if self.on_show_internal_edge_changed:
+                return {
+                    "background-color": self.ENABLED_COLOR
+                    if self.show_internal_edges
+                    else self.BACKGROUND_COLOR
+                }, self.on_show_internal_edge_changed(self.show_internal_edges)
+
+        def toggle_external_edges(_):
+            self.show_external_edges = not self.show_external_edges
+            if self.on_show_external_edge_changed:
+                return {
+                    "background-color": self.ENABLED_COLOR
+                    if self.show_external_edges
+                    else self.BACKGROUND_COLOR
+                }, self.on_show_external_edge_changed(self.show_external_edges)
+
+        def change_node_percent(percent):
+            if self.on_node_percent_changed:
+                return self.on_node_percent_changed(percent)
+
+        def toggle_group(_):
+            id = callback_context.triggered_id.split("_")[0]
+            self.shown_groups[id] = not self.shown_groups[id]
+            if id in self.on_show_group_changed:
+                return {
+                    "background-color": self.ENABLED_COLOR
+                    if self.shown_groups[id]
+                    else self.BACKGROUND_COLOR
+                }, self.on_show_group_changed[id](id, self.shown_groups[id])
+
+        self.app.callback(
+            Output(f"submenu-collapse", "is_open"),
+            [Input(f"submenu", "n_clicks")],
+            [State(f"submenu-collapse", "is_open")],
+        )(toggle_collapse)
+
+        self.app.callback(
+            Output(f"submenu", "className"),
+            [Input(f"submenu-collapse", "is_open")],
+        )(set_navitem_class)
+
+        self.app.callback(
+            [
+                Output("grid-button", "style"),
+                Output("live-graph", "figure", allow_duplicate=True),
+            ],
+            [Input("grid-button", "n_clicks")],
+            prevent_initial_call=True,
+        )(toggle_grid)
+        self.app.callback(
+            [
+                Output("color-button", "style"),
+                Output("live-graph", "figure", allow_duplicate=True),
+            ],
+            [Input("color-button", "n_clicks")],
+            prevent_initial_call=True,
+        )(toggle_color)
+        self.app.callback(
+            [
+                Output("internal-edge-button", "style"),
+                Output("live-graph", "figure", allow_duplicate=True),
+            ],
+            [Input("internal-edge-button", "n_clicks")],
+            prevent_initial_call=True,
+        )(toggle_internal_edges)
+        self.app.callback(
+            [
+                Output("external-edge-button", "style"),
+                Output("live-graph", "figure", allow_duplicate=True),
+            ],
+            [Input("external-edge-button", "n_clicks")],
+            prevent_initial_call=True,
+        )(toggle_external_edges)
+        self.app.callback(
+            Output("live-graph", "figure", allow_duplicate=True),
+            [Input("percentage-slider", "value")],
+            prevent_initial_call=True,
+        )(change_node_percent)
+
+        for group in self.shown_groups:
+            self.app.callback(
+                [
+                    Output(f"{group}_button", "style"),
+                    Output("live-graph", "figure", allow_duplicate=True),
+                ],
+                [Input(f"{group}_button", "n_clicks")],
+                prevent_initial_call=True,
+            )(toggle_group)
+
+    def update_groups(self, groups, hidden_groups):
+        self.shown_groups.clear()
+        self.group_divs.clear()
         for group in groups:
-            self.shown_groups[group.id] = True
-            group_divs.append(
+            self.shown_groups[group.id] = group.id not in hidden_groups
+            self.group_divs.append(
                 html.Div(
                     [
                         html.I(className="fas fa-object-ungroup me-2"),
-                        html.Span(
-                            f" Hide {group.name}"
-                            if self.shown_groups[group.id]
-                            else f" Show {group.name}"
-                        ),
+                        html.Span(f" Show {group.name}"),
                     ],
+                    id=f"{group.id}_button",
                     className="toggle",
                     style={
                         "background-color": self.ENABLED_COLOR
                         if self.shown_groups[group.id]
                         else self.BACKGROUND_COLOR
                     },
-                ),
+                )
             )
 
+    def _build_sidebar(self):
         submenu = [
             html.Li(
                 dbc.Row(
@@ -66,12 +232,12 @@ class HTMLNetworkView:
                 id="submenu",
             ),
             dbc.Collapse(
-                group_divs,
+                self.group_divs,
                 id="submenu-collapse",
             ),
         ]
 
-        sidebar = html.Div(
+        return html.Div(
             [
                 html.Div(
                     [
@@ -88,8 +254,9 @@ class HTMLNetworkView:
                         html.Div(
                             [
                                 html.I(className="fas fa-border-all me-2"),
-                                html.Span("Hide Grid" if self.show_grid else "Show Grid"),
+                                html.Span("Show Grid"),
                             ],
+                            id="grid-button",
                             className="toggle",
                             style={
                                 "background-color": self.ENABLED_COLOR
@@ -100,12 +267,9 @@ class HTMLNetworkView:
                         html.Div(
                             [
                                 html.I(className="fas fa-circle-nodes me-2"),
-                                html.Span(
-                                    "Hide inner Edges"
-                                    if self.show_internal_edges
-                                    else "Show inner Edges"
-                                ),
+                                html.Span("Show inner Edges"),
                             ],
+                            id="internal-edge-button",
                             className="toggle",
                             style={
                                 "background-color": self.ENABLED_COLOR
@@ -116,12 +280,9 @@ class HTMLNetworkView:
                         html.Div(
                             [
                                 html.I(className="fas fa-circle-nodes me-2"),
-                                html.Span(
-                                    "Hide inter group edges"
-                                    if self.show_external_edges
-                                    else "Show inter group edges"
-                                ),
+                                html.Span("Show inter group edges"),
                             ],
+                            id="external-edge-button",
                             className="toggle",
                             style={
                                 "background-color": self.ENABLED_COLOR
@@ -132,12 +293,9 @@ class HTMLNetworkView:
                         html.Div(
                             [
                                 html.I(className="fas fa-palette me-2"),
-                                html.Span(
-                                    "Show status colors"
-                                    if self.show_group_colors
-                                    else "Show group colors"
-                                ),
+                                html.Span("Show status colors"),
                             ],
+                            id="color-button",
                             className="toggle",
                         ),
                         self.SPACER,
@@ -177,41 +335,3 @@ class HTMLNetworkView:
             ],
             className="sidebar",
         )
-
-        content = html.Div(
-            [
-                dcc.Graph(
-                    figure=figure,
-                    id="live-graph",
-                    style={"height": "80vh"},
-                ),
-                dcc.Interval(id="update-color", interval=10 * 1000, n_intervals=0),
-                html.Button("Update Graph", id="update-button", n_clicks=0),
-            ],
-            style={"height": "80vh"},
-        )
-
-        self.app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
-
-        # this function is used to toggle the is_open property of each Collapse
-        def toggle_collapse(n, is_open):
-            if n:
-                return not is_open
-            return is_open
-
-        # this function applies the "open" class to rotate the chevron
-        def set_navitem_class(is_open):
-            if is_open:
-                return "open"
-            return ""
-
-        self.app.callback(
-            Output(f"submenu-collapse", "is_open"),
-            [Input(f"submenu", "n_clicks")],
-            [State(f"submenu-collapse", "is_open")],
-        )(toggle_collapse)
-
-        self.app.callback(
-            Output(f"submenu", "className"),
-            [Input(f"submenu-collapse", "is_open")],
-        )(set_navitem_class)

@@ -16,8 +16,4 @@ if __name__ == "__main__":
 
     # i.add_network_points(n)
     # i.hidden_groups.extend(["0"])
-
-    start = time.time()
-    # i.build(n)
-    print(time.time() - start)
     i.plot(n)

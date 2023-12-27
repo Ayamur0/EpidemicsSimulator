@@ -35,6 +35,7 @@ class Individual:
         self.Yn = []
         self.Zn = []
         self.nodes = []
+        self.colors = []
         self.group_coords = {}
         self.hidden_groups = []
         self.node_id_map = {}
@@ -42,16 +43,82 @@ class Individual:
         self.show_internal_edges = False
         self.show_external_edges = True
         self.show_grid = True
+        self.show_group_colors = True
+        self.fig = None
 
     def plot(self, network: Network):
         self.add_network_points(network)
-        fig = self.build(network)
+        self.fig = self.build(network)
 
-        html_view = HTMLNetworkView(fig, network.groups)
+        def on_reload():
+            self.show_internal_edges = False
+            self.show_external_edges = True
+            self.show_grid = True
+            self.show_group_colors = True
+            self.hidden_groups.clear()
+            self.fig = self.build(network)
+            return network.groups, self.hidden_groups
+
+        html_view = HTMLNetworkView(
+            self.fig,
+            network.groups,
+            self.hidden_groups,
+            on_reload,
+        )
         app = html_view.app
 
+        def change_grid(visible):
+            self.show_grid = visible
+            axis = dict(
+                showbackground=visible,
+                showline=visible,
+                zeroline=visible,
+                showgrid=visible,
+                showticklabels=visible,
+                title="",
+            )
+            self.fig["layout"]["scene"] = dict(
+                xaxis=dict(axis),
+                yaxis=dict(axis),
+                zaxis=dict(axis),
+            )
+            return self.fig
+
+        def change_color(use_group_color):
+            self.show_group_colors = use_group_color
+            if use_group_color:
+                self.fig.update_traces(marker=dict(color=self.colors))
+            else:
+                pass  # TODO set to color array for status
+            return self.fig
+
+        def change_internal_edges(visible):
+            self.show_internal_edges = visible
+            self.fig = self.build(network)
+            return self.fig
+
+        def change_external_edges(visible):
+            self.show_external_edges = visible
+            self.fig = self.build(network)
+            return self.fig
+
+        def hide_group(id, visible):
+            if visible:
+                self.hidden_groups.remove(id)
+            elif id not in self.hidden_groups:
+                self.hidden_groups.append(id)
+            self.fig = self.build(network)
+            return self.fig
+
+        html_view.on_grid_changed = change_grid
+        html_view.on_show_group_colors_changed = change_color
+        html_view.on_show_internal_edge_changed = change_internal_edges
+        html_view.on_show_external_edge_changed = change_external_edges
+        for group in network.groups:
+            html_view.on_show_group_changed[group.id] = hide_group
+
         @app.callback(
-            Output("live-graph", "figure"),
+            Output("live-graph", "figure", allow_duplicate=True),
             [Input("update-color", "n_intervals"), Input("update-button", "n_clicks")],
             prevent_initial_call=True,
         )
@@ -67,22 +134,22 @@ class Individual:
                 # new_color_sequence = self.color_seq
             else:
                 new_color_sequence = random.choices(["pink"], k=len(self.X))
-            fig.update_traces(marker=dict(color=new_color_sequence))
-            fig["layout"]["uirevision"] = "0"
-            return fig
+            self.fig.update_traces(marker=dict(color=new_color_sequence))
+            self.fig["layout"]["uirevision"] = "0"
+            return self.fig
 
         app.run_server(debug=True, use_reloader=True)
 
     def build(self, network: Network):
         aXn, aYn, aZn = [], [], []
-        colors = []
+        self.colors.clear()
         for group in network.groups:
             if group.id not in self.hidden_groups:
                 x, y, z = zip(*self.group_coords[group.id])
                 aXn.extend(x)
                 aYn.extend(y)
                 aZn.extend(z)
-                colors.extend([group.color] * group.size)
+                self.colors.extend([group.color] * group.size)
         aXe, aYe, aZe = self.add_edges(network)
 
         trace1 = go.Scatter3d(
@@ -91,7 +158,10 @@ class Individual:
             z=aZn,
             mode="markers",
             marker=dict(
-                symbol="circle", size=6, color=colors, line=dict(color="rgb(50,50,50)", width=0.5)
+                symbol="circle",
+                size=6,
+                color=self.colors,
+                line=dict(color="rgb(50,50,50)", width=0.5),
             ),
             uirevision="0",
         )
@@ -116,7 +186,7 @@ class Individual:
         )
 
         layout = go.Layout(
-            title="Network Title",
+            title=network.name,
             showlegend=False,
             margin=dict(t=100),
             hovermode="closest",
@@ -125,19 +195,6 @@ class Individual:
                 yaxis=dict(axis),
                 zaxis=dict(axis),
             ),
-            annotations=[
-                dict(
-                    showarrow=False,
-                    text="Data source: <a href='http://bost.ocks.org/mike/miserables/miserables.json'>[1] miserables.json</a>",
-                    xref="paper",
-                    yref="paper",
-                    x=0,
-                    y=0.1,
-                    xanchor="left",
-                    yanchor="bottom",
-                    font=dict(size=14),
-                )
-            ],
         )
 
         data = [trace1, trace2]
@@ -156,7 +213,6 @@ class Individual:
                 edges = []
             if self.show_external_edges:
                 for target in group.external_edges:
-                    print(target)
                     if target not in self.hidden_groups:
                         edges.extend(group.external_edges[target])
             for edge in edges:
