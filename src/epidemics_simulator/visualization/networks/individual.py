@@ -43,7 +43,8 @@ class Individual:
         self.show_internal_edges = False
         self.show_external_edges = True
         self.show_grid = True
-        self.show_group_colors = True
+        self.show_status_colors = False
+        self.visible_node_percent = 1
         self.fig = None
 
     def plot(self, network: Network):
@@ -51,12 +52,14 @@ class Individual:
         self.fig = self.build(network)
 
         def on_reload():
+            self.add_network_points(network)
             self.show_internal_edges = False
             self.show_external_edges = True
             self.show_grid = True
-            self.show_group_colors = True
+            self.show_status_colors = False
             self.hidden_groups.clear()
             self.fig = self.build(network)
+            self.visible_node_percent = 1
             return network.groups, self.hidden_groups
 
         html_view = HTMLNetworkView(
@@ -84,12 +87,12 @@ class Individual:
             )
             return self.fig
 
-        def change_color(use_group_color):
-            self.show_group_colors = use_group_color
-            if use_group_color:
-                self.fig.update_traces(marker=dict(color=self.colors))
-            else:
+        def change_color(use_status_color):
+            self.show_status_colors = use_status_color
+            if use_status_color:
                 pass  # TODO set to color array for status
+            else:
+                self.fig.update_traces(marker=dict(color=self.colors))
             return self.fig
 
         def change_internal_edges(visible):
@@ -110,10 +113,18 @@ class Individual:
             self.fig = self.build(network)
             return self.fig
 
+        def change_visible_node_percent(percent):
+            self.visible_node_percent = percent / 100.0
+            print("node percent " + str(self.visible_node_percent))
+            self.add_network_points(network)
+            self.fig = self.build(network)
+            return self.fig
+
         html_view.on_grid_changed = change_grid
-        html_view.on_show_group_colors_changed = change_color
+        html_view.on_show_status_colors_changed = change_color
         html_view.on_show_internal_edge_changed = change_internal_edges
         html_view.on_show_external_edge_changed = change_external_edges
+        html_view.on_node_percent_changed = change_visible_node_percent
         for group in network.groups:
             html_view.on_show_group_changed[group.id] = hide_group
 
@@ -149,7 +160,7 @@ class Individual:
                 aXn.extend(x)
                 aYn.extend(y)
                 aZn.extend(z)
-                self.colors.extend([group.color] * group.size)
+                self.colors.extend([group.color] * len(x))
         aXe, aYe, aZe = self.add_edges(network)
 
         trace1 = go.Scatter3d(
@@ -217,6 +228,8 @@ class Individual:
                         edges.extend(group.external_edges[target])
             for edge in edges:
                 _from, to = edge.split("/")
+                if not (_from in self.node_id_map and to in self.node_id_map):
+                    continue
                 from_ind = self.node_id_map[_from]
                 to_ind = self.node_id_map[to]
                 aXe.extend([self.Xn[from_ind], self.Xn[to_ind], None])
@@ -232,6 +245,7 @@ class Individual:
                 group_num += 1
             if group.size > max_group_size:
                 max_group_size = group.size
+        max_group_size = math.ceil(max_group_size * self.visible_node_percent)
 
         max_sphere_radius = CircleGrid.calculate_radius_3D(max_group_size)
         side_length = math.ceil(max_sphere_radius * 2 * 1.25)
@@ -251,9 +265,13 @@ class Individual:
         ]
 
     def add_network_points(self, network: Network):
+        self.group_coords.clear()
+        self.node_id_map.clear()
         cube_coords = self.get_cube_coords(network)
         for group in network.groups:
-            node_coords = CircleGrid.get_points_3D(group.size)
+            node_coords = CircleGrid.get_points_3D(
+                math.ceil(self.visible_node_percent * group.size)
+            )
             node_coords = self.adjust_node_coords(cube_coords, node_coords)
             self.group_coords[group.id] = node_coords
             for i, node in zip(range(len(self.Xn), len(self.Xn) + len(node_coords)), group.members):

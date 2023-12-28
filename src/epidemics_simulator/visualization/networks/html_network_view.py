@@ -26,11 +26,11 @@ class HTMLNetworkView:
         self.show_grid = True
         self.show_internal_edges = False
         self.show_external_edges = True
-        self.show_group_colors = True
+        self.show_status_colors = False
         self.shown_groups = {}
         self.group_divs = []
         self.on_grid_changed = None
-        self.on_show_group_colors_changed = None
+        self.on_show_status_colors_changed = None
         self.on_show_internal_edge_changed = None
         self.on_show_external_edge_changed = None
         self.on_node_percent_changed = None
@@ -90,13 +90,13 @@ class HTMLNetworkView:
                 }, self.on_grid_changed(self.show_grid)
 
         def toggle_color(_):
-            self.show_group_colors = not self.show_group_colors
-            if self.on_show_group_colors_changed:
+            self.show_status_colors = not self.show_status_colors
+            if self.on_show_status_colors_changed:
                 return {
                     "background-color": self.ENABLED_COLOR
-                    if self.show_group_colors
+                    if self.show_status_colors
                     else self.BACKGROUND_COLOR
-                }, self.on_show_group_colors_changed(self.show_group_colors)
+                }, self.on_show_status_colors_changed(self.show_status_colors)
 
         def toggle_internal_edges(_):
             self.show_internal_edges = not self.show_internal_edges
@@ -297,6 +297,11 @@ class HTMLNetworkView:
                             ],
                             id="color-button",
                             className="toggle",
+                            style={
+                                "background-color": self.ENABLED_COLOR
+                                if self.show_status_colors
+                                else self.BACKGROUND_COLOR
+                            },
                         ),
                         self.SPACER,
                         dbc.Nav(submenu, vertical=True),
@@ -316,7 +321,7 @@ class HTMLNetworkView:
                                     dcc.Slider(
                                         id="percentage-slider",
                                         className="hidden",
-                                        min=0,
+                                        min=1,
                                         max=100,
                                         step=1,
                                         marks={i: f"{i}%" for i in range(0, 101, 25)},
