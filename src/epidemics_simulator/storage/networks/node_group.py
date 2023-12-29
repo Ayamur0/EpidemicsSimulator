@@ -1,3 +1,4 @@
+import math
 import random
 import statistics
 from typing import List, Optional
@@ -38,6 +39,8 @@ class NodeGroup:
         self.age: int = age
         self.vaccination_rate: float = vaccination_rate
         self.max_vaccination_rate: float = max_vaccination_rate
+        self.max_vaccination_amount: int = math.ceil(max_vaccination_rate * size)
+        self.vaccinated_amount = 0
         self.color: str = color
         self.active: bool = True
         self.internal_edges = set()

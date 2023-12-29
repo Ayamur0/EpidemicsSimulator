@@ -36,6 +36,7 @@ class Individual:
         self.Zn = []
         self.nodes = []
         self.colors = []
+        self.status_colors = []
         self.group_coords = {}
         self.hidden_groups = []
         self.node_id_map = {}
@@ -280,3 +281,9 @@ class Individual:
             self.Xn.extend(x)
             self.Yn.extend(y)
             self.Zn.extend(z)
+
+    def update_colors(self, colors):
+        c_seq = []
+        for group in colors:
+            c_seq.extend(colors[group][: math.ceil(self.visible_node_percent * group.size)])
+        self.status_colors = c_seq

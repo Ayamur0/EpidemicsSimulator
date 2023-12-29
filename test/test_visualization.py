@@ -12,8 +12,5 @@ if __name__ == "__main__":
     n.add_group(NodeGroup(n, "Test3", 100, 10, 0.1, 1, 5, 0, "yellow"))
     n.groups[0].add_external_connection("1", 5, 0)
     n.build()
-    # i.hidden_groups.append("0")
 
-    # i.add_network_points(n)
-    # i.hidden_groups.extend(["0"])
     i.plot(n)
