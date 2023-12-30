@@ -1,0 +1,24 @@
+{
+    "Dark":{
+        "@primaryBackground": "rgb(100, 100, 100)",
+        "@centralBackground": "rgb(100, 100, 100)",
+        "@menuBackground": "rgb(40, 40, 40)",
+        "@hoverBackground": "rgb(90, 90, 90)",
+        "@checkBackground": "rgb(70, 120, 190)",
+        "@secondaryBackground": "rgb(60, 60, 60)",
+        "@widgetBackground": "rgb(80, 80, 80)",
+        "@inputBackground": "rgb(60, 60, 60)",
+        "@textColor": "white"
+    },
+    "Light":{
+        "@primaryBackground": "rgb(230, 230, 230)",
+        "@centralBackground": "rgb(230, 230, 230)",
+        "@menuBackground": "rgb(150, 150, 150)",
+        "@hoverBackground": "rgb(210, 210, 210)",
+        "@checkBackground": "rgb(100, 150, 220)",
+        "@secondaryBackground": "rgb(170, 170, 170)",
+        "@widgetBackground": "rgb(200, 200, 200)",
+        "@inputBackground": "rgb(170, 170, 170)",
+        "@textColor": "black"
+    }
+}

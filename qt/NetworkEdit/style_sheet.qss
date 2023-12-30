@@ -1,30 +1,30 @@
 QMainWindow {
-    background: rgb(100, 100, 100);
+    background: @primaryBackground;
 }
 QMenuBar {
-    color: white;
-    background: rgb( 40, 40, 40);
+    color: @textColor;
+    background: @menuBackground;
 }
 QMenuBar::item:selected {
-    background: rgb( 100, 100, 100);
+    background: @hoverBackground;
 }
 QMenu {
     padding: 0px;
-    color: white;
-    background: rgb( 40, 40, 40);
+    color: @textColor;
+    background: @menuBackground;
 }
 QMenu::item:selected {
-    background: rgb( 100, 100, 100);
+    background: @hoverBackground;;
 }
 QTabWidget {
     /* does nothing so far*/
 }
-QTabWidget::pane { /* removes the white outline on the right and bottom tab */
+QTabWidget::pane { /* removes the @textColor outline on the right and bottom tab */
     border: none;
 }
 QTabBar::tab {
-    color: white;
-    background: rgb( 60, 60, 60); /* Set background color for tabs */
+    color: @textColor;
+    background: @secondaryBackground; /* Set background color for tabs */
     padding: 5px;
 }
 QTabBar::tab:first {
@@ -34,10 +34,10 @@ QTabBar::tab:last {
     border-top-right-radius: 5px;
 }
 QTabBar::tab:hover {
-    background: rgb( 100, 100, 100);
+    background: @hoverBackground;
 }
 QTabBar::tab:selected {
-    background: rgb(70, 120, 190); /* Set background color for the selected tab */
+    background: @checkBackground; /* Set background color for the selected tab */
 }
 QScrollArea {
     border: none;
@@ -45,7 +45,7 @@ QScrollArea {
 }
 #centralwidget QWidget {
     border: none;
-    background: rgb( 100, 100, 100);
+    background: @centralBackground;
 }
 #select_frame QWidget,
 #info_frame QWidget,
@@ -54,27 +54,27 @@ QScrollArea {
 #stats_content QWidget,
 #control_info_widget QWidget{
     border: none;
-    background: rgb(80, 80, 80);
+    background: @widgetBackground;
     border-radius: 5px;
 }
 QWidget#control_info_widget{
     border: none;
-    background: rgb(80, 80, 80);
+    background: @widgetBackground;
     border-radius: 5px;
 }
 QPushButton {
     border: 1px;
-    color: white;
-    background: rgb(60, 60, 60);
+    color: @textColor;
+    background: @inputBackground;
     border-radius: 0px;
     min-width: 30;
     padding: 3px;
 }
 QPushButton:checked {
-    background: rgb(70, 120, 190);
+    background: @checkBackground;
 }
 QPushButton:hover {
-    background: rgb( 100, 100, 100);
+    background: @hoverBackground;
 }
 #select_frame QPushButton,
 #info_frame QPushButton,
@@ -83,8 +83,8 @@ QPushButton:hover {
 #simulation QPushButton, 
 #simulation_stats_frame QPushButton  {
     border: 1px;
-    color: white;
-    background: rgb(60, 60, 60);
+    color: @textColor;
+    background: @inputBackground;
     border-radius: 0px;
 }
 #select_frame QPushButton:hover,
@@ -93,24 +93,24 @@ QPushButton:hover {
 #illness_content QPushButton:hover,
 #simulation QPushButton:hover,
 #simulation_stats_frame QPushButton:hover {
-    background: rgb( 100, 100, 100);
+    background: @hoverBackground;
 }
 #select_frame QPushButton:checked,
 #info_frame QPushButton:checked,
 #group_display QPushButton:checked {
-    background: rgb(70, 120, 190);
+    background: @checkBackground;
 }
 QLineEdit, QSpinBox {
-    color: white;
-    background: rgb(60, 60, 60);
+    color: @textColor;
+    background: @inputBackground;
 }
 #select_frame QLineEdit,
 #illness_list QLineEdit {
-    color: white;
-    background: rgb(60, 60, 60);
+    color: @textColor;
+    background: @inputBackground;
 }
 QLabel {
-    color: white;
+    color: @textColor;
     background: transparent;
 }
 QLabel#success_message {
@@ -120,5 +120,5 @@ QLabel#error_message {
     color: red;
 }
 QMessageBox {
-    background: rgb(80, 80, 80);
+    background: @widgetBackground;
 }

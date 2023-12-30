@@ -1,9 +1,12 @@
+from functools import partial
+import json
 from src.epidemics_simulator.gui.ui_network_groups import UiNetworkGroups
 from src.epidemics_simulator.gui.ui_network_connections import UiNetworkConnections
 from src.epidemics_simulator.gui.ui_group_display import UiGroupDisplay
 from src.epidemics_simulator.gui.ui_illness_editor import UiIllnessEditor
 from src.epidemics_simulator.gui.ui_simulation import UiSimulation
 from src.epidemics_simulator.gui.ui_stat_simulation import UiSimulationStats
+from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from PyQt5 import QtWidgets, uic
 from storage import Network
 
@@ -12,6 +15,12 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def __init__(self):
         super(UiNetworkEditor, self).__init__()
         uic.loadUi("qt/NetworkEdit/main.ui", self)
+        with open('qt/NetworkEdit/themes.json', 'r') as fp:
+            self.themes = json.load(fp)
+        with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
+            self.stylesheet = fp.read()
+        self.change_theme('Dark')
+        self.fill_theme(self.themes)
         self.groups = UiNetworkGroups(self)
         self.connections = UiNetworkConnections(self)
         self.display = UiGroupDisplay(self)
@@ -57,3 +66,15 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
                 continue
             return btn_object
         
+    def fill_theme(self, theme: dict):
+        menu = self.menuThemes
+        for key in theme.keys():
+            action = UiWidgetCreator.create_qaction(key, 'theme_action', self)
+            action.triggered.connect(partial(self.change_theme, key))
+            menu.addAction(action)
+            
+    def change_theme(self, new_Theme):
+        new_style = self.stylesheet
+        for key, value in self.themes[new_Theme].items():
+            new_style = new_style.replace(key, value)
+        self.setStyleSheet(new_style)

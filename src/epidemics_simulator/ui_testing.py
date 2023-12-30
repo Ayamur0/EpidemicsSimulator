@@ -24,8 +24,8 @@ g1.add_external_connection(g2.id, 5, 3)
 
 app = QtWidgets.QApplication(sys.argv)
 window = UiNetworkEditor()
-with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
-    stylesheet = fp.read()
-app.setStyleSheet(stylesheet)
+#with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
+#    stylesheet = fp.read()
+#app.setStyleSheet(stylesheet)
 window.load_groups(test_data)
 app.exec_()

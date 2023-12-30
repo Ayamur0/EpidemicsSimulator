@@ -142,3 +142,7 @@ class UiWidgetCreator:
         for i in range(index, total_widgets - 2):
             grid.layout().addWidget(grid.layout().getItemPosition(i + 1))
             
+    def create_qaction(content, object_name, window):
+        action = QtWidgets.QAction(content, window)
+        action.setObjectName(object_name)
+        return action
