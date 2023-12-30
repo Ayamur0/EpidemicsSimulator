@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -166,7 +166,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>274</width>
-                   <height>246</height>
+                   <height>253</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_3"/>
@@ -212,7 +212,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>280</width>
-                   <height>246</height>
+                   <height>253</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_4"/>
@@ -261,7 +261,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>275</width>
-                   <height>246</height>
+                   <height>253</height>
                   </rect>
                  </property>
                  <property name="layoutDirection">
@@ -322,7 +322,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>275</width>
-                   <height>279</height>
+                   <height>282</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6"/>
@@ -337,13 +337,13 @@ Generation time 20.5s</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="illness_edit">
+      <widget class="QWidget" name="disease_edit">
        <attribute name="title">
-        <string>Illness Editor</string>
+        <string>Disease Editor</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_12">
         <item>
-         <widget class="QFrame" name="illness_frame">
+         <widget class="QFrame" name="disease_frame">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -352,20 +352,24 @@ Generation time 20.5s</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
            <item>
-            <widget class="QScrollArea" name="illness_list">
+            <widget class="QScrollArea" name="disease_list">
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
-             <widget class="QWidget" name="illness_content">
+             <widget class="QWidget" name="disease_content">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
                 <width>1234</width>
-                <height>606</height>
+                <height>612</height>
                </rect>
               </property>
-              <layout class="QGridLayout" name="gridLayout_3"/>
+              <layout class="QGridLayout" name="gridLayout_3">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetDefaultConstraint</enum>
+               </property>
+              </layout>
              </widget>
             </widget>
            </item>
@@ -430,7 +434,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>1234</width>
-                <height>512</height>
+                <height>528</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_2"/>

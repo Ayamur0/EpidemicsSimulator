@@ -3,7 +3,7 @@ import json
 from src.epidemics_simulator.gui.ui_network_groups import UiNetworkGroups
 from src.epidemics_simulator.gui.ui_network_connections import UiNetworkConnections
 from src.epidemics_simulator.gui.ui_group_display import UiGroupDisplay
-from src.epidemics_simulator.gui.ui_illness_editor import UiIllnessEditor
+from src.epidemics_simulator.gui.ui_disease_editor import UiDiseaseEditor
 from src.epidemics_simulator.gui.ui_simulation import UiSimulation
 from src.epidemics_simulator.gui.ui_stat_simulation import UiSimulationStats
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
@@ -24,13 +24,18 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.groups = UiNetworkGroups(self)
         self.connections = UiNetworkConnections(self)
         self.display = UiGroupDisplay(self)
-        self.illness = UiIllnessEditor(self)
+        self.disease = UiDiseaseEditor(self)
         self.simulation = UiSimulation(self)
         self.simulation_stats = UiSimulationStats(self)
         self.show()
         
-    def load_groups(self, network: Network):
+    def load_network(self, network: Network):
         self.current_network = network
+        self.load_groups(network)
+        self.disease.load_properties(network.diseases)
+        self.simulation_stats.load_info()
+        
+    def load_groups(self, network: Network):
         all_groups = network.groups
         for group in all_groups:
             self.groups.add_group(group, network)

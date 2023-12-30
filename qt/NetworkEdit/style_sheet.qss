@@ -49,7 +49,7 @@ QScrollArea {
 }
 #select_frame QWidget,
 #info_frame QWidget,
-#illness_content QWidget,
+#disease_content QWidget,
 #simulation QWidget,
 #stats_content QWidget,
 #control_info_widget QWidget{
@@ -79,7 +79,7 @@ QPushButton:hover {
 #select_frame QPushButton,
 #info_frame QPushButton,
 #group_display QPushButton,
-#illness_content QPushButton,
+#disease_content QPushButton,
 #simulation QPushButton, 
 #simulation_stats_frame QPushButton  {
     border: 1px;
@@ -90,7 +90,7 @@ QPushButton:hover {
 #select_frame QPushButton:hover,
 #info_frame QPushButton:hover,
 #group_display QPushButton:hover,
-#illness_content QPushButton:hover,
+#disease_content QPushButton:hover,
 #simulation QPushButton:hover,
 #simulation_stats_frame QPushButton:hover {
     background: @hoverBackground;
@@ -105,7 +105,7 @@ QLineEdit, QSpinBox {
     background: @inputBackground;
 }
 #select_frame QLineEdit,
-#illness_list QLineEdit {
+#disease_list QLineEdit {
     color: @textColor;
     background: @inputBackground;
 }

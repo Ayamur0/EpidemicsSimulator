@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets
 import sys
 from gui import UiNetworkEditor
 from storage import Network, NodeGroup
+from src.epidemics_simulator.storage.disease import Disease
 
 
 test_data = Network()
@@ -21,11 +22,14 @@ test_data.add_group(g5)
 
 g1.add_external_connection(g2.id, 5, 3)
 
+#test_data.diseases.append(Disease('D1'))
+#test_data.diseases.append(Disease('D2'))
+#test_data.diseases.append(Disease('D3'))
+#test_data.diseases.append(Disease('D4'))
+#test_data.diseases.append(Disease('D5'))
+
 
 app = QtWidgets.QApplication(sys.argv)
 window = UiNetworkEditor()
-#with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
-#    stylesheet = fp.read()
-#app.setStyleSheet(stylesheet)
-window.load_groups(test_data)
+window.load_network(test_data)
 app.exec_()
