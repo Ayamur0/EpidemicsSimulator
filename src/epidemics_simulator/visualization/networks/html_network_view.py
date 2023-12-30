@@ -26,7 +26,7 @@ class HTMLNetworkView:
         self.show_grid = True
         self.show_internal_edges = False
         self.show_external_edges = True
-        self.show_status_colors = False
+        self.show_status_colors = True
         self.shown_groups = {}
         self.group_divs = []
         self.on_grid_changed = None
@@ -58,7 +58,7 @@ class HTMLNetworkView:
                 dcc.Graph(
                     figure=figure,
                     id="live-graph",
-                    style={"height": "80vh"},
+                    style={"height": "100vh"},
                 ),
                 dcc.Interval(id="update-color", interval=10 * 1000, n_intervals=0),
                 html.Button("Update Graph", id="update-button", n_clicks=0),

@@ -5,7 +5,8 @@ import time
 from dash import Dash, html, dcc, callback_context
 import plotly.express as px
 from dash.dependencies import Input, Output
-from src.epidemics_simulator.storage import Network, NodeGroup
+from src.epidemics_simulator.simulation import Simulation
+from src.epidemics_simulator.storage import Network, NodeGroup, Disease
 import matplotlib.pyplot as plt
 from src.epidemics_simulator.algorithms import CircleGrid
 import threading
@@ -37,6 +38,7 @@ class Individual:
         self.nodes = []
         self.colors = []
         self.status_colors = []
+        self.status_colors_group_map = {}
         self.group_coords = {}
         self.hidden_groups = []
         self.node_id_map = {}
@@ -44,7 +46,7 @@ class Individual:
         self.show_internal_edges = False
         self.show_external_edges = True
         self.show_grid = True
-        self.show_status_colors = False
+        self.show_status_colors = True
         self.visible_node_percent = 1
         self.fig = None
 
@@ -52,12 +54,17 @@ class Individual:
         self.add_network_points(network)
         self.fig = self.build(network)
 
+        sim = Simulation(network)
+        sim._init_simulation()
+        self.status_colors_group_map, self.status_colors = sim._create_color_seq()
+        self.fig = self.build(network)
+
         def on_reload():
             self.add_network_points(network)
             self.show_internal_edges = False
             self.show_external_edges = True
             self.show_grid = True
-            self.show_status_colors = False
+            self.show_status_colors = True
             self.hidden_groups.clear()
             self.fig = self.build(network)
             self.visible_node_percent = 1
@@ -90,10 +97,11 @@ class Individual:
 
         def change_color(use_status_color):
             self.show_status_colors = use_status_color
-            if use_status_color:
-                pass  # TODO set to color array for status
-            else:
-                self.fig.update_traces(marker=dict(color=self.colors))
+            self.fig = self.build(network)
+            # if use_status_color:
+            #     self.fig.update_traces(marker=dict(color=self.status_colors))
+            # else:
+            #     self.fig.update_traces(marker=dict(color=self.colors))
             return self.fig
 
         def change_internal_edges(visible):
@@ -116,7 +124,6 @@ class Individual:
 
         def change_visible_node_percent(percent):
             self.visible_node_percent = percent / 100.0
-            print("node percent " + str(self.visible_node_percent))
             self.add_network_points(network)
             self.fig = self.build(network)
             return self.fig
@@ -139,14 +146,19 @@ class Individual:
             if trigger_id and "update-button" in trigger_id:
                 new_color_sequence = random.choices(["purple", "blue"], k=len(self.Xn))
             elif trigger_id and "update-color" in trigger_id:
-                new_color_sequence = random.choices(
-                    [self.CURED, self.HEALTHY, self.VACCINATED, self.INFECTED, self.DECEASED],
-                    k=len(self.Xn),
-                )
+                sim._simulate_step()
+                self.status_colors_group_map, self.status_colors = sim._create_color_seq()
+                new_color_sequence = self.status_colors
+                # new_color_sequence = random.choices(
+                #     [self.CURED, self.HEALTHY, self.VACCINATED, self.INFECTED, self.DECEASED],
+                #     k=len(self.Xn),
+                # )
                 # new_color_sequence = self.color_seq
             else:
                 new_color_sequence = random.choices(["pink"], k=len(self.X))
-            self.fig.update_traces(marker=dict(color=new_color_sequence))
+            self.fig.update_traces(
+                selector=dict(name="nodes"), marker=dict(color=new_color_sequence)
+            )
             self.fig["layout"]["uirevision"] = "0"
             return self.fig
 
@@ -162,6 +174,10 @@ class Individual:
                 aYn.extend(y)
                 aZn.extend(z)
                 self.colors.extend([group.color] * len(x))
+                if group.id in self.status_colors_group_map:
+                    self.status_colors.extend(self.status_colors_group_map[group.id][: len(x)])
+                else:
+                    self.status_colors.extend([self.HEALTHY] * len(x))
         aXe, aYe, aZe = self.add_edges(network)
 
         trace1 = go.Scatter3d(
@@ -169,13 +185,15 @@ class Individual:
             y=aYn,
             z=aZn,
             mode="markers",
+            name="nodes",
             marker=dict(
                 symbol="circle",
                 size=6,
-                color=self.colors,
+                color=self.status_colors if self.show_status_colors else self.colors,
                 line=dict(color="rgb(50,50,50)", width=0.5),
             ),
             uirevision="0",
+            showlegend=False,
         )
 
         trace2 = go.Scatter3d(
@@ -186,6 +204,7 @@ class Individual:
             uirevision="0",
             line=dict(color="rgb(125,125,125)", width=1),
             hoverinfo="none",
+            showlegend=False,
         )
 
         axis = dict(
@@ -199,7 +218,7 @@ class Individual:
 
         layout = go.Layout(
             title=network.name,
-            showlegend=False,
+            showlegend=True,
             margin=dict(t=100),
             hovermode="closest",
             scene=dict(
@@ -208,11 +227,43 @@ class Individual:
                 zaxis=dict(axis),
             ),
         )
-
-        data = [trace1, trace2]
+        data = [trace1, trace2, *self.create_legend(network)]
         fig = go.Figure(data=data, layout=layout)
         fig["layout"]["uirevision"] = "0"
         return fig
+
+    def create_legend(self, network):
+        custom_legend = []
+        if self.show_status_colors:
+            colors = [self.HEALTHY, self.CURED, self.VACCINATED, self.DECEASED]
+            labels = ["Healthy", "Cured", "Vaccinated", "Deceased"]
+            for disease in network.diseases:
+                colors.append(disease.color)
+                labels.append(disease.name)
+        else:
+            colors = []
+            labels = []
+            for group in network.groups:
+                colors.append(group.color)
+                labels.append(group.name)
+
+        for color, label in zip(
+            colors,
+            labels,
+        ):
+            custom_legend.append(
+                go.Scatter3d(
+                    x=[None],
+                    y=[None],
+                    z=[None],
+                    uirevision="0",
+                    mode="markers",
+                    name=label,
+                    marker=dict(size=7, color=color),
+                )
+            )
+
+        return custom_legend
 
     def add_edges(self, network: Network):
         aXe, aYe, aZe = [], [], []
@@ -283,6 +334,7 @@ class Individual:
             self.Zn.extend(z)
 
     def update_colors(self, colors):
+        self.status_colors_group_map = colors
         c_seq = []
         for group in colors:
             c_seq.extend(colors[group][: math.ceil(self.visible_node_percent * group.size)])

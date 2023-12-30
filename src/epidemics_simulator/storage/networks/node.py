@@ -1,7 +1,5 @@
 from typing import List
 
-from src.epidemics_simulator.storage import Disease
-
 
 class Node:
     # Class variable to store instances
@@ -14,7 +12,7 @@ class Node:
         self.int_connections: List["Node"] = []  # node ids this node is connected to
         self.ext_connections: List["Node"] = []  # node ids this node is connected to
         self.infected_time: int = 0
-        self.infected: Disease = None
+        self.infected = None
         self.num_of_infections: int = 0
         self.vaccinated: bool = False
         self.alive: bool = True

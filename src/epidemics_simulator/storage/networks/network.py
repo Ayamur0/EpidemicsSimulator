@@ -7,8 +7,15 @@ class Network:
 
         self.name = "TODO SET NAME"  # TODO set name from UI
         self.group_id_counter: int = 0
+        self.diseases = []
         self.groups = []
         self.builder = NetworkBuilder(self)
+
+    def add_disease(self, disease) -> bool:
+        if disease in self.diseases:
+            return False
+        self.diseases.append(disease)
+        return True
 
     def add_group(self, group) -> bool:
         if group in self.groups:
