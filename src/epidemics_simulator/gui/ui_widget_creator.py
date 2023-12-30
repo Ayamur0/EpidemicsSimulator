@@ -1,4 +1,5 @@
 import random
+from PyQt5.QtCore import Qt
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QRegExp, QTimer
 from PyQt5.QtGui import QRegExpValidator, QColor

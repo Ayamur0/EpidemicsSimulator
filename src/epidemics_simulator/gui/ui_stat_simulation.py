@@ -11,8 +11,8 @@ class UiSimulationStats:
         self.network_editor.reset_button.clicked.connect(lambda: self.reset_simulation())
         self.network_editor.decrease_button.clicked.connect(lambda: self.decrease_simulation_speed())
         self.network_editor.increase_button.clicked.connect(lambda: self.increase_simulation_speed())
-        
-        
+            
+    def load_info(self):
         test = {'name': 'Test', 'idk': 10, 'dddd': 1.2, 'other': 'other'}
         
         for i in range(0, 10):
