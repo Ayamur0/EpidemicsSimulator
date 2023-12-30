@@ -1,34 +1,20 @@
 import os
-from dash import Dash, html, dcc, callback_context
+from dash import Dash, html, dcc, callback_context, MATCH, ALL
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+from .html_sidebar import HTMLSidebar
 
 
 class HTMLNetworkView:
-    PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
-
     BACKGROUND_COLOR = "#272727"
     ENABLED_COLOR = "#545454"
 
-    SPACER = html.Hr(className="spacer")
-
-    def __init__(
-        self,
-        figure,
-        groups,
-        hidden_groups,
-        on_reload,
-    ) -> None:
+    def __init__(self, figure, groups, hidden_groups, on_reload, server) -> None:
         self.app = Dash(
             external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
             assets_folder=os.getcwd() + "/assets",
+            server=server,
         )
-        self.show_grid = True
-        self.show_internal_edges = False
-        self.show_external_edges = True
-        self.show_status_colors = True
-        self.shown_groups = {}
-        self.group_divs = []
         self.on_grid_changed = None
         self.on_show_status_colors_changed = None
         self.on_show_internal_edge_changed = None
@@ -37,21 +23,21 @@ class HTMLNetworkView:
         self.on_show_group_changed = {}
         self.on_reload = on_reload
 
-        self.update_groups(groups, hidden_groups)
-        self.set_callbacks()
+        sidebar = HTMLSidebar(True, False, True, True)
+        self.set_callbacks(sidebar)
 
-        self.app.layout = lambda: self.get_layout(figure)
+        self.app.layout = lambda: self.get_layout(figure, sidebar)
 
-    def get_layout(self, figure):
+    def get_layout(self, figure, sidebar: HTMLSidebar):
         if not self.on_reload:
             raise ValueError
         groups, hidden_groups = self.on_reload()
-        self.show_grid = True
-        self.show_internal_edges = False
-        self.show_external_edges = True
-        self.show_group_colors = True
-        sidebar = self._build_sidebar()
-        self.update_groups(groups, hidden_groups)
+        sidebar.show_grid = True
+        sidebar.show_internal_edges = False
+        sidebar.show_external_edges = True
+        sidebar.show_status_colors = True
+        sidebar.rebuild()
+        sidebar.update_group_divs(groups, hidden_groups)
 
         content = html.Div(
             [
@@ -61,74 +47,75 @@ class HTMLNetworkView:
                     style={"height": "100vh"},
                 ),
                 dcc.Interval(id="update-color", interval=10 * 1000, n_intervals=0),
-                html.Button("Update Graph", id="update-button", n_clicks=0),
             ],
             style={"height": "80vh"},
         )
         return html.Div([dcc.Location(id="url"), sidebar, content])
 
-    def set_callbacks(self):
-        # this function is used to toggle the is_open property of each Collapse
+    def set_callbacks(self, sidebar):
         def toggle_collapse(n, is_open):
             if n:
                 return not is_open
             return is_open
 
-        # this function applies the "open" class to rotate the chevron
         def set_navitem_class(is_open):
             if is_open:
                 return "open"
             return ""
 
         def toggle_grid(_):
-            self.show_grid = not self.show_grid
+            sidebar.show_grid = not sidebar.show_grid
             if self.on_grid_changed:
                 return {
                     "background-color": self.ENABLED_COLOR
-                    if self.show_grid
+                    if sidebar.show_grid
                     else self.BACKGROUND_COLOR
-                }, self.on_grid_changed(self.show_grid)
+                }, self.on_grid_changed(sidebar.show_grid)
 
         def toggle_color(_):
-            self.show_status_colors = not self.show_status_colors
+            sidebar.show_status_colors = not sidebar.show_status_colors
             if self.on_show_status_colors_changed:
                 return {
                     "background-color": self.ENABLED_COLOR
-                    if self.show_status_colors
+                    if sidebar.show_status_colors
                     else self.BACKGROUND_COLOR
-                }, self.on_show_status_colors_changed(self.show_status_colors)
+                }, self.on_show_status_colors_changed(sidebar.show_status_colors)
 
         def toggle_internal_edges(_):
-            self.show_internal_edges = not self.show_internal_edges
+            sidebar.show_internal_edges = not sidebar.show_internal_edges
             if self.on_show_internal_edge_changed:
                 return {
                     "background-color": self.ENABLED_COLOR
-                    if self.show_internal_edges
+                    if sidebar.show_internal_edges
                     else self.BACKGROUND_COLOR
-                }, self.on_show_internal_edge_changed(self.show_internal_edges)
+                }, self.on_show_internal_edge_changed(sidebar.show_internal_edges)
 
         def toggle_external_edges(_):
-            self.show_external_edges = not self.show_external_edges
+            sidebar.show_external_edges = not sidebar.show_external_edges
             if self.on_show_external_edge_changed:
                 return {
                     "background-color": self.ENABLED_COLOR
-                    if self.show_external_edges
+                    if sidebar.show_external_edges
                     else self.BACKGROUND_COLOR
-                }, self.on_show_external_edge_changed(self.show_external_edges)
+                }, self.on_show_external_edge_changed(sidebar.show_external_edges)
 
         def change_node_percent(percent):
             if self.on_node_percent_changed:
                 return self.on_node_percent_changed(percent)
 
-        def toggle_group(_):
-            id = callback_context.triggered_id.split("_")[0]
-            self.shown_groups[id] = not self.shown_groups[id]
+        def toggle_group_button(_):
+            id = callback_context.triggered_id["index"]
+            sidebar.toggle_group(id)
             if id in self.on_show_group_changed:
                 return {
                     "background-color": self.ENABLED_COLOR
-                    if self.shown_groups[id]
+                    if sidebar.is_visible(id)
                     else self.BACKGROUND_COLOR
-                }, self.on_show_group_changed[id](id, self.shown_groups[id])
+                }
+
+        def toggle_group(_):
+            id = callback_context.triggered_id["index"]
+            return self.on_show_group_changed[id](id)
 
         self.app.callback(
             Output(f"submenu-collapse", "is_open"),
@@ -179,164 +166,23 @@ class HTMLNetworkView:
             prevent_initial_call=True,
         )(change_node_percent)
 
-        for group in self.shown_groups:
-            self.app.callback(
-                [
-                    Output(f"{group}_button", "style"),
-                    Output("live-graph", "figure", allow_duplicate=True),
-                ],
-                [Input(f"{group}_button", "n_clicks")],
-                prevent_initial_call=True,
-            )(toggle_group)
+        self.app.callback(
+            Output({"index": MATCH, "type": "group-button"}, "style"),
+            Input({"index": MATCH, "type": "group-button"}, "n_clicks"),
+            prevent_initial_call=True,
+        )(toggle_group_button)
 
-    def update_groups(self, groups, hidden_groups):
-        self.shown_groups.clear()
-        self.group_divs.clear()
-        for group in groups:
-            self.shown_groups[group.id] = group.id not in hidden_groups
-            self.group_divs.append(
-                html.Div(
-                    [
-                        html.I(className="fas fa-object-ungroup me-2"),
-                        html.Span(f" Show {group.name}"),
-                    ],
-                    id=f"{group.id}_button",
-                    className="toggle",
-                    style={
-                        "background-color": self.ENABLED_COLOR
-                        if self.shown_groups[group.id]
-                        else self.BACKGROUND_COLOR
-                    },
-                )
-            )
+        self.app.callback(
+            Output("live-graph", "figure"),
+            Input({"index": ALL, "type": "group-button"}, "n_clicks"),
+            prevent_initial_call=True,
+        )(toggle_group)
 
-    def _build_sidebar(self):
-        submenu = [
-            html.Li(
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            html.I(className="fas fa-object-ungroup me-3"),
-                            width="auto",
-                        ),
-                        dbc.Col("Groups", className="hidden"),
-                        dbc.Col(
-                            html.I(className="fas fa-chevron-right me-3"),
-                            width="auto",
-                            className="hidden",
-                        ),
-                    ],
-                    className="submenu-label",
-                ),
-                style={"cursor": "pointer", "color": "azure"},
-                id="submenu",
-            ),
-            dbc.Collapse(
-                self.group_divs,
-                id="submenu-collapse",
-            ),
-        ]
+        self.app.server.route("/update", methods=["POST"])
 
-        return html.Div(
-            [
-                html.Div(
-                    [
-                        # width: 3rem ensures the logo is the exact width of the
-                        # collapsed sidebar (accounting for padding)
-                        html.Img(src=self.PLOTLY_LOGO, style={"width": "3rem"}),
-                        html.H2("Config"),
-                    ],
-                    className="sidebar-header",
-                ),
-                html.Hr(),
-                dbc.Nav(
-                    [
-                        html.Div(
-                            [
-                                html.I(className="fas fa-border-all me-2"),
-                                html.Span("Show Grid"),
-                            ],
-                            id="grid-button",
-                            className="toggle",
-                            style={
-                                "background-color": self.ENABLED_COLOR
-                                if self.show_grid
-                                else self.BACKGROUND_COLOR
-                            },
-                        ),
-                        html.Div(
-                            [
-                                html.I(className="fas fa-circle-nodes me-2"),
-                                html.Span("Show inner Edges"),
-                            ],
-                            id="internal-edge-button",
-                            className="toggle",
-                            style={
-                                "background-color": self.ENABLED_COLOR
-                                if self.show_internal_edges
-                                else self.BACKGROUND_COLOR
-                            },
-                        ),
-                        html.Div(
-                            [
-                                html.I(className="fas fa-circle-nodes me-2"),
-                                html.Span("Show inter group edges"),
-                            ],
-                            id="external-edge-button",
-                            className="toggle",
-                            style={
-                                "background-color": self.ENABLED_COLOR
-                                if self.show_external_edges
-                                else self.BACKGROUND_COLOR
-                            },
-                        ),
-                        html.Div(
-                            [
-                                html.I(className="fas fa-palette me-2"),
-                                html.Span("Show status colors"),
-                            ],
-                            id="color-button",
-                            className="toggle",
-                            style={
-                                "background-color": self.ENABLED_COLOR
-                                if self.show_status_colors
-                                else self.BACKGROUND_COLOR
-                            },
-                        ),
-                        self.SPACER,
-                        dbc.Nav(submenu, vertical=True),
-                        self.SPACER,
-                        html.Li(
-                            dbc.Col(
-                                [
-                                    dbc.Row(
-                                        [
-                                            dbc.Col(
-                                                html.I(className="fas fa-circle-dot me-3"),
-                                                width="auto",
-                                            ),
-                                            dbc.Col("Node percentage", className="hidden"),
-                                        ]
-                                    ),
-                                    dcc.Slider(
-                                        id="percentage-slider",
-                                        className="hidden",
-                                        min=1,
-                                        max=100,
-                                        step=1,
-                                        marks={i: f"{i}%" for i in range(0, 101, 25)},
-                                        value=100,
-                                        tooltip={"placement": "bottom", "always_visible": False},
-                                        updatemode="drag",
-                                    ),
-                                ],
-                            ),
-                            className="toggle",
-                        ),
-                    ],
-                    vertical=True,
-                    pills=True,
-                ),
-            ],
-            className="sidebar",
-        )
+        def update(object):
+            # run two python services, one for QT one for Dash
+            # QT service hosts network object on url
+            # QT service sends request to localhost:8050/update
+            # r = requests.get(f'http://XXX') host the network object somewhere so this service can get it
+            return

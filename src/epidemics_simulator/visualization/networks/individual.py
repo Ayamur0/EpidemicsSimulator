@@ -29,8 +29,6 @@ class Individual:
     VACCINATED = "rgb(0.067, 0, 0.941)"
     DECEASED = "rgb(0.012, 0.012, 0.012)"
 
-    PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
-
     def __init__(self) -> None:
         self.Xn = []
         self.Yn = []
@@ -52,7 +50,6 @@ class Individual:
 
     def plot(self, network: Network):
         self.add_network_points(network)
-        self.fig = self.build(network)
 
         sim = Simulation(network)
         sim._init_simulation()
@@ -98,10 +95,6 @@ class Individual:
         def change_color(use_status_color):
             self.show_status_colors = use_status_color
             self.fig = self.build(network)
-            # if use_status_color:
-            #     self.fig.update_traces(marker=dict(color=self.status_colors))
-            # else:
-            #     self.fig.update_traces(marker=dict(color=self.colors))
             return self.fig
 
         def change_internal_edges(visible):
@@ -114,8 +107,8 @@ class Individual:
             self.fig = self.build(network)
             return self.fig
 
-        def hide_group(id, visible):
-            if visible:
+        def hide_group(id):
+            if id in self.hidden_groups:
                 self.hidden_groups.remove(id)
             elif id not in self.hidden_groups:
                 self.hidden_groups.append(id)
@@ -225,6 +218,8 @@ class Individual:
                 xaxis=dict(axis),
                 yaxis=dict(axis),
                 zaxis=dict(axis),
+                aspectmode="data",
+                aspectratio=dict(x=1, y=1, z=1),
             ),
         )
         data = [trace1, trace2, *self.create_legend(network)]
