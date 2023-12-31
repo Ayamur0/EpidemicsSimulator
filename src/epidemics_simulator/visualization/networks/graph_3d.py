@@ -2,10 +2,11 @@ from src.epidemics_simulator.storage import Network
 from .plotly_wrapper import PlotlyWrapper
 import plotly.graph_objs as go
 import random
-from dash import callback_context
+from dash import callback
 from dash.dependencies import Input, Output
 from src.epidemics_simulator.simulation import Simulation
 from .legend import Legend
+from .id_factory import id_factory
 
 
 class Graph3D:
@@ -37,25 +38,42 @@ class Graph3D:
         ) = PlotlyWrapper.calculate_network_coords(self.network, self.visible_node_percent)
         self.build()
 
-    def sim_test(self, app):
+    def sim_test(self, page):
         self.sim = Simulation(self.network)
-        self.sim._init_simulation()
-        self.status_colors_group_map, self.status_colors = self.sim._create_color_seq()
+        self.sim.init_simulation()
+        self.status_colors_group_map, self.status_colors = self.sim.create_color_seq()
         self.build()
+        idf = id_factory("view")
 
-        @app.callback(
-            Output("live-graph", "figure", allow_duplicate=True),
-            Input("update-color", "n_intervals"),
+        @callback(
+            Output(idf("live-graph"), "figure", allow_duplicate=True),
+            Input(idf("update-color"), "n_intervals"),
             prevent_initial_call=True,
         )
         def update_graph_scatter(_):
-            self.sim._simulate_step()
-            self.status_colors_group_map, self.status_colors = self.sim._create_color_seq()
+            self.sim.simulate_step()
+            self.status_colors_group_map, self.status_colors = self.sim.create_color_seq()
             self.fig.update_traces(
                 selector=dict(name="nodes"), marker=dict(color=self.status_colors)
             )
             self.fig["layout"]["uirevision"] = "0"
             return self.fig
+
+    def update_status_colors(self, colors_map):
+        self.status_colors_group_map = colors_map
+        self.status_colors.clear()
+        for group in self.network.groups:
+            if group.id not in self.hidden_groups:
+                if group.id in self.status_colors_group_map:
+                    self.status_colors.extend(
+                        self.status_colors_group_map[group.id][: len(self.group_coords[group.id])]
+                    )
+                else:
+                    self.status_colors.extend([self.HEALTHY] * len(self.group_coords[group.id]))
+        self.fig.update_traces(selector=dict(name="nodes"), marker=dict(color=self.status_colors))
+        self.fig["layout"]["uirevision"] = "0"
+        print("updated")
+        return self.fig
 
     def toggle_grid(self, visible):
         self.show_grid = visible
@@ -71,6 +89,8 @@ class Graph3D:
             xaxis=dict(axis),
             yaxis=dict(axis),
             zaxis=dict(axis),
+            aspectmode="data",
+            aspectratio=dict(x=1, y=1, z=1),
         )
         return self.fig
 
@@ -99,7 +119,13 @@ class Graph3D:
 
     def change_visible_node_percent(self, percent):
         self.visible_node_percent = percent / 100.0
-        self.add_network_points(self.network)
+        (
+            self.group_coords,
+            self.node_id_map,
+            self.Xn,
+            self.Yn,
+            self.Zn,
+        ) = PlotlyWrapper.calculate_network_coords(self.network, self.visible_node_percent)
         self.build()
         return self.fig
 
@@ -186,6 +212,8 @@ class Graph3D:
             showlegend=True,
             margin=dict(t=100),
             hovermode="closest",
+            paper_bgcolor="#353535",
+            font={"color": "azure"},
             scene=dict(
                 xaxis=dict(axis),
                 yaxis=dict(axis),
@@ -193,6 +221,7 @@ class Graph3D:
                 aspectmode="data",
                 aspectratio=dict(x=1, y=1, z=1),
             ),
+            legend={"bgcolor": "#404040"},
         )
         lgd = self.legend.status_legend if self.show_status_colors else self.legend.group_legend
         data = [trace1, trace2, *lgd]

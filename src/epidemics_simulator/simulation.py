@@ -21,7 +21,7 @@ class Simulation:
     def simulate(self):
         pass
 
-    def _simulate_step(self):
+    def simulate_step(self):
         for node in list(self.unvaccinated_nodes):
             if (
                 not node.vaccinated
@@ -69,7 +69,7 @@ class Simulation:
                         target.infected = disease
                         self.infected_nodes[disease.id].append(target)
 
-    def _create_color_seq(self):
+    def create_color_seq(self):
         colors = {}
         all = []
         for group in self.network.groups:
@@ -90,10 +90,17 @@ class Simulation:
             all.extend(c)
         return colors, all
 
-    def _init_simulation(self):
+    def init_simulation(self):
         nodes = []
         for group in self.network.groups:
             nodes.extend(group.members)
+            group.vaccinated_amount = 0
+        for node in nodes:
+            node.alive = True
+            node.infected = None
+            node.infected_time = 0
+            node.num_of_infections = 0
+            node.vaccinated = False
         self.unvaccinated_nodes = nodes.copy()
         for disease in self.diseases:
             random.shuffle(nodes)

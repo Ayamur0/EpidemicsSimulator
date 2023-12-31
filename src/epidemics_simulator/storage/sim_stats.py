@@ -1,0 +1,2 @@
+class SimStats:
+    pass

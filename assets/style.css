@@ -10,6 +10,7 @@
     /*f8f9fa*/
     z-index: 1050;
     transition: width 0.1s ease-in-out;
+    color: azure;
 }
 
 /* when the user hovers on the sidebar, expand it */
@@ -55,6 +56,7 @@
     align-items: center;
     overflow: hidden;
     white-space: nowrap;
+    color: azure;
 }
 
 /* position the header relative to the logo and hide by default */
@@ -100,8 +102,10 @@ li.open .fa-chevron-right {
     font-size: 18px;
 }
 
-#submenu-collapse {
+.submenu-collapse {
     width: 3rem;
+    max-height: 40vh;
+    overflow-y: hidden;
     transition: width 0.1s ease-in-out;
 }
 
@@ -122,17 +126,41 @@ li.open .fa-chevron-right {
     opacity: 1;
 }
 
-.sidebar:hover #submenu-collapse {
+.sidebar:hover .submenu-collapse {
     width: 14rem;
+    overflow: auto;
 }
 
-#percentage-slider {
+.rc-slider-track {
+    background-color: azure;
+}
+
+.rc-slider-dot-active {
+    border-color: rgb(238, 105, 11);
+    border: solid 2px rgb(238, 105, 11);
+}
+
+.rc-slider-handle {
+    background-color: rgb(238, 105, 11);
+    border-color: rgb(238, 105, 11);
+}
+
+.rc-slider-handle:hover {
+    border-color: rgb(238, 105, 11);
+}
+
+.rc-slider-handle-active:active {
+    border-color: rgb(238, 105, 11);
+}
+
+.percentage-slider {
     visibility: hidden;
     padding: 1rem 0 0 0;
     margin-top: 1rem;
+    color: rgb(238, 105, 11);
 }
 
-.sidebar:hover #percentage-slider {
+.sidebar:hover .percentage-slider {
     visibility: visible;
 }
 
@@ -145,4 +173,86 @@ li.open .fa-chevron-right {
 
 .sidebar:hover .spacer {
     width: 14rem;
+}
+
+.floating-controls {
+    width: 100vw;
+    position: absolute;
+    bottom: 3vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.round-button {
+    width: 5rem;
+    height: 5rem;
+    background-color: rgb(238, 105, 11);
+    border: none;
+    border-radius: 50%;
+    margin: 0 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.round-button:disabled {
+    background-color: #272727;
+}
+
+.big-button {
+    width: 7rem;
+    height: 7rem;
+}
+
+.round-button-icon {
+    margin: 0;
+    color: azure;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-input:focus {
+    border-color: rgb(238, 105, 11);
+    box-shadow: 0rem 0rem 0rem 0.25rem rgba(238, 105, 11, 0.35);
+}
+
+.toast {
+    width: 10vw;
+    position: absolute;
+    top: 3vh;
+    left: 45vw;
+}
+
+.logbar {
+    position: fixed;
+    top: 30vh;
+    color: azure;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    width: 20rem;
+    padding: 2rem 1rem;
+    background-color: #272727;
+    /*f8f9fa*/
+    z-index: 1050;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.logbar-header {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    color: azure;
+}
+
+.logbar-header h2 {
+    color: azure;
+    margin-left: 1rem;
+    margin-bottom: 0;
 }

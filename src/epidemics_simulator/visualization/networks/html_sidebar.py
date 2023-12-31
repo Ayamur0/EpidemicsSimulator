@@ -13,7 +13,7 @@ class HTMLSidebar(html.Div):
     SPACER = html.Hr(className="spacer")
 
     def __init__(
-        self, show_grid, show_internal_edges, show_external_edges, show_status_colors
+        self, show_grid, show_internal_edges, show_external_edges, show_status_colors, id_factory
     ) -> None:
         super().__init__()
         self.shown_groups = {}
@@ -22,6 +22,7 @@ class HTMLSidebar(html.Div):
         self.show_internal_edges = show_internal_edges
         self.show_external_edges = show_external_edges
         self.show_status_colors = show_status_colors
+        self.id_factory = id_factory
         self.children = self._build_sidebar()
 
     def rebuild(self):
@@ -44,7 +45,7 @@ class HTMLSidebar(html.Div):
                         html.I(className="fas fa-object-ungroup me-2"),
                         html.Span(f" Show {group.name}"),
                     ],
-                    id={"index": group.id, "type": "group-button"},
+                    id={"index": group.id, "type": self.id_factory("group-button")},
                     className="toggle",
                     style={
                         "background-color": HTMLSidebar.ENABLED_COLOR
@@ -73,11 +74,12 @@ class HTMLSidebar(html.Div):
                     className="submenu-label",
                 ),
                 style={"cursor": "pointer", "color": "azure"},
-                id="submenu",
+                id=self.id_factory("submenu"),
             ),
             dbc.Collapse(
                 self.group_divs,
-                id="submenu-collapse",
+                id=self.id_factory("submenu-collapse"),
+                class_name="submenu-collapse",
             ),
         ]
 
@@ -100,7 +102,7 @@ class HTMLSidebar(html.Div):
                                 html.I(className="fas fa-border-all me-2"),
                                 html.Span("Show Grid"),
                             ],
-                            id="grid-button",
+                            id=self.id_factory("grid-button"),
                             className="toggle",
                             style={
                                 "background-color": self.ENABLED_COLOR
@@ -113,7 +115,7 @@ class HTMLSidebar(html.Div):
                                 html.I(className="fas fa-circle-nodes me-2"),
                                 html.Span("Show inner Edges"),
                             ],
-                            id="internal-edge-button",
+                            id=self.id_factory("internal-edge-button"),
                             className="toggle",
                             style={
                                 "background-color": self.ENABLED_COLOR
@@ -126,7 +128,7 @@ class HTMLSidebar(html.Div):
                                 html.I(className="fas fa-circle-nodes me-2"),
                                 html.Span("Show inter group edges"),
                             ],
-                            id="external-edge-button",
+                            id=self.id_factory("external-edge-button"),
                             className="toggle",
                             style={
                                 "background-color": self.ENABLED_COLOR
@@ -139,7 +141,7 @@ class HTMLSidebar(html.Div):
                                 html.I(className="fas fa-palette me-2"),
                                 html.Span("Show status colors"),
                             ],
-                            id="color-button",
+                            id=self.id_factory("color-button"),
                             className="toggle",
                             style={
                                 "background-color": self.ENABLED_COLOR
@@ -163,8 +165,8 @@ class HTMLSidebar(html.Div):
                                         ]
                                     ),
                                     dcc.Slider(
-                                        id="percentage-slider",
-                                        className="hidden",
+                                        id=self.id_factory("percentage-slider"),
+                                        className="hidden percentage-slider",
                                         min=1,
                                         max=100,
                                         step=1,
