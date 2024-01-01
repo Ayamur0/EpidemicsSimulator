@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 class HTMLSimulationView(HTMLNetworkView):
-    def __init__(self, project, update_colors, figure, on_reload) -> None:
+    def __init__(self, project, graph) -> None:
         self.confirm_reset_popup = HTMLPopup(
             title="Are you sure you want to reset the simulation?",
             id="sim-confirm-reset-modal",
@@ -33,14 +33,23 @@ class HTMLSimulationView(HTMLNetworkView):
             id="sim-save-modal",
             is_open=False,
         )
-        super().__init__(figure, on_reload, "sim")
+        super().__init__(graph, "sim")
         self.project = project
         self.network = project.network
-        self.update_colors = update_colors
+        self.build_layout()
+        self.sim = Simulation(self.network)
+        self.sim.init_simulation()
+        color_map, _ = self.sim.create_color_seq()
+        self.graph.update_status_colors(color_map)
+        self.sim_mutex = Lock()
+        self.sim_timer = False
+        self.show_logs = False
+
+    def build_layout(self):
         content = html.Div(
             [
                 dcc.Graph(
-                    figure=figure,
+                    figure=self.graph.fig,
                     id=self.id_factory("live-graph"),
                     style={"height": "100vh"},
                 ),
@@ -82,20 +91,12 @@ class HTMLSimulationView(HTMLNetworkView):
             id=self.id_factory("page-content"),
         )
         self.layout = html.Div([self.sidebar, content, HTMLLogConsole()])
-        self.sim = Simulation(self.network)
-        self.sim.init_simulation()
-        color_map, _ = self.sim.create_color_seq()
-        self.update_colors(color_map)
-        self.sim_mutex = Lock()
-        self.sim_timer = False
-        self.show_logs = False
 
     def reset(self):
+        self.sim.init_simulation()
+        color_map, _ = self.sim.create_color_seq()
+        self.graph.update_status_colors(color_map)
         super().reset()
-        self.sim.init_simulation()
-
-    def restart_sim(self):
-        self.sim.init_simulation()
 
     def _round_button(self, icon, id, big):
         return html.Button(
@@ -115,15 +116,18 @@ class HTMLSimulationView(HTMLNetworkView):
 
         @callback(
             Output(self.id_factory("live-graph"), "figure", allow_duplicate=True),
+            Output("log-console-content", "children", allow_duplicate=True),
             Input(self.id_factory("step"), "n_clicks"),
             prevent_initial_call=True,
         )
         def step(_):
             with self.sim_mutex:
-                print("step")
                 self.sim.simulate_step()
                 color_map, _ = self.sim.create_color_seq()
-                return self.update_colors(color_map)
+                if self.show_logs:
+                    return self.graph.update_status_colors(color_map), self.sim.stats.get_log_text()
+                else:
+                    return self.graph.update_status_colors(color_map), ""
 
         @callback(
             Output(self.id_factory("confirm-reset-modal"), "is_open"),
@@ -160,34 +164,43 @@ class HTMLSimulationView(HTMLNetworkView):
 
         @callback(
             Output(self.id_factory("live-graph"), "figure", allow_duplicate=True),
+            Output("log-console-content", "children", allow_duplicate=True),
             Input(self.id_factory("update-color"), "n_intervals"),
             prevent_initial_call=True,
         )
-        def update_graph_scatter(_):
-            self.sim.simulate_step()
-            color_map, _ = self.sim.create_color_seq()
-            return self.update_colors(color_map)
+        def step(_):
+            with self.sim_mutex:
+                self.sim.simulate_step()
+                color_map, _ = self.sim.create_color_seq()
+                if self.show_logs:
+                    return self.graph.update_status_colors(color_map), self.sim.stats.get_log_text()
+                else:
+                    return self.graph.update_status_colors(color_map), ""
 
-        @callback(Output("log-console", "style"), Input(self.id_factory("show-log"), "n_clicks"))
+        @callback(
+            Output("log-console", "style"),
+            Output("log-console-content", "children", allow_duplicate=True),
+            Input(self.id_factory("show-log"), "n_clicks"),
+            prevent_initial_call=True,
+        )
         def show_logs(_):
             self.show_logs = not self.show_logs
-            return {"opacity": "1" if self.show_logs else "0"}
+            return {"opacity": "1" if self.show_logs else "0"}, self.sim.stats.get_log_text()
 
         def reset_sim():
-            print("reset")
             self.sim.init_simulation()
             color_map, _ = self.sim.create_color_seq()
-            return self.update_colors(color_map)
+            return self.graph.update_status_colors(color_map)
 
         self.confirm_reset_popup.register_confirm_callback(
             Output(self.id_factory("live-graph"), "figure", allow_duplicate=True), reset_sim
         )
 
-        def save_data(_, name, placeholder):
+        def save_data(_, name):
             if not name:
-                name = placeholder
+                name = datetime.now()
             print(name)
-            # ADD stats to prject
+            self.sim.stats.print()
             pass
 
         self.save_popup.register_confirm_callback_with_state(
@@ -195,6 +208,5 @@ class HTMLSimulationView(HTMLNetworkView):
             save_data,
             [
                 State(self.id_factory("save-input"), "value"),
-                State(self.id_factory("save-input"), "placeholder"),
             ],
         )

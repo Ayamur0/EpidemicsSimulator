@@ -38,27 +38,6 @@ class Graph3D:
         ) = PlotlyWrapper.calculate_network_coords(self.network, self.visible_node_percent)
         self.build()
 
-    def sim_test(self, page):
-        self.sim = Simulation(self.network)
-        self.sim.init_simulation()
-        self.status_colors_group_map, self.status_colors = self.sim.create_color_seq()
-        self.build()
-        idf = id_factory("view")
-
-        @callback(
-            Output(idf("live-graph"), "figure", allow_duplicate=True),
-            Input(idf("update-color"), "n_intervals"),
-            prevent_initial_call=True,
-        )
-        def update_graph_scatter(_):
-            self.sim.simulate_step()
-            self.status_colors_group_map, self.status_colors = self.sim.create_color_seq()
-            self.fig.update_traces(
-                selector=dict(name="nodes"), marker=dict(color=self.status_colors)
-            )
-            self.fig["layout"]["uirevision"] = "0"
-            return self.fig
-
     def update_status_colors(self, colors_map):
         self.status_colors_group_map = colors_map
         self.status_colors.clear()
@@ -72,7 +51,6 @@ class Graph3D:
                     self.status_colors.extend([self.HEALTHY] * len(self.group_coords[group.id]))
         self.fig.update_traces(selector=dict(name="nodes"), marker=dict(color=self.status_colors))
         self.fig["layout"]["uirevision"] = "0"
-        print("updated")
         return self.fig
 
     def toggle_grid(self, visible):

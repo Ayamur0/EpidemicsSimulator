@@ -4,32 +4,35 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from .html_sidebar import HTMLSidebar
 from .id_factory import id_factory
+from .graph_3d import Graph3D
 
 
 class HTMLNetworkView:
     BACKGROUND_COLOR = "#272727"
     ENABLED_COLOR = "#545454"
 
-    def __init__(self, figure, on_reload, page: str = "view") -> None:
-        self.on_grid_changed = None
-        self.on_show_status_colors_changed = None
-        self.on_show_internal_edge_changed = None
-        self.on_show_external_edge_changed = None
-        self.on_node_percent_changed = None
-        self.on_show_group_changed = None
-        self.on_reload = on_reload
+    def __init__(self, graph: Graph3D, page: str = "view") -> None:
+        self.on_grid_changed = graph.toggle_grid
+        self.on_show_status_colors_changed = graph.toggle_color
+        self.on_show_internal_edge_changed = graph.toggle_internal_edges
+        self.on_show_external_edge_changed = graph.toggle_external_edges
+        self.on_node_percent_changed = graph.change_visible_node_percent
+        self.on_show_group_changed = graph.hide_group
+        self.graph = graph
         self.id_factory = id_factory(page)
 
         self.sidebar = HTMLSidebar(True, False, True, True, self.id_factory)
         self.set_callbacks()
+        self.build_layout()
+
+    def build_layout(self):
         content = html.Div(
             [
                 dcc.Graph(
-                    figure=figure,
+                    figure=self.graph.fig,
                     id=self.id_factory("live-graph"),
                     style={"height": "100vh"},
                 ),
-                dcc.Interval(id=self.id_factory("update-color"), interval=10 * 1000, n_intervals=0),
             ],
             style={"height": "80vh"},
             id=self.id_factory("page-content"),
@@ -37,15 +40,14 @@ class HTMLNetworkView:
         self.layout = html.Div([self.sidebar, content])
 
     def reset(self):
-        if not self.on_reload:
-            raise ValueError
-        groups, hidden_groups = self.on_reload()
+        groups, hidden_groups = self.graph.on_reload()
         self.sidebar.show_grid = True
         self.sidebar.show_internal_edges = False
         self.sidebar.show_external_edges = True
         self.sidebar.show_status_colors = True
         self.sidebar.rebuild()
         self.sidebar.update_group_divs(groups, hidden_groups)
+        self.build_layout()
 
     def set_callbacks(self):
         @callback(

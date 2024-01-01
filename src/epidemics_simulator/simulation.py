@@ -2,7 +2,7 @@ import itertools
 import random
 from typing import List
 
-from src.epidemics_simulator.storage import Disease, Node
+from src.epidemics_simulator.storage import Disease, Node, SimStats
 
 
 class Simulation:
@@ -15,13 +15,12 @@ class Simulation:
     def __init__(self, network) -> None:
         self.diseases: List[Disease] = network.diseases
         self.network = network
-        self.infected_nodes = {}
+        self.infected_nodes = []
         self.unvaccinated_nodes = []
-
-    def simulate(self):
-        pass
+        self.stats = SimStats(network)
 
     def simulate_step(self):
+        self.stats.new_step()
         for node in list(self.unvaccinated_nodes):
             if (
                 not node.vaccinated
@@ -32,42 +31,47 @@ class Simulation:
                     node.vaccinated = True
                     node.group.vaccinated_amount += 1
                     self.unvaccinated_nodes.remove(node)
+                    self.stats.add_vaccination(node.group.id)
             else:
                 self.unvaccinated_nodes.remove(node)
-        for disease in self.diseases:
-            node: Node
-            for node in self.infected_nodes[disease.id]:
-                node.infected_time += 1
-                if node.infected_time >= disease.duration:
-                    fatality = (
-                        disease.vaccinated_fatality_rate
-                        if node.vaccinated
-                        else disease.fatality_rate
-                    )
-                    r = random.uniform(0, 1)
-                    if r <= fatality:
-                        node.alive = False
-                        if not node.vaccinated:
-                            node.group.vaccinated_amount += 1
-                        continue
-                    node.infected = None
-                    node.infected_time = 0
-                    node.num_of_infections += 1
-                    self.infected_nodes[disease.id].remove(node)
-                target: Node
-                for target in itertools.chain(node.int_connections, node.ext_connections):
-                    if not target.alive or target.infected is not None:
-                        continue
-                    if node.vaccinated:
-                        infection_rate = disease.vaccinated_infection_rate
-                    elif node.num_of_infections > 0:
-                        infection_rate = disease.reinfection_rate
-                    else:
-                        infection_rate = disease.infection_rate
-                    r = random.uniform(0, 1)
-                    if r <= infection_rate:
-                        target.infected = disease
-                        self.infected_nodes[disease.id].append(target)
+        node: Node
+        random.shuffle(self.infected_nodes)
+        for node in self.infected_nodes:
+            disease: Disease = node.infected
+            print(disease.name)
+            node.infected_time += 1
+            if node.infected_time >= disease.duration:
+                fatality = (
+                    disease.vaccinated_fatality_rate if node.vaccinated else disease.fatality_rate
+                )
+                r = random.uniform(0, 1)
+                if r <= fatality:
+                    node.alive = False
+                    self.stats.add_death(node.group.id)
+                    if not node.vaccinated:
+                        node.group.vaccinated_amount += 1
+                    continue
+                else:
+                    self.stats.add_cure(node.group.id, disease.id)
+                node.infected = None
+                node.infected_time = 0
+                node.num_of_infections += 1
+                self.infected_nodes.remove(node)
+            target: Node
+            for target in itertools.chain(node.int_connections, node.ext_connections):
+                if not target.alive or target.infected is not None:
+                    continue
+                if node.vaccinated:
+                    infection_rate = disease.vaccinated_infection_rate
+                elif node.num_of_infections > 0:
+                    infection_rate = disease.reinfection_rate
+                else:
+                    infection_rate = disease.infection_rate
+                r = random.uniform(0, 1)
+                if r <= infection_rate:
+                    target.infected = disease
+                    self.infected_nodes.append(target)
+                    self.stats.add_infection(node.group.id, disease.id)
 
     def create_color_seq(self):
         colors = {}
@@ -91,6 +95,8 @@ class Simulation:
         return colors, all
 
     def init_simulation(self):
+        self.infected_nodes.clear()
+        self.stats = SimStats(self.network)
         nodes = []
         for group in self.network.groups:
             nodes.extend(group.members)
@@ -107,5 +113,6 @@ class Simulation:
             infected = nodes[: disease.initial_infection_count]
             for node in infected:
                 node.infected = disease
-            self.infected_nodes[disease.id] = infected
+                self.stats.add_infection(node.group.id, disease.id)
+            self.infected_nodes.extend(infected)
             nodes = nodes[disease.initial_infection_count :]

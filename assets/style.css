@@ -1,3 +1,7 @@
+:root {
+    color-scheme: dark;
+}
+
 /* This creates a skinny side bar fixed to the left of the page */
 .sidebar {
     position: fixed;
@@ -11,6 +15,15 @@
     z-index: 1050;
     transition: width 0.1s ease-in-out;
     color: azure;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 /* when the user hovers on the sidebar, expand it */
@@ -229,17 +242,18 @@ li.open .fa-chevron-right {
 
 .logbar {
     position: fixed;
-    top: 30vh;
     color: azure;
     right: 0;
     bottom: 0;
     opacity: 0;
+    height: 70vh;
     width: 20rem;
     padding: 2rem 1rem;
     background-color: #272727;
     /*f8f9fa*/
     z-index: 1050;
     transition: opacity 0.2s ease-in-out;
+    overflow: hidden;
 }
 
 .logbar-header {
