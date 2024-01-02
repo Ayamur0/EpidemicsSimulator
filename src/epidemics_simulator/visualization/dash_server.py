@@ -35,6 +35,7 @@ class DashServer:
                 sim_view.reset()
                 return sim_view.layout
             elif pathname == "/stats":
+                stats_view.reset()
                 return stats_view.layout
             else:  # if redirected to unknown link
                 return "404"

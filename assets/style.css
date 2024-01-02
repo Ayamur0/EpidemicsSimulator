@@ -270,3 +270,29 @@ li.open .fa-chevron-right {
     margin-left: 1rem;
     margin-bottom: 0;
 }
+
+.file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    text-align: center;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.file-icon {
+    font-size: 2rem;
+    margin: 10px;
+}
+
+.file-text {
+    font-size: 1.2rem;
+    margin-left: 10px;
+}

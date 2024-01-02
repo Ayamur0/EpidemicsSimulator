@@ -4,13 +4,15 @@ from dash import Dash, html, dcc, callback_context
 import pandas as pd
 import plotly.express as px
 from src.epidemics_simulator.storage import SimStats
+from .html_file_popup import HTMLFilePopup
 
 
 class HTMLStatsView:
     def __init__(self, project) -> None:
         self.project = project
         self.sidebar = HTMLSidebar(project.network, self)
-        self.stats: SimStats = project.stats["test"]
+        # self.stats: SimStats = project.stats["test"]
+        self.stats: SimStats = None
         self.visible_data = []
         self.visible_groups = [None]
         self.visible_diseases = [None]
@@ -26,7 +28,8 @@ class HTMLStatsView:
                         "height": "70%",
                     },
                     id="stats-graph",
-                )
+                ),
+                HTMLFilePopup(self.project.stats.keys(), self),
             ],
             style={
                 "width": "100vw",
@@ -44,6 +47,16 @@ class HTMLStatsView:
         print(self.visible_data)
         print(self.visible_groups)
         print(self.visible_diseases)
+
+    def reset(self):
+        self.visible_data = []
+        self.visible_groups = [None]
+        self.visible_diseases = [None]
+        self.data_dict = {}
+        self.use_cumulative_data = False
+
+    def load_stats(self, name):
+        self.stats = self.project.stats[name]
 
     def build_graph(self):
         self.update_data()
