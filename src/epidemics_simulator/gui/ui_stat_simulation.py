@@ -45,3 +45,6 @@ class UiSimulationStats:
         pass
     def reset_simulation(self):
         pass
+    
+    def unload(self):
+        self.network_editor.unload_items_from_layout(self.network_editor.stats_content.layout())

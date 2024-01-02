@@ -147,3 +147,38 @@ class UiWidgetCreator:
         action = QtWidgets.QAction(content, window)
         action.setObjectName(object_name)
         return action
+    
+    def create_file(window):     
+        #options = QtWidgets.QFileDialog.Options()
+        #options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of native platform dialog
+
+        #file_dialog = QtWidgets.QFileDialog(window)
+        #file_dialog.setOptions(options)
+
+        #_ = file_dialog.exec_()  # Use exec_() and handle the result
+        
+        #file_name, _ = file_dialog.getSaveFileName(window, "Save File", "", "All Files (*);;Text Files (*.txt)", options=options)
+        #return file_name
+
+        
+        
+        
+          
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
+
+        # Get the selected file name using getOpenFileName for opening files
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(window, "Save File", "", "All Files (*);;Text Files (*.txt)", options=options)
+        return file_name
+    
+    def open_file(window):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
+
+        # Get the selected file name using getOpenFileName for opening files
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(window, "Open File", "", "All Files (*);;Text Files (*.txt)", options=options)
+        return file_name
+    
+    def fileDialogCanceled():
+        # Custom slot to handle cancellation
+        print("FileDialog canceled, do not close the application")

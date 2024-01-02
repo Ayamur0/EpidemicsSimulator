@@ -1,10 +1,12 @@
+from threading import Thread
 from PyQt5 import QtWidgets
 import sys
 from gui import UiNetworkEditor
 from storage import Network, NodeGroup
 from src.epidemics_simulator.storage.disease import Disease
 
-
+from src.epidemics_simulator.visualization.dash_server import DashServer
+from src.epidemics_simulator.storage import Network, Project
 test_data = Network()
 g1 = NodeGroup(test_data, "Group1", 53, 58, 0.54, 0.3, 14, 2, '#ff3541')
 g2 = NodeGroup(test_data, "Group2", 87, 12, 0.62, 0.4, 12, 7,'#115577')
