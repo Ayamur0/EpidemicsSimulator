@@ -10,22 +10,17 @@ class HTMLFilePopup(dbc.Modal):
         self.files = files
         self.stats_view = stats_view
         self.centered = True
+        self.keyboard = False
+        self.backdrop = "static"
         self.is_open = True
         self.children = [
             dbc.ModalHeader(
                 dbc.ModalTitle("Pick a stat file to display"),
                 close_button=False,
+                style={"background-color": "#353535", "color": "azure", "border-color": "#6b6b6b"},
             ),
             self._create_modal_body(),
         ]
-
-        # @callback(
-        #     Output(self.id, "is_open", allow_duplicate=True),
-        #     Input(f"{self.id}-close", "n_clicks"),
-        #     prevent_initial_call=True,
-        # )
-        # def confirm(_):
-        #     return False
 
     def _create_modal_body(self):
         items = []
@@ -50,7 +45,10 @@ class HTMLFilePopup(dbc.Modal):
                 self.stats_view.load_stats(file)
                 return False
 
-        return dbc.ModalBody(html.Div(items, className="file-list"))
+        return dbc.ModalBody(
+            html.Div(items, className="file-list"),
+            style={"background-color": "#353535", "color": "azure"},
+        )
 
     def show_popup(self, app):
         app.layout = html.Div([self.modal_body, self])

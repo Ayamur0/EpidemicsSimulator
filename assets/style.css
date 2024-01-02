@@ -282,9 +282,10 @@ li.open .fa-chevron-right {
     align-items: center;
     justify-content: left;
     text-align: center;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: #353535;
+    border: 1px solid #6b6b6b;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .file-icon {

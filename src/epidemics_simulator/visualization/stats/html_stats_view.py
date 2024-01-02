@@ -37,6 +37,7 @@ class HTMLStatsView:
                 "display": "flex",
                 "justify-content": "center",
                 "align-items": "center",
+                "background-color": "#353535",
             },
         )
         self.layout = html.Div([self.sidebar, self.content])
@@ -69,7 +70,9 @@ class HTMLStatsView:
             if self.use_cumulative_data:
                 df = df.cumsum(axis=0)
             fig = px.line(df, x=df.index, y=df.columns, labels={"index": "Step"})
-        fig.update_layout(legend_title_text="Plots")
+        fig.update_layout(
+            legend_title_text="Plots", paper_bgcolor="#353535", font={"color": "azure"}
+        )
         fig.update_yaxes(title_text="People")
         return fig
 
