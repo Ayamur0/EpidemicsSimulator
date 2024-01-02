@@ -297,6 +297,8 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
+        self.menuNew_from_template = QtWidgets.QMenu(self.menuFile)
+        self.menuNew_from_template.setObjectName("menuNew_from_template")
         self.menuThemes = QtWidgets.QMenu(self.menubar)
         self.menuThemes.setObjectName("menuThemes")
         MainWindow.setMenuBar(self.menubar)
@@ -316,7 +318,10 @@ class Ui_MainWindow(object):
         self.actionExport_Image.setObjectName("actionExport_Image")
         self.actionNew = QtWidgets.QAction(MainWindow)
         self.actionNew.setObjectName("actionNew")
+        self.actiontest = QtWidgets.QAction(MainWindow)
+        self.actiontest.setObjectName("actiontest")
         self.menuFile.addAction(self.actionNew)
+        self.menuFile.addAction(self.menuNew_from_template.menuAction())
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionImport)
@@ -325,7 +330,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuThemes.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -351,6 +356,7 @@ class Ui_MainWindow(object):
         self.speed_label.setText(_translate("MainWindow", "Simulation speed: 0"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.simulation_stats), _translate("MainWindow", "Simulation Stats"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuNew_from_template.setTitle(_translate("MainWindow", "New from template"))
         self.menuThemes.setTitle(_translate("MainWindow", "Theme"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionSave.setIconText(_translate("MainWindow", "Save"))
@@ -366,3 +372,4 @@ class Ui_MainWindow(object):
         self.actionExport_Image.setShortcut(_translate("MainWindow", "Ctrl+E"))
         self.actionNew.setText(_translate("MainWindow", "New"))
         self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
+        self.actiontest.setText(_translate("MainWindow", "test"))

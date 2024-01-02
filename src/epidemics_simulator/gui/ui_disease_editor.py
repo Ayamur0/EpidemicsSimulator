@@ -98,7 +98,8 @@ class UiDiseaseEditor:
         self.open_properties_input(default_dict)
 
 
-
+    def unload(self):
+        self.network_editor.unload_items_from_layout(self.network_editor.disease_content.layout())
 
     #def get_properties_dict(self):
     #    return {

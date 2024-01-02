@@ -62,7 +62,7 @@ class UiGroupDisplay:
         
     def start_generate_thread(self, network: Network):
         self.webview.show()
-        self.webview.load(QUrl("http://localhost:8050"))
+        self.webview.load(QUrl("http://localhost:8050/view"))
         
         worker = Worker(network, self.network_editor.network_stats)
         worker.finished.connect(lambda: worker.quit())
@@ -70,6 +70,5 @@ class UiGroupDisplay:
         worker.start()       
         
     def unload(self):
-        self.available_displays.clear()
         self.network_editor.unload_items_from_layout(self.network_editor.network_graph.layout())
     
