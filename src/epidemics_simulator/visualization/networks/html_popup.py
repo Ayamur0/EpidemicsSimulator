@@ -8,13 +8,17 @@ class HTMLPopup(dbc.Modal):
         super().__init__(*args, **kwargs)
         self.centered = True
         if content:
-            body = dbc.ModalBody(content)
+            body = dbc.ModalBody(
+                content,
+                style={"background-color": "#353535", "color": "azure"},
+            )
         else:
             body = None
         self.children = [
             dbc.ModalHeader(
                 dbc.ModalTitle(title),
-                close_button=True,
+                close_button=False,
+                style={"background-color": "#353535", "color": "azure", "border-color": "#353535"},
             ),
             body,
             dbc.ModalFooter(
@@ -37,11 +41,7 @@ class HTMLPopup(dbc.Modal):
                         n_clicks=0,
                     ),
                 ],
-                # style={
-                #     "display": "flex",
-                #     "align-items": "flex-end",
-                #     "justify-content": "flex-end",
-                # },
+                style={"background-color": "#353535", "color": "azure", "border-color": "#353535"},
             ),
         ]
 

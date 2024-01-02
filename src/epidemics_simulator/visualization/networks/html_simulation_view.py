@@ -122,6 +122,7 @@ class HTMLSimulationView(HTMLNetworkView):
         )
         def step(_):
             with self.sim_mutex:
+                print("step")
                 self.sim.simulate_step()
                 color_map, _ = self.sim.create_color_seq()
                 if self.show_logs:
@@ -220,3 +221,13 @@ class HTMLSimulationView(HTMLNetworkView):
                 State(self.id_factory("save-input"), "value"),
             ],
         )
+
+        # @callback(
+        #     Output(self.id_factory("live-graph"), "figure", allow_duplicate=True),
+        #     Input("dummy-button", "n_clicks"),
+        #     prevent_initial_call=True,
+        # )
+        # def update(_):
+        #     print(_)
+        #     self.reset()
+        #     return self.graph.fig
