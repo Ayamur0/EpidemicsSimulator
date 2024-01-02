@@ -21,6 +21,8 @@ if __name__ == "__main__":
     p = Project()
     p.stats["test"] = SimStats.from_json([])
     p.network = n
+    # p.save_to_file()
+    # p = Project.load_from_file("project.json")
     server.run_network_view(p)
 
     # i.plot(n)

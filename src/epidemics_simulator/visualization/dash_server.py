@@ -3,12 +3,12 @@ from src.epidemics_simulator.visualization.networks.html_network_view import HTM
 from src.epidemics_simulator.visualization.networks.html_simulation_view import HTMLSimulationView
 from src.epidemics_simulator.visualization.networks.graph_3d import Graph3D
 from src.epidemics_simulator.visualization.stats.html_stats_view import HTMLStatsView
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 from dash.dependencies import Input, Output, State
 from dash import Dash, html, dcc, callback
 import dash_bootstrap_components as dbc
 import os
-import requests
+import json
 
 
 class DashServer:
@@ -53,11 +53,21 @@ class DashServer:
             else:  # if redirected to unknown link
                 return "404"
 
-        # @app.server.route("/post-endpoint", methods=["POST"])
-        # def test():
-        #     html_view.reset()
-        #     sim_view.reset()
-        #     stats_view.reset()
-        #     return make_response(jsonify({"status": "OK"}), 200)
+        @app.server.route("/update-data", methods=["POST"])
+        def update():
+            try:
+                json_data = request.get_json()
+                data = json.loads(json_data)
+                project = Project.from_dict(data)
+                html_view.graph.network = project.network
+                sim_view.project = project
+                sim_view.graph.network = project.network
+                stats_view.project = project
+                html_view.reset()
+                sim_view.reset()
+                stats_view.reset()
+                return make_response(jsonify({"status": "OK"}), 200)
+            except Exception as e:
+                return make_response(jsonify({"status": {str(e)}}), 400)
 
         app.run(debug=True, use_reloader=True)

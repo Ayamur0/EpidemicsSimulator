@@ -190,3 +190,49 @@ class NodeGroup:
             dic,
             color,
         )
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "id": self.id,
+            "size": len(self.members),
+            "node_id_counter": self.node_id_counter,
+            "avrg_int_con": self.avrg_int_con,
+            "delta_int_con": self.delta_int_con,
+            "avrg_ext_con": self.avrg_ext_con,
+            "delta_ext_con": self.delta_ext_con,
+            "age": self.age,
+            "vaccination_rate": self.vaccination_rate,
+            "max_vaccination_rate": self.max_vaccination_rate,
+            "max_vaccination_amount": self.max_vaccination_amount,
+            "vaccinated_amount": self.vaccinated_amount,
+            "color": self.color,
+            "active": self.active,
+        }
+
+    @classmethod
+    def from_dict(cls, data, network):
+        instance = cls(
+            network=network,
+            name=data["name"],
+            size=data["size"],
+            aic=data["avrg_int_con"],
+            dic=data["delta_int_con"],
+            age=data["age"],
+            vaccination_rate=data["vaccination_rate"],
+            max_vaccination_rate=data["max_vaccination_rate"],
+            color=data["color"],
+        )
+        instance.id = data["id"]
+        instance.avrg_int_con = data["avrg_int_con"]
+        instance.delta_int_con = data["delta_int_con"]
+        instance.avrg_ext_con = data["avrg_ext_con"]
+        instance.delta_ext_con = data["delta_ext_con"]
+        instance.age = data["age"]
+        instance.vaccination_rate = data["vaccination_rate"]
+        instance.max_vaccination_rate = data["max_vaccination_rate"]
+        instance.max_vaccination_amount = data["max_vaccination_amount"]
+        instance.vaccinated_amount = data["vaccinated_amount"]
+        instance.color = data["color"]
+        instance.active = data["active"]
+        return instance
