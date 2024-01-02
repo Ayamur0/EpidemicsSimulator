@@ -3,14 +3,13 @@ import plotly.graph_objs as go
 
 
 class Legend:
-    HEALTHY = "rgb(0.043, 0.388, 0.082)"
-    CURED = "rgb(0.192, 0.961, 0.573)"
-    INFECTED = "rgb(0.659, 0, 0)"
-    VACCINATED = "rgb(0.067, 0, 0.941)"
-    DECEASED = "rgb(0.012, 0.012, 0.012)"
-
     def __init__(self, network: Network) -> None:
-        status_colors = [self.HEALTHY, self.CURED, self.VACCINATED, self.DECEASED]
+        status_colors = [
+            network.healthy_color,
+            network.cured_color,
+            network.vaccinated_color,
+            network.deceased_color,
+        ]
         status_labels = ["Healthy", "Cured", "Vaccinated", "Deceased"]
         for disease in network.diseases:
             status_colors.append(disease.color)

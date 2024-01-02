@@ -6,13 +6,11 @@ from src.epidemics_simulator.storage import Disease, Node, SimStats
 
 
 class Simulation:
-    HEALTHY = "rgb(0.043, 0.388, 0.082)"
-    CURED = "rgb(0.192, 0.961, 0.573)"
-    INFECTED = "rgb(0.659, 0, 0)"
-    VACCINATED = "rgb(0.067, 0, 0.941)"
-    DECEASED = "rgb(0.012, 0.012, 0.012)"
-
     def __init__(self, network) -> None:
+        self.healthy_color = network.healthy_color
+        self.cured_color = network.cured_color
+        self.vaccinated_color = network.vaccinated_color
+        self.deceased_color = network.deceased_color
         self.diseases: List[Disease] = network.diseases
         self.network = network
         self.infected_nodes = []
@@ -81,15 +79,15 @@ class Simulation:
             node: Node
             for node in group.members:
                 if not node.alive:
-                    c.append(self.DECEASED)
+                    c.append(self.deceased_color)
                 elif node.infected:
                     c.append(node.infected.color)
                 elif node.vaccinated:
-                    c.append(self.VACCINATED)
+                    c.append(self.vaccinated_color)
                 elif node.num_of_infections > 0:
-                    c.append(self.CURED)
+                    c.append(self.cured_color)
                 else:
-                    c.append(self.HEALTHY)
+                    c.append(self.healthy_color)
             colors[group.id] = c
             all.extend(c)
         return colors, all
