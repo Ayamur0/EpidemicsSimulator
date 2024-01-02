@@ -1,7 +1,10 @@
 class Disease:
+    id_counter = 0
+
     def __init__(self, name) -> None:
         self.name = name
-        self.id = name
+        self.id = Disease.id_counter
+        Disease.id_counter += 1
         self.color = "rgb(0.659, 0, 0)"
         self.fatality_rate = 0.2
         self.vaccinated_fatality_rate = 0.05

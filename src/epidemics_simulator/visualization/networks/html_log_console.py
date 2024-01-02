@@ -30,6 +30,7 @@ class HTMLLogConsole(html.Div):
                                     id="log-console-content",
                                     style={"white-space": "pre-wrap"},
                                 ),
+                                # id="log-console-content",
                             ),
                         ],
                         vertical=True,

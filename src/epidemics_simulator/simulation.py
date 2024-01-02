@@ -31,14 +31,13 @@ class Simulation:
                     node.vaccinated = True
                     node.group.vaccinated_amount += 1
                     self.unvaccinated_nodes.remove(node)
-                    self.stats.add_vaccination(node.group.id)
+                    self.stats.add_vaccination(node)
             else:
                 self.unvaccinated_nodes.remove(node)
         node: Node
         random.shuffle(self.infected_nodes)
         for node in self.infected_nodes:
             disease: Disease = node.infected
-            print(disease.name)
             node.infected_time += 1
             if node.infected_time >= disease.duration:
                 fatality = (
@@ -47,12 +46,12 @@ class Simulation:
                 r = random.uniform(0, 1)
                 if r <= fatality:
                     node.alive = False
-                    self.stats.add_death(node.group.id)
+                    self.stats.add_death(node)
                     if not node.vaccinated:
                         node.group.vaccinated_amount += 1
                     continue
                 else:
-                    self.stats.add_cure(node.group.id, disease.id)
+                    self.stats.add_cure(node)
                 node.infected = None
                 node.infected_time = 0
                 node.num_of_infections += 1
@@ -71,7 +70,8 @@ class Simulation:
                 if r <= infection_rate:
                     target.infected = disease
                     self.infected_nodes.append(target)
-                    self.stats.add_infection(node.group.id, disease.id)
+                    self.stats.add_infection(target)
+        self.stats.finish_step()
 
     def create_color_seq(self):
         colors = {}
@@ -113,6 +113,7 @@ class Simulation:
             infected = nodes[: disease.initial_infection_count]
             for node in infected:
                 node.infected = disease
-                self.stats.add_infection(node.group.id, disease.id)
+                self.stats.add_infection(node)
             self.infected_nodes.extend(infected)
             nodes = nodes[disease.initial_infection_count :]
+        self.stats.finish_step()

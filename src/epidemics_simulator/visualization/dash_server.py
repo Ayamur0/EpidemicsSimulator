@@ -1,7 +1,8 @@
 from src.epidemics_simulator.storage import Network, Project
-from .html_network_view import HTMLNetworkView
-from .html_simulation_view import HTMLSimulationView
-from .graph_3d import Graph3D
+from src.epidemics_simulator.visualization.networks.html_network_view import HTMLNetworkView
+from src.epidemics_simulator.visualization.networks.html_simulation_view import HTMLSimulationView
+from src.epidemics_simulator.visualization.networks.graph_3d import Graph3D
+from src.epidemics_simulator.visualization.stats.html_stats_view import HTMLStatsView
 from flask import Flask
 from dash.dependencies import Input, Output, State
 from dash import Dash, html, dcc, callback
@@ -23,6 +24,8 @@ class DashServer:
 
         sim_view = HTMLSimulationView(project, graph)
 
+        stats_view = HTMLStatsView(project)
+
         @callback(Output("page-content", "children"), [Input("url", "pathname")])
         def display_page(pathname):
             if pathname == "/view":
@@ -31,6 +34,8 @@ class DashServer:
             elif pathname == "/sim":
                 sim_view.reset()
                 return sim_view.layout
+            elif pathname == "/stats":
+                return stats_view.layout
             else:  # if redirected to unknown link
                 return "404"
 

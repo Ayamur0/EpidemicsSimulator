@@ -3,7 +3,7 @@ from dash import Dash, html, dcc, callback_context, MATCH, ALL, callback
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from .html_sidebar import HTMLSidebar
-from .id_factory import id_factory
+from src.epidemics_simulator.visualization.id_factory import id_factory
 from .graph_3d import Graph3D
 
 

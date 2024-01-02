@@ -1,8 +1,8 @@
 import itertools
 from src.epidemics_simulator.visualization.networks import Individual
-from src.epidemics_simulator.storage import Network, NodeGroup, Disease, Project
+from src.epidemics_simulator.storage import Network, NodeGroup, Disease, Project, SimStats
 from src.epidemics_simulator.algorithms import CircleGrid
-from src.epidemics_simulator.visualization.networks.dash_server import DashServer
+from src.epidemics_simulator.visualization.dash_server import DashServer
 import time
 import plotly
 
@@ -20,6 +20,7 @@ if __name__ == "__main__":
     n.groups[0].add_external_connection("1", 5, 0)
     n.build()
     p = Project()
+    p.stats["test"] = SimStats.from_json([])
     p.network = n
     server.run_network_view(p)
 

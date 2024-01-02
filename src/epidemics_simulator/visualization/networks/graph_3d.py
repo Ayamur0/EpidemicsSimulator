@@ -6,7 +6,7 @@ from dash import callback
 from dash.dependencies import Input, Output
 from src.epidemics_simulator.simulation import Simulation
 from .legend import Legend
-from .id_factory import id_factory
+from src.epidemics_simulator.visualization.id_factory import id_factory
 
 
 class Graph3D:
@@ -127,6 +127,7 @@ class Graph3D:
     def build(self):
         aXn, aYn, aZn = [], [], []
         self.colors.clear()
+        self.status_colors.clear()
         for group in self.network.groups:
             if group.id not in self.hidden_groups:
                 x, y, z = zip(*self.group_coords[group.id])

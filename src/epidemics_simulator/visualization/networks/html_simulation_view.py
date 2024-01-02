@@ -125,7 +125,10 @@ class HTMLSimulationView(HTMLNetworkView):
                 self.sim.simulate_step()
                 color_map, _ = self.sim.create_color_seq()
                 if self.show_logs:
-                    return self.graph.update_status_colors(color_map), self.sim.stats.get_log_text()
+                    return (
+                        self.graph.update_status_colors(color_map),
+                        self.sim.stats.get_log_text_html(),
+                    )
                 else:
                     return self.graph.update_status_colors(color_map), ""
 
@@ -173,7 +176,10 @@ class HTMLSimulationView(HTMLNetworkView):
                 self.sim.simulate_step()
                 color_map, _ = self.sim.create_color_seq()
                 if self.show_logs:
-                    return self.graph.update_status_colors(color_map), self.sim.stats.get_log_text()
+                    return (
+                        self.graph.update_status_colors(color_map),
+                        self.sim.stats.get_log_text_html(),
+                    )
                 else:
                     return self.graph.update_status_colors(color_map), ""
 
@@ -185,23 +191,27 @@ class HTMLSimulationView(HTMLNetworkView):
         )
         def show_logs(_):
             self.show_logs = not self.show_logs
-            return {"opacity": "1" if self.show_logs else "0"}, self.sim.stats.get_log_text()
+            return {"opacity": "1" if self.show_logs else "0"}, self.sim.stats.get_log_text_html()
 
         def reset_sim():
             self.sim.init_simulation()
             color_map, _ = self.sim.create_color_seq()
-            return self.graph.update_status_colors(color_map)
+            return self.graph.update_status_colors(color_map), self.sim.stats.get_log_text_html()
 
         self.confirm_reset_popup.register_confirm_callback(
-            Output(self.id_factory("live-graph"), "figure", allow_duplicate=True), reset_sim
+            [
+                Output(self.id_factory("live-graph"), "figure", allow_duplicate=True),
+                Output("log-console-content", "children", allow_duplicate=True),
+            ],
+            reset_sim,
         )
 
         def save_data(_, name):
             if not name:
                 name = datetime.now()
             print(name)
-            self.sim.stats.print()
-            pass
+            self.project.stats[name] = self.sim.stats
+            self.sim.stats.to_json()
 
         self.save_popup.register_confirm_callback_with_state(
             Output(self.id_factory("save-toast"), "is_open"),
