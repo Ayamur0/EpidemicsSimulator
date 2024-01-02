@@ -20,9 +20,21 @@ class HTMLFilePopup(dbc.Modal):
                 style={"background-color": "#353535", "color": "azure", "border-color": "#6b6b6b"},
             ),
             self._create_modal_body(),
+            dbc.ModalFooter(
+                style={"background-color": "#353535", "color": "azure", "border-color": "#353535"},
+            ),
         ]
 
     def _create_modal_body(self):
+        if not self.files:
+            return dbc.ModalBody(
+                html.Div(
+                    "You do not have any stat files. Run a simulation and save the results to create one.",
+                    className="file-list",
+                    style={"display": "flex", "justify-content": "center", "align-items": "center"},
+                ),
+                style={"background-color": "#353535", "color": "azure"},
+            )
         items = []
         for index, file in enumerate(self.files):
             items.append(
