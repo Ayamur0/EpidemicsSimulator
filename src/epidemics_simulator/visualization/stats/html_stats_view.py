@@ -83,9 +83,9 @@ class HTMLStatsView:
         ):
             name = data
             if group:
-                name += f" {group}"
+                name += f" {self.project.network.get_group_by_id(group).name}"
             if disease:
-                name += f" {disease}"
+                name += f" {self.project.network.get_disease_by_id(disease).name}"
             name = name.replace("_", " ")
             self.data_dict[name] = self.get_data(data, group, disease)
 

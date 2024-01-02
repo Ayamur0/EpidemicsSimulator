@@ -1,5 +1,4 @@
 import itertools
-from src.epidemics_simulator.visualization.networks import Individual
 from src.epidemics_simulator.storage import Network, NodeGroup, Disease, Project, SimStats
 from src.epidemics_simulator.algorithms import CircleGrid
 from src.epidemics_simulator.visualization.dash_server import DashServer

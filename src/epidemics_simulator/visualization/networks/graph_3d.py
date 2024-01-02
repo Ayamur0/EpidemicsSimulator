@@ -10,14 +10,12 @@ from src.epidemics_simulator.visualization.id_factory import id_factory
 
 
 class Graph3D:
-    HEALTHY = "rgb(0.043, 0.388, 0.082)"
-    CURED = "rgb(0.192, 0.961, 0.573)"
-    INFECTED = "rgb(0.659, 0, 0)"
-    VACCINATED = "rgb(0.067, 0, 0.941)"
-    DECEASED = "rgb(0.012, 0.012, 0.012)"
-
     def __init__(self, network: Network) -> None:
         self.network: Network = network
+        self.healthy_color = network.healthy_color
+        self.cured_color = network.cured_color
+        self.vaccinated_color = network.vaccinated_color
+        self.deceased_color = network.deceased_color
         self.fig = None
         self.legend = Legend(network)
         self.show_grid = True
@@ -48,7 +46,9 @@ class Graph3D:
                         self.status_colors_group_map[group.id][: len(self.group_coords[group.id])]
                     )
                 else:
-                    self.status_colors.extend([self.HEALTHY] * len(self.group_coords[group.id]))
+                    self.status_colors.extend(
+                        [self.healthy_color] * len(self.group_coords[group.id])
+                    )
         self.fig.update_traces(selector=dict(name="nodes"), marker=dict(color=self.status_colors))
         self.fig["layout"]["uirevision"] = "0"
         return self.fig
@@ -138,7 +138,7 @@ class Graph3D:
                 if group.id in self.status_colors_group_map:
                     self.status_colors.extend(self.status_colors_group_map[group.id][: len(x)])
                 else:
-                    self.status_colors.extend([self.HEALTHY] * len(x))
+                    self.status_colors.extend([self.healthy_color] * len(x))
         aXe, aYe, aZe = PlotlyWrapper.calculate_edge_coords(
             self.network,
             self.show_internal_edges,

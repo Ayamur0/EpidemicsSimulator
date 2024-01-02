@@ -76,9 +76,7 @@ class HTMLSubmenu(dbc.Nav):
     def add_hr_rule(self):
         self.content.append(html.Hr())
 
-    def add_group_entries(
-        self, groups, icon1="people-group", icon2="people-group", identifier="group"
-    ):
+    def add_group_entries(self, groups, icon1="people-group", icon2="person", identifier="group"):
         self.content.append(
             html.Div(
                 [

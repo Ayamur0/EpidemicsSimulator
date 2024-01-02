@@ -116,12 +116,12 @@ class HTMLSidebar(html.Div):
         return submenu
 
     def groups_submenu(self):
-        submenu = HTMLSubmenu("Groups", "object-ungroup", "groups", self.stats_view)
+        submenu = HTMLSubmenu("Groups", "people-group", "groups", self.stats_view)
         submenu.add_group_entries(self.network.groups)
         return submenu
 
     def disease_submenu(self):
-        submenu = HTMLSubmenu("Diseases", "virus", "diseases", self.stats_view)
+        submenu = HTMLSubmenu("Diseases", "viruses", "diseases", self.stats_view)
         submenu.add_disease_entries(self.network.diseases)
         return submenu
 
