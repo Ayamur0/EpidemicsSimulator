@@ -57,8 +57,7 @@ class DashServer:
         def update():
             try:
                 json_data = request.get_json()
-                data = json.loads(json_data)
-                project = Project.from_dict(data)
+                project = Project.from_dict(json_data)
                 html_view.graph.network = project.network
                 sim_view.project = project
                 sim_view.graph.network = project.network
