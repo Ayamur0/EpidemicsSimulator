@@ -324,8 +324,6 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.menuNew_from_template.menuAction())
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionOpen)
-        self.menuFile.addAction(self.actionImport)
-        self.menuFile.addAction(self.actionExport)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuThemes.menuAction())
 
@@ -361,7 +359,7 @@ class Ui_MainWindow(object):
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionSave.setIconText(_translate("MainWindow", "Save"))
         self.actionSave.setToolTip(_translate("MainWindow", "Save"))
-        self.actionSave.setShortcut(_translate("MainWindow", "Shift+S"))
+        self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionOpen.setText(_translate("MainWindow", "Open"))
         self.actionOpen.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.actionImport.setText(_translate("MainWindow", "Import Network"))

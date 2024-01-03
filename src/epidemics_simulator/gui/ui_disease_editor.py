@@ -9,7 +9,6 @@ class UiDiseaseEditor:
         
                     
     def load_properties(self, diseasees):
-        
         self.create_add_disease_button()
         for disease in diseasees:
             disease_prop = disease.get_properties_dict()
@@ -17,22 +16,21 @@ class UiDiseaseEditor:
         
             
     def create_add_disease_button(self):
-        v = None
         widget = UiWidgetCreator.create_layout_widget('add_disease', QtWidgets.QVBoxLayout())
         widget.setMinimumSize(240, 256)
         form_layout = UiWidgetCreator.create_layout_widget('add_disease_form', QtWidgets.QFormLayout())
-        label = UiWidgetCreator.create_label('Healty color', 'disease_label_properties')
-        color = UiWidgetCreator.generate_random_color().name() if not v else v # replace v with the real healthy color
-        color_button = UiWidgetCreator.create_push_button(None, 'color_button', style_sheet=f'background: {color};')
-        color_button.clicked.connect(lambda: UiWidgetCreator.show_color_dialog(line_edit, color_button))
-        line_edit = UiWidgetCreator.create_line_edit(color, 'group_line_edit_properties', regex_validator='^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$')
-        form_layout.layout().addRow(label, color_button)
+        label, line_edit = UiWidgetCreator.create_color_button('Healty color', form_layout)
+        line_edit.textChanged.connect(lambda: self.on_line_eidit_change(label, line_edit))
         widget.layout().addWidget(form_layout)
         
         button = UiWidgetCreator.create_push_button('+', 'add_disease_button')
         button.clicked.connect(lambda: self.add_new_disease())
         widget.layout().addWidget(button)
         self.network_editor.disease_content.layout().addWidget(widget, 0, 0)
+        
+    def on_line_eidit_change(self, label, line_edit):
+        print(label.text())
+        print(line_edit.text())
         
     def open_properties_input(self, properties: dict):
         line_edits = {}

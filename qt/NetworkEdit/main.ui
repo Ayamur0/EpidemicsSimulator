@@ -528,8 +528,6 @@ Generation time 20.5s</string>
     <addaction name="menuNew_from_template"/>
     <addaction name="actionSave"/>
     <addaction name="actionOpen"/>
-    <addaction name="actionImport"/>
-    <addaction name="actionExport"/>
    </widget>
    <widget class="QMenu" name="menuThemes">
     <property name="title">
@@ -555,7 +553,7 @@ Generation time 20.5s</string>
     <string>Save</string>
    </property>
    <property name="shortcut">
-    <string>Shift+S</string>
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionOpen">

@@ -62,13 +62,17 @@ class UiWidgetCreator:
         except RuntimeError:
             return
         
-    def show_message(widget, label_text, object_name, remove_last_message: bool):
+    def show_message(widget, label_text, object_name, remove_last_message: bool, is_row=True):
         if remove_last_message:
-            last_item =  widget.layout().itemAt(widget.layout().count() - 1).widget()
-            if isinstance(last_item, QtWidgets.QLabel):
-                last_item.deleteLater()
+            if  widget.layout():
+                last_item =  widget.layout().itemAt(widget.layout().count() - 1).widget()
+                if isinstance(last_item, QtWidgets.QLabel):
+                    last_item.deleteLater()
         label = UiWidgetCreator.create_label(label_text, object_name)
-        widget.layout().addRow(label)
+        if is_row:
+            widget.layout().addRow(label)
+        else:
+            widget.layout().addWidget(label)
         timer = QTimer()
         timer.singleShot(2000, lambda: UiWidgetCreator.hide_message(label, timer))
         
@@ -148,37 +152,40 @@ class UiWidgetCreator:
         action.setObjectName(object_name)
         return action
     
+    def create_file_system_model():
+        model = QtWidgets.QFileSystemModel()
+        model.setRootPath("")
+        model.setNameFilters(["*.json"])
+        model.setNameFilterDisables(False)
+        return model
+    
     def create_file(window):     
-        #options = QtWidgets.QFileDialog.Options()
-        #options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of native platform dialog
-
-        #file_dialog = QtWidgets.QFileDialog(window)
-        #file_dialog.setOptions(options)
-
-        #_ = file_dialog.exec_()  # Use exec_() and handle the result
-        
-        #file_name, _ = file_dialog.getSaveFileName(window, "Save File", "", "All Files (*);;Text Files (*.txt)", options=options)
-        #return file_name
-
-        
-        
-        
-          
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
 
-        # Get the selected file name using getOpenFileName for opening files
-        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(window, "Save File", "", "All Files (*);;Text Files (*.txt)", options=options)
+        # Add a filter to allow only JSON files
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(window, "Save File", "", "Json Files (*.json);;All Files (*)", options=options)
+        
+        # Check if the selected file has a JSON extension, if not, add it
+        if file_name and not file_name.endswith('.json'):
+            file_name += '.json'
+        
         return file_name
-    
+
     def open_file(window):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
 
-        # Get the selected file name using getOpenFileName for opening files
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(window, "Open File", "", "All Files (*);;Text Files (*.txt)", options=options)
+        # Add a filter to allow only JSON files
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(window, "Open File", "", "Json Files (*.json);;All Files (*)", options=options)
+        
         return file_name
-    
-    def fileDialogCanceled():
-        # Custom slot to handle cancellation
-        print("FileDialog canceled, do not close the application")
+
+    def create_color_button(label_content, form_widget, color_value=None):
+        label = UiWidgetCreator.create_label('Healty color', 'disease_label_properties')
+        color = UiWidgetCreator.generate_random_color().name() if not color_value else color_value # replace v with the real healthy color
+        color_button = UiWidgetCreator.create_push_button(None, 'color_button', style_sheet=f'background: {color};')
+        color_button.clicked.connect(lambda: UiWidgetCreator.show_color_dialog(line_edit, color_button))
+        line_edit = UiWidgetCreator.create_line_edit(color, 'group_line_edit_properties', regex_validator='^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$')
+        form_widget.layout().addRow(label, color_button)
+        return label, line_edit, 

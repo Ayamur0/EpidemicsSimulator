@@ -49,7 +49,7 @@ class UiStartupWindow(QtWidgets.QDialog):
         self.close_startup()
         
     def new_template_network(self, template_id):
-        if not self.parent.new_network_from_template(template_id, self):
+        if not self.parent.new_network(self, template_id):
             return
         self.close_startup()
         
