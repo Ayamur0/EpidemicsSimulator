@@ -154,6 +154,7 @@ class UiNetworkGroups:
             self.unload()
             self.network_editor.load_groups(network)
             self.load_properties(group, network)
+            UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully added", "success_message", True)
         #self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
         
         self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
@@ -169,12 +170,7 @@ class UiNetworkGroups:
                 regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
             elif p == 'color':
                 _, line_edit = UiWidgetCreator.create_color_button(p, self.network_editor.group_properties_content.layout(), v)
-                #color = UiWidgetCreator.generate_random_color().name() if not v else v
-                #color_button = UiWidgetCreator.create_push_button(None, 'color_button', style_sheet=f'background: {color};')
-                #color_button.clicked.connect(lambda: UiWidgetCreator.show_color_dialog(line_edit, color_button))
-                #line_edit = UiWidgetCreator.create_line_edit(color, 'group_line_edit_properties', regex_validator=regex_validator)
                 line_edits[p] = line_edit
-                #self.network_editor.group_properties_content.layout().addRow(label, color_button)
                 continue
             elif p != 'name':
                 regex_validator = '^[0-9]+$'

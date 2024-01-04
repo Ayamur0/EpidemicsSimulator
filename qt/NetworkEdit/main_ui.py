@@ -208,7 +208,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.disease_frame)
         self.verticalLayout_10.setObjectName("verticalLayout_10")
         self.disease_list = QtWidgets.QScrollArea(self.disease_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.disease_list.sizePolicy().hasHeightForWidth())
+        self.disease_list.setSizePolicy(sizePolicy)
         self.disease_list.setWidgetResizable(True)
+        self.disease_list.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.disease_list.setObjectName("disease_list")
         self.disease_content = QtWidgets.QWidget()
         self.disease_content.setGeometry(QtCore.QRect(0, 0, 1234, 612))
@@ -328,7 +334,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuThemes.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

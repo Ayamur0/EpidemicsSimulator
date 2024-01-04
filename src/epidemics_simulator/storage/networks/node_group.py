@@ -149,25 +149,6 @@ class NodeGroup:
         self.delta_int_con = dic
         self.color = color
 
-        # if (name := value_dict.get("name")) is not None:
-        #    self.name = str(name)
-        # if (member_count := value_dict.get("member count")) is not None:
-        #    self.members.clear()
-        #    self.create_members(int(member_count))
-        # if (aic := value_dict.get("average internal connections")) is not None and (dic := value_dict.get("average internal connections")) is not None:
-        #    if dic > aic:
-        #        raise ValueError('Delta has to be smalller then average')
-        #    self.avrg_int_con = int(aic)
-        #    self.delta_int_con = int(dic)
-        # if (age := value_dict.get("age")) is not None:
-        #    self.age = int(age)
-        # if (vaccination_rate := value_dict.get("vaccination rate")) is not None:
-        #    self.vaccination_rate = float(vaccination_rate)
-        # if (max_vaccination_rate := value_dict.get("max vaccination rate")) is not None:
-        #    self.max_vaccination_rate = float(max_vaccination_rate)
-        # if (color := value_dict.get("color")) is not None:
-        #    self.color = str(color)
-
     def init_from_dict(network, value_dict):
         (
             name,

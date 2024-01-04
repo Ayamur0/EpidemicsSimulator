@@ -87,35 +87,10 @@ class UiWidgetCreator:
         color = QtWidgets.QColorDialog.getColor()
 
         if color.isValid():
+            color_string = UiWidgetCreator.convert_color_to_float_rgb_string(color)
             hex_color = color.name()
-            line_edit.setText(hex_color)
+            line_edit.setText(color_string)
             color_button.setStyleSheet(f'background: {hex_color};')
-    
-    #def fade(self, widget):
-    #    effect = QtWidgets.QGraphicsOpacityEffect()
-    #    widget.setGraphicsEffect(effect)
-    #    animation = QPropertyAnimation(effect, b"opacity")
-    #    animation.setDuration(1000)
-    #    animation.setStartValue(1)
-    #    animation.setEndValue(0)
-    #    animation.start()
-
-    #def unfade(self, widget):
-    #    effect = QtWidgets.QGraphicsOpacityEffect()
-    #    widget.setGraphicsEffect(effect)
-
-    #    animation = QPropertyAnimation(effect, b"opacity")
-    #    animation.setDuration(1000)
-    #    animation.setStartValue(0)
-    #    animation.setEndValue(1)
-    #    animation.start()
-        
-    #def show_error(self, message):
-    #    error_box = QtWidgets.QMessageBox(self)
-    #    error_box.setIcon(QtWidgets.QMessageBox.Warning)
-    #    error_box.setText(message)
-    #    error_box.setWindowTitle('Validation Error')
-    #    error_box.exec_()
     
     def create_delete_dialog(content: str):
         msg_box = QtWidgets.QMessageBox()
@@ -182,10 +157,57 @@ class UiWidgetCreator:
         return file_name
 
     def create_color_button(label_content, form_widget, color_value=None):
-        label = UiWidgetCreator.create_label('Healty color', 'disease_label_properties')
-        color = UiWidgetCreator.generate_random_color().name() if not color_value else color_value # replace v with the real healthy color
+        label = UiWidgetCreator.create_label(label_content, 'disease_label_properties')
+        if color_value:
+            color_value_object = UiWidgetCreator.rgb_string_to_qcolor(color_value)
+            print(color_value)
+            color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)
+        else:
+            color_value_object = UiWidgetCreator.generate_random_color()
+            color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)
+        float_color = UiWidgetCreator.convert_color_to_float_rgb_string(color_value_object)
         color_button = UiWidgetCreator.create_push_button(None, 'color_button', style_sheet=f'background: {color};')
         color_button.clicked.connect(lambda: UiWidgetCreator.show_color_dialog(line_edit, color_button))
-        line_edit = UiWidgetCreator.create_line_edit(color, 'group_line_edit_properties', regex_validator='^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$')
+        regex_validator = '^rgb\((0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\)$'
+        line_edit = UiWidgetCreator.create_line_edit(float_color, 'group_line_edit_properties', regex_validator=regex_validator)
         form_widget.layout().addRow(label, color_button)
         return label, line_edit, 
+
+    def convert_color_to_float_rgb_string(color: QColor):
+        red = color.red() / 255.0
+        green = color.green() / 255.0
+        blue = color.blue() / 255.0
+        return f'rgb({red:.2f}, {green:.2f}, {blue:.2f})'
+    
+    def convert_color_to_int_rgb_string(color: QColor):
+        red = color.red()
+        green = color.green()
+        blue = color.blue()
+        return f'rgb({red}, {green}, {blue})'
+    
+    def rgb_string_to_qcolor(rgb_string):
+        # Extracting the RGB values from the string
+        rgb_values = [float(value) for value in rgb_string[4:-1].split(',')]
+        
+        # Converting float values to integers (0-255 range)
+        rgb_int_values = [int(value * 255) for value in rgb_values]
+
+        
+        # Creating a QColor object
+        color = QColor(*rgb_int_values)
+        
+        return color
+    
+    def create_qframe(object_name, layout: QtWidgets.QBoxLayout):
+        frame = QtWidgets.QFrame()
+        frame.setObjectName(object_name)
+        frame.setLayout(layout)
+        frame.layout().setStretch(0, 1)
+        frame.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        return frame
+    
+    def create_qscroll_area(object_name):
+        scroll_area = QtWidgets.QScrollArea()
+        scroll_area.setObjectName(object_name)
+
+        return scroll_area

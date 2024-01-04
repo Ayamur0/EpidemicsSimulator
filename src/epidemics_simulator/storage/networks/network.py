@@ -20,6 +20,14 @@ class Network:
             return False
         self.diseases.append(disease)
         return True
+    
+    def remove_disease(self, disease_id) -> bool:
+        for disease in self.diseases:
+            if disease.id == disease_id:
+                self.diseases.remove(disease)
+                return True
+        return False
+            
 
     def add_group(self, group) -> bool:
         if group in self.groups:
@@ -76,3 +84,12 @@ class Network:
         instance.deceased_color = data.get("deceased_color", "rgb(0.012, 0.012, 0.012)")
         instance.builder = NetworkBuilder(instance)
         return instance
+    
+    def set_healty_color(self, value):
+        self.healthy_color = value
+    def set_cured_color(self, value):
+        self.cured_color = value
+    def set_vaccinated_color(self, value):
+        self.vaccinated_color = value
+    def set_deceased_color(self, value):
+        self.deceased_color = value
