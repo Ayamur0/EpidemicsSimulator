@@ -21,13 +21,17 @@ class NodeGroup:
         aic: int,
         dic: int,
         color: str,
+        id: str = None,
     ):
         if dic > aic:
             raise ValueError("Delta has to be smalller then average")
         self.network = network
         self.name = name
-        self.id: str = f"{network.group_id_counter}"  # auto set new id
-        network.group_id_counter += 1
+        if not id:
+            self.id: str = f"{network.group_id_counter}"  # auto set new id
+            network.group_id_counter += 1
+        else:
+            self.id = id
         self.node_id_counter: int = 0
         # spawn members for size
         self.members: List["Node"] = []
@@ -222,8 +226,8 @@ class NodeGroup:
             vaccination_rate=data["vaccination_rate"],
             max_vaccination_rate=data["max_vaccination_rate"],
             color=data["color"],
+            id=data["id"],
         )
-        instance.id = data["id"]
         instance.avrg_int_con = data["avrg_int_con"]
         instance.delta_int_con = data["delta_int_con"]
         instance.avrg_ext_con = data["avrg_ext_con"]
