@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -443,7 +443,7 @@ Generation time 20.5s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>1234</width>
-                <height>528</height>
+                <height>510</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_2"/>
@@ -488,16 +488,29 @@ Generation time 20.5s</string>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="speed_label">
-                <property name="text">
-                 <string>Simulation speed: 0</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-                <property name="indent">
-                 <number>20</number>
-                </property>
+               <widget class="QWidget" name="info_widget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLabel" name="step_label">
+                   <property name="text">
+                    <string>Step: 0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="speed_label">
+                   <property name="text">
+                    <string>Simulation speed: 0</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                   <property name="indent">
+                    <number>20</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>

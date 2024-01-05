@@ -160,7 +160,6 @@ class UiWidgetCreator:
         label = UiWidgetCreator.create_label(label_content, 'disease_label_properties')
         if color_value:
             color_value_object = UiWidgetCreator.rgb_string_to_qcolor(color_value)
-            print(color_value)
             color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)
         else:
             color_value_object = UiWidgetCreator.generate_random_color()

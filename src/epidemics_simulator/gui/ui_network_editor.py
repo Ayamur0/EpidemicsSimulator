@@ -3,7 +3,7 @@ import json
 import os
 
 import requests
-from src.epidemics_simulator.visualization.dash_server import DashServer
+from PyQt5.QtCore import QThreadPool, QRunnable
 from src.epidemics_simulator.gui.ui_network_groups import UiNetworkGroups
 from src.epidemics_simulator.gui.ui_network_connections import UiNetworkConnections
 from src.epidemics_simulator.gui.ui_group_display import UiGroupDisplay
@@ -13,20 +13,47 @@ from src.epidemics_simulator.gui.ui_stat_simulation import UiSimulationStats
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.gui.ui_startup_window import UiStartupWindow
 from src.epidemics_simulator.storage import Network, Project
+from PyQt5.QtCore import pyqtSignal
 from src.epidemics_simulator.gui.templates import templates
 from PyQt5 import QtWidgets, uic
 from storage import Network
 
+class NetworkRunnable(QRunnable):
+    def __init__(self, project: Project):
+        super().__init__()
+        self.url = "http://127.0.0.1:8050/update-data"
+        self.project = project
+
+    def run(self):
+        try:
+            # Make the POST request
+            response = requests.post(self.url, json=self.project.to_dict())
+
+            # Check the response
+            if response.status_code == 200:
+                print("POST request successful")
+            else:
+                print(f"POST request failed with status code {response.status_code}")
+
+        except requests.ConnectionError:
+            # Emit a signal to handle the exception in the main thread
+            print(f"Server is not reachable")
+        except Exception as e:
+            # Emit a signal to handle other exceptions in the main thread
+            print(f"An error occurred: {e}")
 
 class UiNetworkEditor(QtWidgets.QMainWindow):
+    network_changed = pyqtSignal()
     def __init__(self):
         super(UiNetworkEditor, self).__init__()
+        self.network_was_build = False
+        self.network_changed.connect(lambda: self.on_network_change())
         uic.loadUi("qt/NetworkEdit/main.ui", self)
         with open('qt/NetworkEdit/themes.json', 'r') as fp:
             self.themes = json.load(fp)
         with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
             self.stylesheet = fp.read()
-        
+        self.thread_pool = QThreadPool.globalInstance()
         self.change_theme('Dark')
         self.fill_theme(self.themes)
         self.groups = UiNetworkGroups(self)
@@ -41,7 +68,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
         self.launch_startup()
         #self.show()
-        
+
+
     def launch_startup(self):
         # Launch initial startup dialog
         startup = UiStartupWindow(self)
@@ -65,8 +93,10 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
     def load_network(self, network: Network):
         self.current_network = network
+        self.network_changed.emit()
         self.load_groups(network)
         self.disease.load_properties(network.diseases)
+        self.simulation.load_simulation()
         self.simulation_stats.load_info()
         
     def load_groups(self, network: Network):
@@ -156,17 +186,26 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         return True
     
     def push_to_dash(self):
-        url = "http://127.0.0.1:8050/update-data"
-
-        # Make the POST request
-        response = requests.post(url, json=self.project.to_dict())
-
-        # Check the response
-        if response.status_code == 200:
-            print("POST request successful")
-        else:
-            print(f"POST request failed with status code {response.status_code}")
+        server_push = NetworkRunnable(self.project)
+        self.thread_pool.start(server_push)
             
     def on_tab_change(self, index):
-        if index == 2: # Tab index of simulation
-            self.push_to_dash()
+        #self.unload_all()
+        #if index == 0:
+        #    self.load_groups(self.current_network)
+        #elif index == 1:
+        #    self.disease.load_properties(self.current_network.diseases)
+        if index == 3:
+            return
+        self.simulation_stats.stop_simulation()
+        #if index == 2: # Tab index of simulation
+        #    self.push_to_dash()
+        #elif index == 3:
+        #    self.simulation.load_simulation()
+        #elif index == 4:
+        #    self.simulation_stats.load_info()
+        
+    def on_network_change(self):
+        self.network_was_build = False
+        self.push_to_dash()
+        self.simulation_stats.reset_simulation()

@@ -13,16 +13,12 @@ class Worker(QThread):
         
     def run(self):
         start = time.time()
-        self.generate_network(self.network)        
+        self.network.build()    
         generation_time = time.time() - start
         self.refresh_info_label(self.label, self.network, generation_time)
         
         self.finished.emit()
         
-    def generate_network(self, network: Network):
-        builder = NetworkBuilder(network)
-        builder.build()
-
     def refresh_info_label(self, label_to_write: QtWidgets.QLabel, network: Network, generation_time: float):
         label_text = f'Some stats about graph creation\n'
         total_nodes, total_connections = self.get_network_info(network)
@@ -62,14 +58,19 @@ class UiGroupDisplay:
         
         
     def start_generate_thread(self, network: Network):
-        self.network_editor.push_to_dash()
+        print(self.network_editor.network_was_build)
+        if self.network_editor.network_was_build:
+            return
+        self.worker = Worker(network, self.network_editor.network_stats)
+        self.worker.finished.connect(lambda: self.worker_finished())
+        self.worker.start()  
+        
+    def worker_finished(self):
+        self.worker.quit()
+        self.worker.deleteLater()
         self.webview.show()
         self.webview.load(QUrl("http://localhost:8050/view"))
-        
-        worker = Worker(network, self.network_editor.network_stats)
-        worker.finished.connect(lambda: worker.quit())
-        worker.finished.connect(lambda: worker.deleteLater())
-        worker.start()       
+        self.network_editor.network_was_build = True
         
     def unload(self):
         self.webview.hide()

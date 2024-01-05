@@ -11,10 +11,13 @@ class UiDiseaseEditor:
         
         
                     
-    def load_properties(self, diseasees):
+    def load_properties(self, diseasees, disease_save=None):
         self.create_add_disease_button()
         for disease in diseasees:
             disease_prop = disease.get_properties_dict()
+            if disease.id == disease_save:
+                self.open_properties_input(disease_prop, disease, disease_save)
+                continue
             self.open_properties_input(disease_prop, disease)
         
             
@@ -40,7 +43,7 @@ class UiDiseaseEditor:
         widget.layout().addWidget(button)
         self.network_editor.disease_content.layout().addWidget(widget, 0, 0)
         
-    def open_properties_input(self, properties: dict, disease: Disease):
+    def open_properties_input(self, properties: dict, disease: Disease, disease_save=None):
         frame = UiWidgetCreator.create_qframe('disease_input_frame', QtWidgets.QVBoxLayout())
         content_widget = UiWidgetCreator.create_layout_widget('disease_input', QtWidgets.QVBoxLayout())
         #scroll_area = UiWidgetCreator.create_qscroll_area('disease_input')
@@ -67,6 +70,8 @@ class UiDiseaseEditor:
             line_edits[p] = line_edit
         content_widget.layout().addWidget(form_layout)
         self.create_save_remove_button(frame, form_layout, line_edits, disease)
+        if disease_save: # show success message here, because the page is reload so the message would be removed instantly
+            UiWidgetCreator.show_message(form_layout, "Successfully created", 'success_message', True)
         UiWidgetCreator.move_grid_widgets_right(self.network_editor.disease_content, 1, 4)
         self.network_editor.disease_content.layout().addWidget(frame, 0, 1)
         return line_edits
@@ -86,7 +91,7 @@ class UiDiseaseEditor:
         if disease:
             remove = UiWidgetCreator.create_push_button('remove', 'remove_disease_button')
             layout.layout().addWidget(remove)
-            remove.clicked.connect(partial(self.remove_disease, disease.id))
+            remove.clicked.connect(partial(self.remove_disease, disease))
         
         frame.layout().addWidget(layout)
         
@@ -94,8 +99,11 @@ class UiDiseaseEditor:
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         
         if disease:
-            disease.set_from_dict(updated_dict)
-            UiWidgetCreator.show_message(line_edit_layout, "Successfully saved", 'success_message', True)
+            try:
+                disease.set_from_dict(updated_dict)
+            except ValueError as e:
+                UiWidgetCreator.show_message(line_edit_layout, "Pleas fill out every input", 'error_message', True)
+                return
         else:
             try:
                 disease = Disease.init_from_dict(updated_dict)
@@ -105,11 +113,16 @@ class UiDiseaseEditor:
                 return
             UiWidgetCreator.show_message(line_edit_layout, "Successfully created", 'success_message', True)
         self.unload()
-        self.load_properties(self.network_editor.current_network.diseases)
+        self.load_properties(self.network_editor.current_network.diseases, disease.id)
         self.is_creating_disease = False
+        self.network_editor.network_changed.emit()
     
     def remove_disease(self, disease: Disease):
-        self.network_editor.current_network.remove_disease(disease)
+        msg_box  = UiWidgetCreator.create_delete_dialog(f'Are you sure you want to delete "{disease.name}"?')
+        result = msg_box.exec_()
+        if result != QtWidgets.QMessageBox.AcceptRole:
+            return
+        self.network_editor.current_network.remove_disease(disease.id)
         self.unload()
         self.load_properties(self.network_editor.current_network.diseases)
         self.is_creating_disease = False
@@ -135,16 +148,3 @@ class UiDiseaseEditor:
     def unload(self):
         self.is_creating_disease = False
         self.network_editor.unload_items_from_layout(self.network_editor.disease_content.layout())
-
-    #def get_properties_dict(self):
-    #    return {
-    #        "name": self.name,
-    #        "fatality rate": self.fatality_rate,
-    #        "vaccinated fatality rate ": self.vaccinated_fatality_rate ,
-    #        "infection rate": self.infection_rate,
-    #        "reinfection rate": self.reinfection_rate,
-    #        "vaccinated infection rate": self.vaccinated_infection_rate,
-    #        "duration": self.duration,
-    #        "initial infection count": self.initial_infection_count,
-    #        "infected color": self.color,
-    #    }

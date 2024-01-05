@@ -38,24 +38,26 @@ class UiNetworkGroups:
         self.network_editor.group_list_content.layout().addWidget(layout_widget)
         
     def duplicate_group(self):
-        pass
+        self.network_editor.network_changed.emit()
+        # TODO
         
     def delete_group(self, group: NodeGroup, network: Network):
         msg_box  = UiWidgetCreator.create_delete_dialog(f'Are you sure you want to delete the group "{group.name}"?')
         result = msg_box.exec_()
-        if result == QtWidgets.QMessageBox.AcceptRole:
-            index = self.network_editor.group_list_content.layout().indexOf(self.group_layouts[group.id])
-            if index == -1:
-                raise ValueError
-            selected_button = self.network_editor.get_selected_button(self.group_buttons)
-            widget_item = self.network_editor.group_list_content.layout().takeAt(index)
-            widget_item.widget().deleteLater()
-            if selected_button == self.group_buttons[group.id]:
-                self.reset_group_view()
-            del self.group_buttons[group.id]
-            del self.group_layouts[group.id]
-            network.delete_group(group.id)
+        if result != QtWidgets.QMessageBox.AcceptRole:
             return
+        index = self.network_editor.group_list_content.layout().indexOf(self.group_layouts[group.id])
+        if index == -1:
+            raise ValueError
+        selected_button = self.network_editor.get_selected_button(self.group_buttons)
+        widget_item = self.network_editor.group_list_content.layout().takeAt(index)
+        widget_item.widget().deleteLater()
+        if selected_button == self.group_buttons[group.id]:
+            self.reset_group_view()
+        del self.group_buttons[group.id]
+        del self.group_layouts[group.id]
+        network.delete_group(group.id)
+        self.network_editor.network_changed.emit()
 
         
     def change_group_activity(self, checkbox: QtWidgets.QCheckBox, group: NodeGroup):
@@ -156,8 +158,8 @@ class UiNetworkGroups:
             self.load_properties(group, network)
             UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully added", "success_message", True)
         #self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
-        
         self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
+        self.network_editor.network_changed.emit()
     
 
     def open_group_properties_input(self, properties: dict):
