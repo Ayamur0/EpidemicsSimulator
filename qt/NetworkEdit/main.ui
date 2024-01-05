@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -353,8 +353,17 @@ Generation time 20.5s</string>
           <layout class="QVBoxLayout" name="verticalLayout_10">
            <item>
             <widget class="QScrollArea" name="disease_list">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
              </property>
              <widget class="QWidget" name="disease_content">
               <property name="geometry">
@@ -528,8 +537,6 @@ Generation time 20.5s</string>
     <addaction name="menuNew_from_template"/>
     <addaction name="actionSave"/>
     <addaction name="actionOpen"/>
-    <addaction name="actionImport"/>
-    <addaction name="actionExport"/>
    </widget>
    <widget class="QMenu" name="menuThemes">
     <property name="title">
@@ -555,7 +562,7 @@ Generation time 20.5s</string>
     <string>Save</string>
    </property>
    <property name="shortcut">
-    <string>Shift+S</string>
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionOpen">

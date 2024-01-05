@@ -12,6 +12,7 @@ class UiNetworkGroups:
         self.group_buttons: dict = {}
         self.group_layouts: dict = {}
         self.network_editor.save_properties_btn.hide()
+        self.is_creating_group = False
         
     def add_group(self, group: NodeGroup, network: Network):
         self.error_incomplete_input = False
@@ -36,6 +37,9 @@ class UiNetworkGroups:
         self.group_layouts[group.id] = layout_widget
         self.network_editor.group_list_content.layout().addWidget(layout_widget)
         
+    def duplicate_group(self):
+        pass
+        
     def delete_group(self, group: NodeGroup, network: Network):
         msg_box  = UiWidgetCreator.create_delete_dialog(f'Are you sure you want to delete the group "{group.name}"?')
         result = msg_box.exec_()
@@ -59,16 +63,24 @@ class UiNetworkGroups:
     
     def new_group_button_input(self, network: Network):
         add_group_button = self.network_editor.new_group_btn
+        try:
+            add_group_button.clicked.disconnect()
+        except TypeError:
+            pass
         add_group_button.clicked.connect(lambda: self.create_new_group_input(network))
         self.group_buttons['-1'] = add_group_button
     
     def create_new_group_input(self, network: Network):
-        self.unload_group_properties()
-        #self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
-        self.network_editor.connections.unload()
-        
         self.network_editor.deselect_other_buttons('-1', self.group_buttons)
-        
+
+        if self.is_creating_group:
+            UiWidgetCreator.show_message(self.network_editor.group_list_content, 'Please finish current group creation', 'error_message', True, is_row=False)
+            return
+
+        self.is_creating_group = True
+        self.unload_group_properties()
+        self.network_editor.connections.unload()
+
         default_dict = {
             "name": '',
             "member count": '',
@@ -79,12 +91,18 @@ class UiNetworkGroups:
             "max vaccination rate": '',
             "color": ''
         }
-        
-        line_edits = line_edits = self.open_group_properties_input(default_dict)
+
+        line_edits = self.open_group_properties_input(default_dict)
+
+        # Disconnect the signal before connecting it again
+        add_group_button = self.network_editor.new_group_btn
+        #add_group_button.clicked.disconnect()
+        #add_group_button.clicked.connect(lambda: self.create_new_group_input(network))
         
         self.save_properties_button(line_edits, None, network)
         
     def load_properties(self, group: NodeGroup, network: Network):
+        self.is_creating_group = False
         self.unload_group_properties()
         #self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
         self.network_editor.connections.unload()
@@ -118,6 +136,7 @@ class UiNetworkGroups:
                 else:
                     UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message', True)
                 return
+            self.is_creating_group = False
             self.unload_group_list()
             self.network_editor.load_groups(network)
             UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully saved", "success_message", True)
@@ -131,11 +150,13 @@ class UiNetworkGroups:
                 else:
                     UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Pleas fill out every input", 'error_message', True)
                 return
+            self.is_creating_group = False
             self.unload()
             self.network_editor.load_groups(network)
             self.load_properties(group, network)
+            UiWidgetCreator.show_message(self.network_editor.group_properties_content, "Successfully added", "success_message", True)
         #self.network_editor.unload_items_from_layout(self.network_editor.group_list_content.layout())
-            
+        
         self.network_editor.deselect_other_buttons(group.id, self.group_buttons)
     
 
@@ -148,12 +169,8 @@ class UiNetworkGroups:
             if p == 'vaccination rate' or p == 'max vaccination rate':
                 regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
             elif p == 'color':
-                color = UiWidgetCreator.generate_random_color().name() if not v else v
-                color_button = UiWidgetCreator.create_push_button(None, 'color_button', style_sheet=f'background: {color};')
-                color_button.clicked.connect(lambda: UiWidgetCreator.show_color_dialog(line_edit, color_button))
-                line_edit = UiWidgetCreator.create_line_edit(color, 'group_line_edit_properties', regex_validator=regex_validator)
+                _, line_edit = UiWidgetCreator.create_color_button(p, self.network_editor.group_properties_content.layout(), v)
                 line_edits[p] = line_edit
-                self.network_editor.group_properties_content.layout().addRow(label, color_button)
                 continue
             elif p != 'name':
                 regex_validator = '^[0-9]+$'

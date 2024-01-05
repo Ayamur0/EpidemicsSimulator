@@ -9,7 +9,9 @@ class UiSimulation:
         self.network_editor.simulation_view.layout().addWidget(self.webview)
         self.network_editor.open_browser_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("http://localhost:8050/sim")))
         
+        
+        
     def unload(self):
         # TODO refresh network on server
         pass
-        
+    
