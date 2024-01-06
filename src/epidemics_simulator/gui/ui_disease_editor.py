@@ -27,15 +27,22 @@ class UiDiseaseEditor:
         form_layout = UiWidgetCreator.create_layout_widget('add_disease_form', QtWidgets.QFormLayout())
         _, line_edit = UiWidgetCreator.create_color_button('healty color', form_layout, color_value=self.network_editor.current_network.healthy_color)
         line_edit.textChanged.connect(lambda: self.network_editor.current_network.set_healty_color(line_edit.text()))
+        line_edit.textChanged.connect(lambda: self.network_editor.disease_changed.emit())
         
         _, line_edit = UiWidgetCreator.create_color_button('cured color', form_layout, color_value=self.network_editor.current_network.cured_color)
         line_edit.textChanged.connect(lambda: self.network_editor.current_network.set_cured_color(line_edit.text()))
+        line_edit.textChanged.connect(lambda: self.network_editor.disease_changed.emit())
         
         _, line_edit = UiWidgetCreator.create_color_button('vaccinated color', form_layout, color_value=self.network_editor.current_network.vaccinated_color)
         line_edit.textChanged.connect(lambda: self.network_editor.current_network.set_vaccinated_color(line_edit.text()))
+        line_edit.textChanged.connect(lambda: self.network_editor.disease_changed.emit())
         
         _, line_edit = UiWidgetCreator.create_color_button('deceased color', form_layout, color_value=self.network_editor.current_network.deceased_color)
         line_edit.textChanged.connect(lambda: self.network_editor.current_network.set_deceased_color(line_edit.text()))
+        line_edit.textChanged.connect(lambda: self.network_editor.disease_changed.emit())
+        
+        
+        
         widget.layout().addWidget(form_layout)
         
         button = UiWidgetCreator.create_push_button('+', 'add_disease_button')
@@ -89,11 +96,23 @@ class UiDiseaseEditor:
         layout.layout().addWidget(save)
         
         if disease:
+            duplicate = UiWidgetCreator.create_push_button('duplicate', 'duplicate_disease_button')
             remove = UiWidgetCreator.create_push_button('remove', 'remove_disease_button')
-            layout.layout().addWidget(remove)
+            duplicate.clicked.connect(lambda: self.duplicate_disease(disease))
             remove.clicked.connect(partial(self.remove_disease, disease))
+            layout.layout().addWidget(duplicate)
+            layout.layout().addWidget(remove)
+            
         
         frame.layout().addWidget(layout)
+        
+    def duplicate_disease(self, disease: Disease):
+        new_disease = Disease(disease.name, disease.color, disease.fatality_rate, disease.vaccinated_fatality_rate, disease.infection_rate, disease.reinfection_rate, disease.vaccinated_infection_rate, disease.duration, disease.initial_infection_count)
+        self.network_editor.current_network.add_disease(new_disease)
+        self.network_editor.disease_changed.emit()
+        self.is_creating_disease = False
+        self.unload()
+        self.load_properties(self.network_editor.current_network.diseases, None)
         
     def save_input(self, line_edits, line_edit_layout, disease: Disease):
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
@@ -115,7 +134,7 @@ class UiDiseaseEditor:
         self.unload()
         self.load_properties(self.network_editor.current_network.diseases, disease.id)
         self.is_creating_disease = False
-        self.network_editor.network_changed.emit()
+        self.network_editor.disease_changed.emit()
     
     def remove_disease(self, disease: Disease):
         msg_box  = UiWidgetCreator.create_delete_dialog(f'Are you sure you want to delete "{disease.name}"?')

@@ -6,18 +6,34 @@ import time
 from src.epidemics_simulator.network_builder import NetworkBuilder
 class Worker(QThread):
     finished = pyqtSignal()
-    def __init__(self, network: Network, label: QtWidgets.QLabel) -> None:
+    def __init__(self, network: Network) -> None:
         super().__init__()
         self.network = network
-        self.label = label
         
     def run(self):
-        start = time.time()
         self.network.build()    
-        generation_time = time.time() - start
-        self.refresh_info_label(self.label, self.network, generation_time)
-        
         self.finished.emit()
+        
+    
+
+class UiGroupDisplay:
+    def __init__(self, network_editor) -> None:      
+        self.network_editor = network_editor
+        self.view_buttons: dict = {}
+        self.network_editor.network_stats.setText('\n\n\n')
+        self.network_editor.generate_button.clicked.connect(lambda: self.start_generate_thread(self.network_editor.current_network))
+        self.webview = QWebEngineView()
+        self.webview.hide()
+        self.network_editor.network_graph.layout().addWidget(self.webview)
+        
+        
+    def start_generate_thread(self, network: Network):
+        if self.network_editor.network_was_build:
+            return
+        self.worker = Worker(network)
+        self.worker.finished.connect(lambda: self.worker_finished())
+        self.start_time = time.time()
+        self.worker.start()  
         
     def refresh_info_label(self, label_to_write: QtWidgets.QLabel, network: Network, generation_time: float):
         label_text = f'Some stats about graph creation\n'
@@ -45,31 +61,18 @@ class Worker(QThread):
         for group in already_visited_groups:
             to_remove += node.get_ext_conn_amount(to_group=group)
         return to_remove
-
-class UiGroupDisplay:
-    def __init__(self, network_editor) -> None:      
-        self.network_editor = network_editor
-        self.view_buttons: dict = {}
-        self.network_editor.network_stats.setText('\n\n\n')
-        self.network_editor.generate_button.clicked.connect(lambda: self.start_generate_thread(self.network_editor.current_network))
-        self.webview = QWebEngineView()
-        self.webview.hide()
-        self.network_editor.network_graph.layout().addWidget(self.webview)
-        
-        
-    def start_generate_thread(self, network: Network):
-        print(self.network_editor.network_was_build)
-        if self.network_editor.network_was_build:
-            return
-        self.worker = Worker(network, self.network_editor.network_stats)
-        self.worker.finished.connect(lambda: self.worker_finished())
-        self.worker.start()  
         
     def worker_finished(self):
+        generation_time = time.time() - self.start_time
+        label = self.network_editor.network_stats
+        self.refresh_info_label(label, self.network_editor.current_network, generation_time)
+        
+        
         self.worker.quit()
         self.worker.deleteLater()
-        self.webview.show()
-        self.webview.load(QUrl("http://localhost:8050/view"))
+        if self.network_editor.server_connected:
+            self.webview.show()
+            self.webview.load(QUrl("http://localhost:8050/view"))
         self.network_editor.network_was_build = True
         
     def unload(self):

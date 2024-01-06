@@ -6,12 +6,13 @@ from src.epidemics_simulator.simulation import Simulation
 from src.epidemics_simulator.storage.networks import Network
 class Worker(QThread):
     finished = pyqtSignal()
+    update_label_signal = pyqtSignal(dict, int)
+    update_control_label_signal = pyqtSignal(int)
     max_speed = 256.0
     min_speed = 0.125
-    def __init__(self, simulation: Simulation, ui_sim) -> None:
+    def __init__(self, simulation: Simulation) -> None:
         super().__init__()
         self.simulation = simulation
-        self.ui_sim = ui_sim
         self.simulation_speed = 0
         self.current_step = 0
         self.stopped = False
@@ -26,45 +27,27 @@ class Worker(QThread):
             start_time = time.time()
             self.simulation.simulate_step()
             self.current_step += 1
-            
-            self.ui_sim.update_stat_labels(self.simulation.stats.group_stats, self.current_step)
+            self.update_label_signal.emit(self.simulation.stats.group_stats, self.current_step)
             elapsed_time = time.time() - start_time
             if elapsed_time < time_interval:
                 time.sleep(time_interval - elapsed_time)
         self.finished.emit()
-    
-        
-    def update_stat_widget(self, widgets, properties: dict):
-        for key, prop in widgets.items():
-            prop.setText(str(properties[key]))
-            
+  
     def stop_simulation(self):
         self.simulation_speed = 0
-        self.update_control_labels()
+        self.update_control_label_signal.emit(self.simulation_speed)
         
     def start_stop(self):
         self.simulation_speed = 1 if self.simulation_speed == 0 else 0
-        self.update_control_labels()
+        self.update_control_label_signal.emit(self.simulation_speed)
         
     def increase_speed(self):
         self.simulation_speed *= 2 if self.simulation_speed < Worker.max_speed else 1
-        self.update_control_labels()
+        self.update_control_label_signal.emit(self.simulation_speed)
         
     def decrease_speed(self):
         self.simulation_speed /= 2 if self.simulation_speed > Worker.min_speed else 1
-        self.update_control_labels()
-        
-    def update_control_labels(self):
-        if self.simulation_speed >= 1:
-            self.ui_sim.network_editor.speed_label.setText(f'Simulation speed: {int(self.simulation_speed)}')
-        else:
-            self.ui_sim.network_editor.speed_label.setText(f'Simulation speed: {self.simulation_speed}')
-        if self.simulation_speed == 0:
-            self.ui_sim.network_editor.start_stop_button.setText('Start')
-        else:
-            self.ui_sim.network_editor.start_stop_button.setText('Stop')
-        
-        
+        self.update_control_label_signal.emit(self.simulation_speed)
         
     def stop(self):
         self.stopped = True
@@ -84,7 +67,9 @@ class UiSimulationStats:
         
     def create_worker(self):
         self.simulation = Simulation(self.network_editor.current_network)
-        self.worker = Worker(self.simulation, self)
+        self.worker = Worker(self.simulation)
+        self.worker.update_label_signal.connect(self.update_stat_labels)
+        self.worker.update_control_label_signal.connect(self.update_control_labels)
             
     def load_info(self):
         self.create_worker()
@@ -153,6 +138,7 @@ class UiSimulationStats:
         self.worker.decrease_speed()
     def reset_simulation(self):
         self.unload()
+        self.update_control_labels(0)
         self.load_info()
         
         
@@ -170,3 +156,13 @@ class UiSimulationStats:
         self.stat_labels = {}
         self.network_editor.unload_items_from_layout(self.network_editor.stats_content.layout())
         
+        
+    def update_control_labels(self, simulation_speed):
+        if simulation_speed >= 0:
+            self.network_editor.speed_label.setText(f'Simulation speed: {int(simulation_speed)}')
+        else:
+            self.network_editor.speed_label.setText(f'Simulation speed: {simulation_speed}')
+        if simulation_speed == 0:
+            self.network_editor.start_stop_button.setText('Start')
+        else:
+            self.network_editor.start_stop_button.setText('Stop')

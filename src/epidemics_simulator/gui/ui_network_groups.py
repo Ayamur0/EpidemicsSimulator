@@ -27,19 +27,28 @@ class UiNetworkGroups:
         group_button.clicked.connect(lambda: self.load_properties(group, network))
         self.group_buttons[group.id] = group_button
         
+        duplicate_button = UiWidgetCreator.create_push_button('duplicate', 'group_duplicate_btn')
+        duplicate_button.clicked.connect(lambda: self.duplicate_group(group, network))
+        
         delete_button = UiWidgetCreator.create_push_button('del', 'group_del_btn')
         delete_button.clicked.connect(lambda: self.delete_group(group, network))
         
         layout_widget.layout().addWidget(checkbox)
         layout_widget.layout().addWidget(group_button)
+        layout_widget.layout().addWidget(duplicate_button)
         layout_widget.layout().addWidget(delete_button)
         
         self.group_layouts[group.id] = layout_widget
         self.network_editor.group_list_content.layout().addWidget(layout_widget)
         
-    def duplicate_group(self):
+    def duplicate_group(self, group: NodeGroup, network: Network):
+        #new_group = NodeGroup.from_dict(group.to_dict(), network) not usable because the id would not change
+        new_group = NodeGroup(network, group.name, group.size, group.age, group.vaccination_rate, group.max_vaccination_rate, group.avrg_int_con, group.delta_int_con, group.color)
+        network.add_group(new_group)
+        self.add_group(new_group, network)
+        for ext_group, value in group.avrg_ext_con.items():
+            new_group.add_external_connection(ext_group, value, group.delta_ext_con[ext_group])
         self.network_editor.network_changed.emit()
-        # TODO
         
     def delete_group(self, group: NodeGroup, network: Network):
         msg_box  = UiWidgetCreator.create_delete_dialog(f'Are you sure you want to delete the group "{group.name}"?')

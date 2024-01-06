@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -420,7 +420,7 @@ Generation time 20.5s</string>
       </widget>
       <widget class="QWidget" name="simulation_stats">
        <attribute name="title">
-        <string>Simulation Stats</string>
+        <string>Text Simulation</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_14">
         <item>
@@ -514,6 +514,37 @@ Generation time 20.5s</string>
                </widget>
               </item>
              </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stats_view">
+       <attribute name="title">
+        <string>Statistics</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_20">
+        <item>
+         <widget class="QFrame" name="stats_frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_19">
+           <item>
+            <widget class="QWidget" name="stat_view_widget" native="true">
+             <layout class="QVBoxLayout" name="verticalLayout_18"/>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="open_view_in_browser">
+             <property name="text">
+              <string>Open in browser</string>
+             </property>
             </widget>
            </item>
           </layout>

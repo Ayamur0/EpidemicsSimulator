@@ -52,7 +52,8 @@ QScrollArea {
 #disease_content QWidget,
 #simulation QWidget,
 #stats_content QWidget,
-#control_info_widget QWidget{
+#control_info_widget QWidget,
+#stats_view QWidget{
     border: none;
     background: @widgetBackground;
     border-radius: 5px;
@@ -81,7 +82,8 @@ QPushButton:hover {
 #group_display QPushButton,
 #disease_content QPushButton,
 #simulation QPushButton, 
-#simulation_stats_frame QPushButton  {
+#simulation_stats_frame QPushButton,
+#stats_view QPushButton  {
     border: 1px;
     color: @textColor;
     background: @inputBackground;
@@ -92,7 +94,8 @@ QPushButton:hover {
 #group_display QPushButton:hover,
 #disease_content QPushButton:hover,
 #simulation QPushButton:hover,
-#simulation_stats_frame QPushButton:hover {
+#simulation_stats_frame QPushButton:hover,
+#stats_view QPushButton:hover {
     background: @hoverBackground;
 }
 #select_frame QPushButton:checked,
