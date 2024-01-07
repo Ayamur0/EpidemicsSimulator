@@ -125,3 +125,7 @@ QLabel#error_message {
 QMessageBox {
     background: @widgetBackground;
 }
+
+QDialog#generate_popup {
+    background: @hoverBackground;
+}

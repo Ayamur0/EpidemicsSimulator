@@ -53,8 +53,6 @@ class Worker(QThread):
         self.stopped = True
         self.quit()
         self.wait()
-
-
 class UiSimulationStats:
     
     def __init__(self, network_editor) -> None:
@@ -64,17 +62,25 @@ class UiSimulationStats:
         self.network_editor.decrease_button.clicked.connect(lambda: self.decrease_simulation_speed())
         self.network_editor.increase_button.clicked.connect(lambda: self.increase_simulation_speed())
         self.stat_labels = {}
+        self.simulation_started = False
         
     def create_worker(self):
         self.simulation = Simulation(self.network_editor.current_network)
         self.worker = Worker(self.simulation)
         self.worker.update_label_signal.connect(self.update_stat_labels)
         self.worker.update_control_label_signal.connect(self.update_control_labels)
+
             
     def load_info(self):
         self.create_worker()
         self.update_stat_labels(self.worker.simulation.stats.group_stats, self.worker.current_step)
-        self.worker.start()  
+        
+    def ask_for_generation(self):
+        msg_box  = UiWidgetCreator.create_delete_dialog(f'Changes in the network have been made. Do you want to generate the new Edges?', default_button=0)
+        result = msg_box.exec_()
+        if result != QtWidgets.QMessageBox.AcceptRole:
+            return False
+        return True
         
     def get_row_col(self, grid):
         row = grid.layout().count() // 4
@@ -131,7 +137,22 @@ class UiSimulationStats:
     def stop_simulation(self):
         self.worker.stop_simulation()
     def start_stop_simulation(self):
-        self.worker.start_stop()
+        if len(self.network_editor.current_network.groups) == 0:
+            return
+        self.worker.start()  
+        if self.simulation_started:
+            self.worker.start_stop()
+            return
+        if not self.network_editor.network_was_build:
+            self.simulation_started = True
+            wants_to_generate = self.ask_for_generation()
+            if wants_to_generate:
+                self.network_editor.display.start_generate_thread(self.network_editor.current_network)
+            self.start_stop_simulation()
+        
+            
+        
+        
     def increase_simulation_speed(self):
         self.worker.increase_speed()
     def decrease_simulation_speed(self):
@@ -144,6 +165,7 @@ class UiSimulationStats:
         
     def stop_worker(self):
         try:
+            self.stop_simulation()
             self.worker.stop()
             self.worker.deleteLater()  # Explicitly delete the worker
         except AttributeError:
@@ -152,6 +174,7 @@ class UiSimulationStats:
             pass
     
     def unload(self):
+        self.simulation_started = False
         self.stop_worker()
         self.stat_labels = {}
         self.network_editor.unload_items_from_layout(self.network_editor.stats_content.layout())

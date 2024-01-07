@@ -1,8 +1,9 @@
 import random
 from PyQt5.QtCore import Qt
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QRegExp, QTimer
-from PyQt5.QtGui import QRegExpValidator, QColor
+from PyQt5.QtCore import QRegExp, QTimer, QThread, QSize
+from PyQt5.QtGui import QRegExpValidator, QColor, QMovie
+
 from src.epidemics_simulator.gui.cutsom_widgets import *
 
 class UiWidgetCreator:
@@ -92,7 +93,7 @@ class UiWidgetCreator:
             line_edit.setText(color_string)
             color_button.setStyleSheet(f'background: {hex_color};')
     
-    def create_delete_dialog(content: str):
+    def create_delete_dialog(content: str, default_button=1):
         msg_box = QtWidgets.QMessageBox()
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
         msg_box.setWindowTitle('Delete Confirmation')
@@ -102,7 +103,10 @@ class UiWidgetCreator:
         yes_button = msg_box.addButton('Yes', QtWidgets.QMessageBox.AcceptRole)
         cancel_button = msg_box.addButton('Cancel', QtWidgets.QMessageBox.RejectRole)
         
-        msg_box.setDefaultButton(cancel_button)
+        if default_button == 0:
+            msg_box.setDefaultButton(yes_button)
+        elif default_button == 1:
+            msg_box.setDefaultButton(cancel_button)
         
         return msg_box
     
@@ -210,3 +214,22 @@ class UiWidgetCreator:
         scroll_area.setObjectName(object_name)
 
         return scroll_area
+    
+    def create_generate_popup(parent):
+        dialog = QtWidgets.QDialog(parent, flags=Qt.FramelessWindowHint)
+        dialog.setWindowModality(Qt.ApplicationModal)
+        dialog.setObjectName('generate_popup')
+        dialog.setLayout(QtWidgets.QHBoxLayout())
+        # Asset source: https://gifer.com/en/ZKZg
+        loading = QMovie('assets/loading.gif')
+        loading.setScaledSize(QSize(35, 35))
+        loading_label = QtWidgets.QLabel()
+        loading_label.setMovie(loading)
+        loading.start()
+        #loading_label.setFixedSize(50, 50)
+        
+        text_label = UiWidgetCreator.create_label('Generating...', 'generating_label')
+        dialog.layout().addWidget(loading_label)
+        dialog.layout().addWidget(text_label)
+        
+        return dialog

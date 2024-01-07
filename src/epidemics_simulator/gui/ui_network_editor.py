@@ -134,7 +134,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         for i in range(0, len(templates)):
             template = templates[i]
             action = UiWidgetCreator.create_qaction(template.name, 'template_menu_item', self)
-            action.triggered.connect(partial(self.new_network, i, self))
+            action.triggered.connect(partial(self.new_network, self, i))
             self.menuNew_from_template.addAction(action)
 
         
@@ -206,6 +206,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
         
     def new_network(self, parent, template_id=None):
+        
         file_name = UiWidgetCreator.create_file(parent)
         if not file_name:
             return False
@@ -245,11 +246,14 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         #self.thread_pool.start(self.server_push)
             
     def on_tab_change(self, index):
+        self.groups.unload()
+        self.connections.unload()
+        self.disease.unload()
         #self.unload_all()
-        #if index == 0:
-        #    self.load_groups(self.current_network)
-        #elif index == 1:
-        #    self.disease.load_properties(self.current_network.diseases)
+        if index == 0:
+            self.load_groups(self.current_network)
+        elif index == 1:
+            self.disease.load_properties(self.current_network.diseases)
         if index == 3:
             return
         self.simulation_stats.stop_simulation()
@@ -262,15 +266,16 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
     def on_network_change(self):
         self.network_was_build = False
-        self.push_to_dash()
-        self.simulation_stats.reset_simulation()
+        self.on_disease_change()
+        #self.push_to_dash()
+        #self.simulation_stats.reset_simulation()
         
     def on_disease_change(self):
         # TODO if nothing changes remove this function and only call on_network_change
         # Diseases should not be displayed on the view?
-        self.on_network_change()
-        #self.push_to_dash()
-        #self.simulation_stats.reset_simulation()
+        #self.on_network_change()
+        self.push_to_dash()
+        self.simulation_stats.reset_simulation()
         
     def show_webviews(self):
         self.simulation.load_simulation()

@@ -3,7 +3,8 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl
 from storage import Network, Node
 import time
-from src.epidemics_simulator.network_builder import NetworkBuilder
+from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
+
 class Worker(QThread):
     finished = pyqtSignal()
     def __init__(self, network: Network) -> None:
@@ -30,10 +31,13 @@ class UiGroupDisplay:
     def start_generate_thread(self, network: Network):
         if self.network_editor.network_was_build:
             return
+        
         self.worker = Worker(network)
         self.worker.finished.connect(lambda: self.worker_finished())
         self.start_time = time.time()
-        self.worker.start()  
+        self.worker.start() 
+        self.popup = UiWidgetCreator.create_generate_popup(self.network_editor)
+        self.popup.exec_()
         
     def refresh_info_label(self, label_to_write: QtWidgets.QLabel, network: Network, generation_time: float):
         label_text = f'Some stats about graph creation\n'
@@ -48,6 +52,8 @@ class UiGroupDisplay:
         total_connections = 0
         visited_groups: list[str] = []
         for group in network.groups:
+            if not group.active:
+                continue
             total_nodes += group.size
             for node in group.members:
                 total_connections += node.int_conn_amount
@@ -66,6 +72,8 @@ class UiGroupDisplay:
         generation_time = time.time() - self.start_time
         label = self.network_editor.network_stats
         self.refresh_info_label(label, self.network_editor.current_network, generation_time)
+        print('Finished Generating')
+        self.popup.deleteLater()
         
         
         self.worker.quit()
@@ -78,4 +86,10 @@ class UiGroupDisplay:
     def unload(self):
         self.webview.hide()
         self.network_editor.network_stats.setText('\n\n\n')
+        try:
+            self.popup.deleteLater()
+        except AttributeError:
+            pass
+        except RuntimeError:
+            pass
     

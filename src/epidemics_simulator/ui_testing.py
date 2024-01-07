@@ -21,10 +21,10 @@ def execute_file_in_process():
     except subprocess.CalledProcessError as e:
         print(f"An error occurred: {e}")
         
-server_thread = threading.Thread(target=execute_file_in_process)# Register a function to terminate the subprocess when the main program exits
-atexit.register(lambda: server_thread.terminate() if server_thread.is_alive() else None)
-server_thread.start()
+#server_thread = threading.Thread(target=execute_file_in_process)# Register a function to terminate the subprocess when the main program exits
+#atexit.register(lambda: server_thread.terminate() if server_thread.is_alive() else None)
+#server_thread.start()
 app = QtWidgets.QApplication(sys.argv)
 window = UiNetworkEditor()
 app.exec_()
-server_thread.join()
+#server_thread.join()

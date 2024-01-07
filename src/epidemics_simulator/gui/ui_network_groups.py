@@ -71,6 +71,7 @@ class UiNetworkGroups:
         
     def change_group_activity(self, checkbox: QtWidgets.QCheckBox, group: NodeGroup):
         group.active = checkbox.isChecked()
+        self.network_editor.network_changed.emit()
     
     def new_group_button_input(self, network: Network):
         add_group_button = self.network_editor.new_group_btn
@@ -214,5 +215,6 @@ class UiNetworkGroups:
         self.network_editor.unload_items_from_layout(self.network_editor.group_properties_content.layout())
             
     def unload(self):
+        self.network_editor.deselect_other_buttons('None', self.group_buttons)
         self.unload_group_list()
         self.unload_group_properties()
