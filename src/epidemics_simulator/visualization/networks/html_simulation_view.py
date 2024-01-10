@@ -35,9 +35,8 @@ class HTMLSimulationView(HTMLNetworkView):
         )
         super().__init__(graph, "sim")
         self.project = project
-        self.network = project.network
         self.build_layout()
-        self.sim = Simulation(self.network)
+        self.sim = Simulation(self.project.network)
         self.sim.init_simulation()
         color_map, _ = self.sim.create_color_seq()
         self.graph.update_status_colors(color_map)
@@ -99,6 +98,7 @@ class HTMLSimulationView(HTMLNetworkView):
         self.layout = html.Div([self.sidebar, content, HTMLLogConsole()])
 
     def reset(self):
+        self.sim = Simulation(self.project.network)
         self.sim.init_simulation()
         color_map, _ = self.sim.create_color_seq()
         self.graph.update_status_colors(color_map)

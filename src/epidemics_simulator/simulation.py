@@ -93,11 +93,6 @@ class Simulation:
         return colors, all
 
     def init_simulation(self):
-        self.healthy_color = self.network.healthy_color
-        self.cured_color = self.network.cured_color
-        self.vaccinated_color = self.network.vaccinated_color
-        self.deceased_color = self.network.deceased_color
-        self.diseases: List[Disease] = self.network.diseases
         self.infected_nodes.clear()
         self.stats = SimStats(self.network)
         nodes = []
