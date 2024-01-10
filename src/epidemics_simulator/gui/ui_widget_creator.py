@@ -107,10 +107,11 @@ class UiWidgetCreator:
         return QColor(red, green, blue)
     
     def convert_color_to_float_rgb_string(color: QColor) -> str:
-        red = color.red() / 255.0
-        green = color.green() / 255.0
-        blue = color.blue() / 255.0
-        return f'rgb({red:.2f}, {green:.2f}, {blue:.2f})'
+        red = min(color.red() / 255.0, 0.999)
+        green = min(color.green() / 255.0, 0.999)
+        blue = min(color.blue() / 255.0, 0.999)
+        
+        return f'rgb({red:.3f}, {green:.3f}, {blue:.3f})'
     
     def convert_color_to_int_rgb_string(color: QColor) -> str:
         red = color.red()

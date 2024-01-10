@@ -21,6 +21,7 @@ class GenerateNetwork(QThread):
 class UiDisplayGroup:
     def __init__(self, main_window: QtWidgets.QMainWindow):
         self.main_window = main_window
+        self.url = f'{self.main_window.server_url}/view'
                 
         self.generate_button = self.main_window.generate_button
         
@@ -29,9 +30,10 @@ class UiDisplayGroup:
         self.open_browser_button = self.main_window.open_in_browser_button
         
         self.webview = QWebEngineView()
+        self.webview.load(QUrl(self.url))
         self.network_graph.layout().addWidget(self.webview)
         
-        self.url = f'{self.main_window.server_url}/view'
+        
         
         self.open_browser_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(self.url)))
         
@@ -61,17 +63,20 @@ class UiDisplayGroup:
     def generating_finished(self):
         generation_time = time.time() - self.start_time
         self.refresh_info_label(self.network, generation_time)
-        print('Finished Generating')
-        self.popup.deleteLater()
-
-        self.load_webview()
+        self.main_window.push_to_dash()
+        self.main_window.server_push.wait()
         self.main_window.generated_network = True
         self.generated_once = True
-        self.main_window.push_to_dash()
+        print('Finished Generating')
+        self.popup.deleteLater()
+        self.load_webview()
+        
+        
+        
         
     def load_webview(self):
-        self.webview.load(QUrl(self.url))
-        self.show_webview()
+        self.main_window.show_webviews()
+        #self.show_webview()
         
     def hide_webview(self):
         if self.generated_once:
@@ -81,7 +86,15 @@ class UiDisplayGroup:
     def show_webview(self):
         if not self.main_window.is_server_connected:
             return
-        self.webview.show()
+        if not self.generated_once:
+            return
+        try:
+            self.webview.loadFinished.disconnect()
+        except TypeError:
+            pass
+        self.webview.loadFinished.connect(lambda: self.webview.show())
+        self.webview.reload()
+        #self.webview.show()
         
     def refresh_info_label(self, network: Network, generation_time: float):
         label_text = f'Some stats about graph creation\n'

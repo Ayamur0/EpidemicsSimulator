@@ -178,7 +178,10 @@ class UiDiseaseEditTab:
                 UiWidgetCreator.show_status(form_layout, "Pleas fill out every input", 'error_message', True)
                 return
         self.delete_disease_from_layout_at(1)
-        self.disease_layout_list[1] = disease.id
+        if len(self.disease_layout_list) == 1:
+            self.disease_layout_list.append(disease.id)
+        else:
+            self.disease_layout_list[1] = disease.id
         self.is_creating_disease = False
         #self.unload()
         #self.load_inputs(self.network, id_success_save=disease.id)

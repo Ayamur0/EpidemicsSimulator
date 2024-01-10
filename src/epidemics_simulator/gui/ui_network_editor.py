@@ -20,7 +20,7 @@ from src.epidemics_simulator.gui.disease_edit.ui_disease_edit_tab import UiDisea
 from src.epidemics_simulator.gui.simulation.ui_simulation import UiSimulationTab
 from src.epidemics_simulator.gui.statistics.ui_statistics import UiStatisticTab
 from src.epidemics_simulator.gui.text_simulation.ui_text_simulation import UiTextSimulationTab
-
+import psutil
 class PushData(QThread):
     no_response_signal = pyqtSignal()
     finished = pyqtSignal(QThread)
@@ -32,6 +32,7 @@ class PushData(QThread):
     def run(self):
         try:
             # Make the POST request
+            test = self.project.to_dict()
             response = requests.post(self.url, json=self.project.to_dict())
 
             # Check the response
@@ -242,6 +243,11 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.network_edit_tab.group_display.hide_webview()
         self.simulation_tab.hide_webview()
         self.statistics_tab.hide_webview()
+        
+    def show_webviews(self):
+        self.network_edit_tab.group_display.show_webview()
+        self.simulation_tab.show_webview()
+        self.statistics_tab.show_webview()
     
     def on_network_change(self):
         ## TODO do i want to reset the text simulation?
@@ -272,8 +278,9 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.is_server_connected = True
         self.server_check_in_progress = False
         self.push_to_dash()
-        self.simulation_tab.show_webview()
-        self.statistics_tab.show_webview()
+        self.show_webviews()
+        
+    
         
     def push_to_dash(self):
         if not self.is_project_loaded:
@@ -282,7 +289,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.server_push.no_response_signal.connect(self.check_server_connection)
         self.server_push.finished.connect(self.thread_finished)
         self.server_push.start()
-        
+
     def thread_finished(self, worker: QThread):
         worker.quit()
         worker.deleteLater()
@@ -299,29 +306,42 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if self.is_server_connected:
             return
         try:
+                response = requests.head(self.server_url, timeout=1)
+                # Check if the response status code is in the 2xx range (success)
+                if response.status_code // 100 == 2:
+                    self.is_server_connected = True
+                    return
+        except requests.ConnectionError or requests.exceptions.ReadTimeout:
+            pass
+        try:
             activate_script = os.path.join('venv', 'Scripts' if sys.platform == 'win32' else 'bin', 'activate')
             activate_command = [activate_script, '&&', 'python', 'test/test_visualization.py']
 
             creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 
-            process = subprocess.Popen(activate_command, shell=True, executable=os.environ.get('SHELL'), creationflags=creation_flags)
+            process = subprocess.Popen(activate_command, stdout=subprocess.PIPE, shell=True, executable=os.environ.get('SHELL'), creationflags=creation_flags)
             self.check_server_connection(is_initial_test=True)
             return process
-        except Exception:
+        except Exception as e:
+            print(f'Error starting server: {e}')
             return None
-        
+      
+    def kill(self, proc_pid):
+        # Source: https://stackoverflow.com/a/25134985
+        process = psutil.Process(proc_pid)
+        for proc in process.children(recursive=True):
+            proc.kill()
+        process.kill()
+            
     def terminate_server(self):
-        print(self.server_process.pid)
         if self.server_process:
-            os.kill(self.server_process.pid, signal.SIGTERM)
-            #self.server_process.terminate()
+            self.kill(self.server_process.pid)
             
     def closeEvent(self, event):
         if self.unsaved_changes:
             if self.ask_to_save():
                 event.ignore()
                 return
-        
         self.terminate_server()
         event.accept()
         
