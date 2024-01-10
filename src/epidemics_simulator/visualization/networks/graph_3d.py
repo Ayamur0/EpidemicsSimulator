@@ -36,6 +36,14 @@ class Graph3D:
         ) = PlotlyWrapper.calculate_network_coords(self.network, self.visible_node_percent)
         self.build()
 
+    def update_network(self, network):
+        self.network = network
+        self.healthy_color = network.healthy_color
+        self.cured_color = network.cured_color
+        self.vaccinated_color = network.vaccinated_color
+        self.deceased_color = network.deceased_color
+        self.legend = Legend(self.network)
+
     def update_status_colors(self, colors_map):
         self.status_colors_group_map = colors_map
         self.status_colors.clear()
@@ -123,9 +131,6 @@ class Graph3D:
         self.visible_node_percent = 1
         self.build()
         return self.network.groups, self.hidden_groups
-
-    def rebuild_legend(self):
-        self.legend = Legend(self.network)
 
     def build(self):
         aXn, aYn, aZn = [], [], []
