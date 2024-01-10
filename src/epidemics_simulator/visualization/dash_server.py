@@ -57,11 +57,10 @@ class DashServer:
             try:
                 json_data = request.get_json()
                 project = Project.from_dict(json_data)
-                html_view.graph.update_network(project.network)
+                graph.update_network(project.network)
                 html_view.reset()
                 html_view.needs_build = True
                 sim_view.project = project
-                sim_view.graph.update_network(project.network)
                 sim_view.reset()
                 sim_view.needs_build = True
                 stats_view.project = project

@@ -22,7 +22,7 @@ class HTMLNetworkView:
         self.needs_build = False
         self.id_factory = id_factory(page)
 
-        self.sidebar = HTMLSidebar(True, False, True, True, self.id_factory)
+        self.sidebar = HTMLSidebar(True, False, True, False, self.id_factory)
         self.set_callbacks()
         self.build_layout()
 
@@ -46,12 +46,12 @@ class HTMLNetworkView:
         )
         self.layout = html.Div([self.sidebar, content])
 
-    def reset(self):
-        groups, hidden_groups = self.graph.on_reload()
+    def reset(self, is_sim=False):
+        groups, hidden_groups = self.graph.on_reload(is_sim)
         self.sidebar.show_grid = True
         self.sidebar.show_internal_edges = False
         self.sidebar.show_external_edges = True
-        self.sidebar.show_status_colors = True
+        self.sidebar.show_status_colors = is_sim
         self.sidebar.rebuild()
         self.sidebar.update_group_divs(groups, hidden_groups)
         self.build_layout()
@@ -172,12 +172,15 @@ class HTMLNetworkView:
             Input({"index": ALL, "type": self.id_factory("group-button")}, "n_clicks"),
             prevent_initial_call=True,
         )
-        def toggle_group(_):
+        def toggle_group(clicks):
+            if all(i is None for i in clicks):
+                raise exceptions.PreventUpdate()
             id = callback_context.triggered_id["index"]
             return self.on_show_group_changed(id)
 
         @callback(
             Output(self.id_factory("live-graph"), "figure", allow_duplicate=True),
+            Output(self.id_factory("submenu-collapse"), "children"),
             Input(self.id_factory("build-request"), "n_intervals"),
             prevent_initial_call=True,
         )
@@ -185,7 +188,7 @@ class HTMLNetworkView:
             if self.needs_build:
                 self.needs_build = False
                 self.graph.build()
-                return self.graph.fig
+                return self.graph.fig, self.sidebar.group_divs
             else:
                 raise exceptions.PreventUpdate()
 
