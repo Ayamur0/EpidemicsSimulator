@@ -182,7 +182,6 @@ class HTMLNetworkView:
             prevent_initial_call=True,
         )
         def check_for_update(_):
-            print("check")
             if self.needs_build:
                 self.needs_build = False
                 self.graph.rebuild_legend()
