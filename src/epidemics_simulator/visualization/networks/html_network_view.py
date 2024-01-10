@@ -1,5 +1,5 @@
 import os
-from dash import Dash, html, dcc, callback_context, MATCH, ALL, callback
+from dash import Dash, html, dcc, callback_context, MATCH, ALL, callback, exceptions
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from .html_sidebar import HTMLSidebar
@@ -188,7 +188,7 @@ class HTMLNetworkView:
                 self.graph.build()
                 return self.graph.fig
             else:
-                return None
+                raise exceptions.PreventUpdate()
 
         # @server.route("/update", methods=["POST"])
 
