@@ -124,6 +124,9 @@ class Graph3D:
         self.build()
         return self.network.groups, self.hidden_groups
 
+    def rebuild_legend(self):
+        self.legend = Legend(self.network)
+
     def build(self):
         aXn, aYn, aZn = [], [], []
         self.colors.clear()
