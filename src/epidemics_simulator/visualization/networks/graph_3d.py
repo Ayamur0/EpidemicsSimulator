@@ -115,7 +115,7 @@ class Graph3D:
         self.build()
         return self.fig
 
-    def on_reload(self):
+    def on_reload(self, show_status_colors):
         (
             self.group_coords,
             self.node_id_map,
@@ -126,7 +126,7 @@ class Graph3D:
         self.show_internal_edges = False
         self.show_external_edges = True
         self.show_grid = True
-        self.show_status_colors = True
+        self.show_status_colors = show_status_colors
         self.hidden_groups.clear()
         self.visible_node_percent = 1
         self.build()

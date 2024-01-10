@@ -34,6 +34,7 @@ class HTMLSimulationView(HTMLNetworkView):
             is_open=False,
         )
         super().__init__(graph, "sim")
+        self.sidebar.show_status_colors = True
         self.project = project
         self.build_layout()
         self.sim = Simulation(self.project.network)
@@ -102,7 +103,8 @@ class HTMLSimulationView(HTMLNetworkView):
         self.sim.init_simulation()
         color_map, _ = self.sim.create_color_seq()
         self.graph.update_status_colors(color_map)
-        super().reset()
+        super().reset(True)
+        self.sidebar.show_status_colors = True
 
     def _round_button(self, icon, id, big):
         return html.Button(
@@ -128,7 +130,6 @@ class HTMLSimulationView(HTMLNetworkView):
         )
         def step(_):
             with self.sim_mutex:
-                print("step")
                 self.sim.simulate_step()
                 color_map, _ = self.sim.create_color_seq()
                 if self.show_logs:
