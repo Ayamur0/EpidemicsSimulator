@@ -58,13 +58,13 @@ class DashServer:
                 json_data = request.get_json()
                 project = Project.from_dict(json_data)
                 html_view.graph.network = project.network
+                html_view.reset()
                 html_view.needs_build = True
                 sim_view.project = project
                 sim_view.graph.network = project.network
+                sim_view.reset()
                 sim_view.needs_build = True
                 stats_view.project = project
-                # html_view.reset()
-                # sim_view.reset()
                 stats_view.reset()
                 return make_response(jsonify({"status": "OK"}), 200)
             except Exception as e:

@@ -59,6 +59,12 @@ class HTMLSimulationView(HTMLNetworkView):
                     n_intervals=0,
                     disabled=True,
                 ),
+                dcc.Interval(
+                    id=self.id_factory("build-request"),
+                    interval=0.5 * 1000,
+                    n_intervals=0,
+                    disabled=False,
+                ),
                 html.Div(
                     [
                         self._round_button("fa-trash", self.id_factory("reset"), False),
