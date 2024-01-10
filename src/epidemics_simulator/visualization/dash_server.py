@@ -40,7 +40,6 @@ class DashServer:
             # State("dummy-button", "n_clicks"),
         )
         def display_page(pathname):
-            print("path")
             if pathname == "/view":
                 html_view.reset()
                 return html_view.layout
@@ -62,8 +61,8 @@ class DashServer:
                 sim_view.project = project
                 sim_view.graph.network = project.network
                 stats_view.project = project
-                html_view.reset()
-                sim_view.reset()
+                # html_view.reset()
+                # sim_view.reset()
                 stats_view.reset()
                 return make_response(jsonify({"status": "OK"}), 200)
             except Exception as e:

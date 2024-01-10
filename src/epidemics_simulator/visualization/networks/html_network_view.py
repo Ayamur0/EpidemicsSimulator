@@ -19,6 +19,7 @@ class HTMLNetworkView:
         self.on_node_percent_changed = graph.change_visible_node_percent
         self.on_show_group_changed = graph.hide_group
         self.graph = graph
+        self.needs_build = False
         self.id_factory = id_factory(page)
 
         self.sidebar = HTMLSidebar(True, False, True, True, self.id_factory)
@@ -32,6 +33,12 @@ class HTMLNetworkView:
                     figure=self.graph.fig,
                     id=self.id_factory("live-graph"),
                     style={"height": "100vh"},
+                ),
+                dcc.Interval(
+                    id=self.id_factory("build-request"),
+                    interval=0.5 * 1000,
+                    n_intervals=0,
+                    disabled=False,
                 ),
             ],
             style={"height": "80vh"},
@@ -168,6 +175,19 @@ class HTMLNetworkView:
         def toggle_group(_):
             id = callback_context.triggered_id["index"]
             return self.on_show_group_changed(id)
+
+        @callback(
+            Output(self.id_factory("live-graph"), "figure", allow_duplicate=True),
+            Input(self.id_factory("build-request"), "n_intervals"),
+            prevent_initial_call=True,
+        )
+        def check_for_update(_):
+            print("check")
+            if self.needs_build:
+                self.graph.build()
+                return self.graph.fig
+            else:
+                return None
 
         # @server.route("/update", methods=["POST"])
 
