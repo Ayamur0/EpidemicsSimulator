@@ -4,33 +4,31 @@ from PyQt5.QtCore import pyqtSignal
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.gui.templates import templates
 
-class UiStartupWindow(QtWidgets.QDialog):
+class UiStartup(QtWidgets.QDialog):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
         self.resize(300, 600)
+        self.setLayout(QtWidgets.QVBoxLayout())
         
-        layout = UiWidgetCreator.create_layout_widget('startup_layout', QtWidgets.QVBoxLayout())
-        self.setLayout(layout.layout())
-        self.create_startup_buttons()
+    def launch_startup(self):
+        self.add_startup_buttons()
         
+        self.show()
         
-    def create_startup_buttons(self):
-        self.parent.unload_items_from_layout(self.layout())
-        new = UiWidgetCreator.create_push_button('New', 'new_network')
-        new_from_template = UiWidgetCreator.create_push_button('New from Template', 'new_network')
-        open_network = UiWidgetCreator.create_push_button('Open', 'open_network')
+    def add_startup_buttons(self):
+        new_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button('New', 'new_network_button')
+        new_from_template_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button('New from template', 'new_template_button')
+        open_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button('Open', 'open_network_button')
         
-        new.clicked.connect(lambda: self.new_network())
-        new_from_template.clicked.connect(lambda: self.new_from_template())
-        open_network.clicked.connect(lambda: self.open_network())
+        new_button.clicked.connect(lambda: self.new_network())
+        new_from_template_button.clicked.connect(lambda: self.new_from_template())
+        open_button.clicked.connect(lambda: self.open_network())
         
-        self.layout().addWidget(new)
-        self.layout().addWidget(new_from_template)
-        self.layout().addWidget(open_network)
+        self.layout().addWidget(new_button)
+        self.layout().addWidget(new_from_template_button)
+        self.layout().addWidget(open_button)
         
-        
-   
     def new_from_template(self):
         self.parent.unload_items_from_layout(self.layout())
            

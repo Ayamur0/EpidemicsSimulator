@@ -88,7 +88,7 @@ class Network:
         instance.builder = NetworkBuilder(instance)
         return instance
 
-    def set_healty_color(self, value):
+    def set_healthy_color(self, value):
         self.healthy_color = value
 
     def set_cured_color(self, value):

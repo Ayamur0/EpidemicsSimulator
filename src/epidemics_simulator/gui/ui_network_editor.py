@@ -1,31 +1,32 @@
 from functools import partial
 import json
 import os
+import signal
+import subprocess
+import sys
 import time
 
 import requests
 from PyQt5.QtCore import QThreadPool, QRunnable, QThread
-from src.epidemics_simulator.gui.ui_network_groups import UiNetworkGroups
-from src.epidemics_simulator.gui.ui_network_connections import UiNetworkConnections
-from src.epidemics_simulator.gui.ui_group_display import UiGroupDisplay
-from src.epidemics_simulator.gui.ui_disease_editor import UiDiseaseEditor
-from src.epidemics_simulator.gui.ui_simulation import UiSimulation
-from src.epidemics_simulator.gui.ui_stat_simulation import UiSimulationStats
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
-from src.epidemics_simulator.gui.ui_startup_window import UiStartupWindow
-from src.epidemics_simulator.gui.ui_stats_view import UiStatsView
+from src.epidemics_simulator.gui.ui_startup import UiStartup
 from src.epidemics_simulator.storage import Network, Project
 from PyQt5.QtCore import pyqtSignal
 from src.epidemics_simulator.gui.templates import templates
 from PyQt5 import QtWidgets, uic
 from storage import Network
+from src.epidemics_simulator.gui.network_edit.ui_network_edit_tab import UiNetworkEditTab
+from src.epidemics_simulator.gui.disease_edit.ui_disease_edit_tab import UiDiseaseEditTab
+from src.epidemics_simulator.gui.simulation.ui_simulation import UiSimulationTab
+from src.epidemics_simulator.gui.statistics.ui_statistics import UiStatisticTab
+from src.epidemics_simulator.gui.text_simulation.ui_text_simulation import UiTextSimulationTab
 
-class NetworkRunnable(QThread):
+class PushData(QThread):
     no_response_signal = pyqtSignal()
     finished = pyqtSignal(QThread)
-    def __init__(self, project: Project):
+    def __init__(self, project: Project, base_url: str):
         super().__init__()
-        self.url = "http://127.0.0.1:8050/update-data"
+        self.url = f'{base_url}/update-data'
         self.project = project
 
     def run(self):
@@ -38,7 +39,6 @@ class NetworkRunnable(QThread):
                 print("POST request successful")
             else:
                 print(f"POST request failed with status code {response.status_code}")
-
         except requests.ConnectionError:
             # Emit a signal to handle the exception in the main thread
             self.no_response_signal.emit()
@@ -61,68 +61,63 @@ class CheckConnection(QThread):
                 # Check if the response status code is in the 2xx range (success)
                 if response.status_code // 100 == 2:
                     connected = True
-            except requests.ConnectionError:
+            except requests.ConnectionError or requests.exceptions.ReadTimeout:
                 print('Error Connecting')
-                time.sleep(0.5)
+                time.sleep(1)
         self.connection_established.emit()
         self.finished.emit(self)
 
+
 class UiNetworkEditor(QtWidgets.QMainWindow):
-    network_changed = pyqtSignal()
-    disease_changed = pyqtSignal()
+    network_changed = pyqtSignal() # TODO connect emit
+    disease_changed = pyqtSignal() # TODO connect emit
     def __init__(self):
         super(UiNetworkEditor, self).__init__()
-        self.network_was_build = False
+        self.server_process = None
+        self.server_url = 'http://localhost:8050'
+        self.changed_disease = False
+        self.generated_network = False
+        self.is_server_connected = False
+        self.checking_connection = False
         self.is_project_loaded = False
+        self.server_check_in_progress = False
+        self.unsaved_changes = False
         self.network_changed.connect(self.on_network_change)
         self.disease_changed.connect(self.on_disease_change)
+        
+        self.server_process  = self.start_server()
         uic.loadUi("qt/NetworkEdit/main.ui", self)
         with open('qt/NetworkEdit/themes.json', 'r') as fp:
             self.themes = json.load(fp)
         with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
             self.stylesheet = fp.read()
-        self.thread_pool = QThreadPool.globalInstance()
         self.change_theme('Dark')
         self.fill_theme(self.themes)
-        self.groups = UiNetworkGroups(self)
-        self.connections = UiNetworkConnections(self)
-        self.display = UiGroupDisplay(self)
-        self.disease = UiDiseaseEditor(self)
-        self.simulation = UiSimulation(self)
-        self.simulation_stats = UiSimulationStats(self)
-        self.stats_view = UiStatsView(self)
-        self.server_connected = False
-        self.server_check_in_progress = False
-        self.start_server_check()
-        
+
         self.connect_menu_actions()
         self.tabWidget.currentChanged.connect(self.on_tab_change)
         
-        self.launch_startup()
-        #self.show()
+        self.startup = UiStartup(self)
+        self.network_edit_tab = UiNetworkEditTab(self)
+        self.disease_edit_tab = UiDiseaseEditTab(self)
+        self.simulation_tab = UiSimulationTab(self)
+        self.text_simulation_tab = UiTextSimulationTab(self)
+        self.statistics_tab = UiStatisticTab(self)
+        self.startup.launch_startup()
 
-    def start_server_check(self):
-        if self.server_check_in_progress:
-            return
-        self.server_check_in_progress = True
-        self.server_check = CheckConnection('http://127.0.0.1:8050')
-        self.server_check.connection_established.connect(self.connection_established)
-        self.server_check.finished.connect(self.thread_finished)
-        self.server_check.start()
-        #self.thread_pool.start(self.server_check)
-        
-    def connection_established(self):
-        self.server_connected = True
-        self.server_check_in_progress = False
-        self.push_to_dash()
-        self.show_webviews()
+    def launch(self):
+        self.network = self.project.network
+        self.unload()
+        self.init_uis()
 
-    def launch_startup(self):
-        # Launch initial startup dialog
-        startup = UiStartupWindow(self)
-        startup.show()
-        #startup.close_startup() # TODO load network or create network with the Startup
         
+    def init_uis(self):
+        self.is_project_loaded = True
+        self.network_edit_tab.init_ui(self.network)
+        self.disease_edit_tab.init_ui(self.network)
+        self.simulation_tab.init_ui()
+        self.text_simulation_tab.init_ui(self.network)
+        self.statistics_tab.init_ui()
         
     def connect_menu_actions(self):
         self.actionNew.triggered.connect(lambda: self.new_network(self))
@@ -136,36 +131,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             action = UiWidgetCreator.create_qaction(template.name, 'template_menu_item', self)
             action.triggered.connect(partial(self.new_network, self, i))
             self.menuNew_from_template.addAction(action)
-
-        
-    def load_network(self, network: Network):
-        self.current_network = network
-        self.is_project_loaded = True
-        self.network_changed.emit()
-        self.load_groups(network)
-        self.disease.load_properties(network.diseases)
-        self.simulation.load_simulation()
-        self.simulation_stats.load_info()
-        self.stats_view.load_stats()
-        
-    def load_groups(self, network: Network):
-        all_groups = network.groups
-        for group in all_groups:
-            self.groups.add_group(group, network)
-        self.groups.new_group_button_input(network)
-        
-    def unload_all_segments(self):
-        self.connections.unload()
-        self.display.unload()
-        self.groups.unload()
-        
-    def unload_all(self):
-        self.unload_all_segments()
-        self.disease.unload()
-        self.simulation.unload()
-        self.simulation_stats.unload()
-        self.stats_view.unload()
-        
+   
         
     def unload_items_from_layout(self, layout):
         while layout.count():
@@ -183,13 +149,6 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             if not btn_object.isChecked():
                 continue
             btn_object.setChecked(False)
-            
-    def get_selected_button(self, button_dict):
-        for button in button_dict:
-            btn_object = button_dict[button]
-            if not btn_object.isChecked():
-                continue
-            return btn_object
         
     def fill_theme(self, theme: dict):
         menu = self.menuThemes
@@ -206,11 +165,12 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
         
     def new_network(self, parent, template_id=None):
-        
+        if self.is_project_loaded and self.unsaved_changes:
+            if self.ask_to_save():
+                return
         file_name = UiWidgetCreator.create_file(parent)
         if not file_name:
             return False
-        self.unload_all()
         if template_id:
             network = templates[template_id]
         else:
@@ -219,68 +179,158 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.project = Project()
         self.project.network = network
         self.project.file_location = file_name
-        self.load_network(network)
         self.project.save_to_file()
+        
+        self.launch()
         return True
         
     def save_network(self):
+        self.unsaved_changes = False
         self.project.save_to_file()
         
     def open_network(self, parent):
+        if self.is_project_loaded and self.unsaved_changes:
+            if self.ask_to_save():
+                return
         file_name = UiWidgetCreator.open_file(parent)
         if not file_name:
             return False
-        self.unload_all()
         self.project = Project.load_from_file(file_name)
         self.project.file_location = file_name
-        self.load_network(self.project.network)
+        self.launch()
         return True
     
+    def unload(self):
+        self.generated_network = False
+        self.changed_disease = False
+        self.is_project_loaded = False
+        self.unsaved_changes = False
+        self.network_edit_tab.unload()
+        self.disease_edit_tab.unload()
+        self.simulation_tab.unload()
+        self.text_simulation_tab.unload()
+        self.statistics_tab.unload()
+
+    def on_tab_change(self, index):
+        for i in range(self.tabWidget.count()):
+            if i != index:
+                self.tabWidget.widget(i).hide()
+            else:
+                self.tabWidget.widget(i).show()
+        if index != 3:
+            self.text_simulation_tab.stop_simulation()
+        if index == 0:
+            pass
+        elif index == 1:
+            pass
+        elif index == 2:
+            if len(self.network.groups) == 0:
+                return
+            if not self.generated_network:
+                self.simulation_tab.ask_for_regeneration()
+        elif index == 2:
+            if len(self.network.groups) == 0:
+                return
+            if not self.generated_network:
+                self.text_simulation_tab.ask_for_regeneration()
+            elif self.changed_disease:
+                self.text_simulation_tab.ask_for_reset()
+        elif index == 4:
+            pass
+    
+    def hide_webviews(self):
+        self.network_edit_tab.group_display.hide_webview()
+        self.simulation_tab.hide_webview()
+        self.statistics_tab.hide_webview()
+    
+    def on_network_change(self):
+        ## TODO do i want to reset the text simulation?
+        self.generated_network = False
+        self.unsaved_changes = True
+        self.push_to_dash()
+        print('Network Changed')
+        
+    def on_disease_change(self):
+        self.changed_disease = True
+        self.unsaved_changes = True
+        self.push_to_dash()
+        print('Disease Changed')
+        
+    def check_server_connection(self, is_initial_test=False):
+        if self.server_check_in_progress:
+            return
+        if not is_initial_test:
+            self.ask_if_server_should_restart() # Could inflict bugs
+        self.is_server_connected = False
+        self.server_check_in_progress = True
+        self.server_check = CheckConnection(self.server_url)
+        self.server_check.connection_established.connect(self.connection_established)
+        self.server_check.finished.connect(self.thread_finished)
+        self.server_check.start()
+        
+    def connection_established(self):
+        self.is_server_connected = True
+        self.server_check_in_progress = False
+        self.push_to_dash()
+        self.simulation_tab.show_webview()
+        self.statistics_tab.show_webview()
+        
     def push_to_dash(self):
         if not self.is_project_loaded:
             return
-        self.server_push = NetworkRunnable(self.project)
-        self.server_push.no_response_signal.connect(self.start_server_check)
+        self.server_push = PushData(self.project, self.server_url)
+        self.server_push.no_response_signal.connect(self.check_server_connection)
         self.server_push.finished.connect(self.thread_finished)
         self.server_push.start()
-        #self.thread_pool.start(self.server_push)
-            
-    def on_tab_change(self, index):
-        self.groups.unload()
-        self.connections.unload()
-        self.disease.unload()
-        #self.unload_all()
-        if index == 0:
-            self.load_groups(self.current_network)
-        elif index == 1:
-            self.disease.load_properties(self.current_network.diseases)
-        if index == 3:
-            return
-        self.simulation_stats.stop_simulation()
-        #if index == 2: # Tab index of simulation
-        #    self.push_to_dash()
-        #elif index == 3:
-        #    self.simulation.load_simulation()
-        #elif index == 4:
-        #    self.simulation_stats.load_info()
-        
-    def on_network_change(self):
-        self.network_was_build = False
-        self.on_disease_change()
-        #self.push_to_dash()
-        #self.simulation_stats.reset_simulation()
-        
-    def on_disease_change(self):
-        # TODO if nothing changes remove this function and only call on_network_change
-        # Diseases should not be displayed on the view?
-        #self.on_network_change()
-        self.push_to_dash()
-        self.simulation_stats.reset_simulation()
-        
-    def show_webviews(self):
-        self.simulation.load_simulation()
-        self.stats_view.load_stats()
         
     def thread_finished(self, worker: QThread):
         worker.quit()
         worker.deleteLater()
+        
+    def ask_if_server_should_restart(self):
+        message = UiWidgetCreator.show_message('Connection to server lost. Do you want to restart the server?', 'Connection lost')
+        result = message.exec_()
+        if result != QtWidgets.QMessageBox.AcceptRole:
+            return
+        self.terminate_server()
+        self.server_process = self.start_server()
+        
+    def start_server(self):
+        if self.is_server_connected:
+            return
+        try:
+            activate_script = os.path.join('venv', 'Scripts' if sys.platform == 'win32' else 'bin', 'activate')
+            activate_command = [activate_script, '&&', 'python', 'test/test_visualization.py']
+
+            creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+
+            process = subprocess.Popen(activate_command, shell=True, executable=os.environ.get('SHELL'), creationflags=creation_flags)
+            self.check_server_connection(is_initial_test=True)
+            return process
+        except Exception:
+            return None
+        
+    def terminate_server(self):
+        print(self.server_process.pid)
+        if self.server_process:
+            os.kill(self.server_process.pid, signal.SIGTERM)
+            #self.server_process.terminate()
+            
+    def closeEvent(self, event):
+        if self.unsaved_changes:
+            if self.ask_to_save():
+                event.ignore()
+                return
+        
+        self.terminate_server()
+        event.accept()
+        
+    def ask_to_save(self):
+        answer = UiWidgetCreator.save_popup('Do you want to save your changes?')
+        if answer == QtWidgets.QMessageBox.Save:
+            self.save_network()
+            return False
+        elif answer == QtWidgets.QMessageBox.No:
+            return False
+        elif answer == QtWidgets.QMessageBox.Cancel:
+            return True

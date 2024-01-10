@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -98,25 +98,38 @@ Generation time 20.5s</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="generate_button">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(Re-)Generate the network image&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true"/>
-                   </property>
-                   <property name="text">
-                    <string>Generate</string>
-                   </property>
-                   <property name="autoDefault">
-                    <bool>false</bool>
-                   </property>
-                   <property name="default">
-                    <bool>false</bool>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
-                   </property>
+                  <widget class="QWidget" name="info_buttons" native="true">
+                   <layout class="QVBoxLayout" name="verticalLayout_21">
+                    <item>
+                     <widget class="QPushButton" name="generate_button">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(Re-)Generate the network image&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <property name="text">
+                       <string>Generate</string>
+                      </property>
+                      <property name="autoDefault">
+                       <bool>false</bool>
+                      </property>
+                      <property name="default">
+                       <bool>false</bool>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="open_in_browser_button">
+                      <property name="text">
+                       <string>Open in browser</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
                   </widget>
                  </item>
                 </layout>
@@ -359,6 +372,12 @@ Generation time 20.5s</string>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="lineWidth">
+              <number>4</number>
+             </property>
+             <property name="midLineWidth">
+              <number>4</number>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
@@ -374,11 +393,6 @@ Generation time 20.5s</string>
                 <height>612</height>
                </rect>
               </property>
-              <layout class="QGridLayout" name="gridLayout_3">
-               <property name="sizeConstraint">
-                <enum>QLayout::SetDefaultConstraint</enum>
-               </property>
-              </layout>
              </widget>
             </widget>
            </item>
@@ -437,6 +451,9 @@ Generation time 20.5s</string>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
              <widget class="QWidget" name="stats_content">
               <property name="geometry">
                <rect>
@@ -446,7 +463,6 @@ Generation time 20.5s</string>
                 <height>510</height>
                </rect>
               </property>
-              <layout class="QGridLayout" name="gridLayout_2"/>
              </widget>
             </widget>
            </item>
