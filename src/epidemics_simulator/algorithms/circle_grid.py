@@ -6,13 +6,13 @@ class CircleGrid:
         return radius * radius * math.pi
 
     def _estimate_points_3D(radius: int):
-        return radius * radius * math.pi * 4
+        return radius**3 * math.pi * 4 / 3
 
     def _calculate_points(radius: int):
         points = []
-        for x in range(-radius, radius + 1):
+        for x in range(-radius, radius + 1):  # 2r
             Y = int((radius * radius - x * x) ** 0.5)
-            for y in range(-Y, Y + 1):
+            for y in range(-Y, Y + 1):  # 0 - 2r - 0
                 points.append([x, y])
         return points
 
@@ -39,7 +39,7 @@ class CircleGrid:
 
     def get_points_3D(amount: int):
         radius = -1
-        for i in range(0, 100):
+        for i in range(0, 800):
             if CircleGrid._estimate_points_3D(i) >= amount:
                 radius = i - 1
                 break
