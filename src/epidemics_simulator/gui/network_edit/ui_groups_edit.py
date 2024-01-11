@@ -118,7 +118,7 @@ class UiGroupEdit:
                 self.group_prop.layout().addRow(label, color_button)
                 continue
             elif key != 'name':
-                regex_validator = '^[0-9]+$'
+                regex_validator = '^(?!10000001$)[0-9]{1,8}$ '# Only allows numbers that are below 10 Million
             line_edit = UiWidgetCreator.create_qline_edit(value, 'group_line_edit_properties', regex_validator=regex_validator)
             line_edits[key] = line_edit
             self.group_prop.layout().addRow(label, line_edit)

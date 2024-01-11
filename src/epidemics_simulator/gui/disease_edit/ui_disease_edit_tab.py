@@ -118,7 +118,7 @@ class UiDiseaseEditTab:
         line_edits: dict = {}
         for key, value in properties.items():
             label = UiWidgetCreator.create_qlabel(key, 'group_propertie_label')
-            regex_validator = '^\d*\.\d+$'
+            regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
             if key == 'name':
                 regex_validator = '.*'
             elif key == 'color':
@@ -127,7 +127,7 @@ class UiDiseaseEditTab:
                 form_widget.layout().addRow(label, color_button)
                 continue
             elif key == 'initial infection count' or key == 'duration':
-                regex_validator = '^[1-9]\d*$'
+                regex_validator = '^(?!10000001$)[0-9]{1,8}$ '# Only allows numbers that are below 10 Million (amount of nodes cant exceed 10 Mil)
             line_edit = UiWidgetCreator.create_qline_edit(value, 'group_line_edit_properties', regex_validator=regex_validator)
             line_edits[key] = line_edit
             form_widget.layout().addRow(label, line_edit)
