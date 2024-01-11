@@ -32,8 +32,9 @@ class GenerateNetwork(QThread):
             if self.restart: # Doing this so after a restart an extra step cant occure
                 self.restart = False   
                 self.current_step = 0
-                self.simulation.init_simulation()
                 self.stop_simulation()
+                self.simulation.init_simulation()
+                
                 self.update_label_signal.emit(self.simulation.stats.group_stats, self.current_step)
             if self.simulation_speed == 0:
                 time.sleep(0.2)
@@ -182,6 +183,8 @@ class UiTextSimulationTab:
             return
         self.worker.decrease_speed()
     def reset_simulation(self):
+        if not self.simuilation_started:
+            self.start_worker()
         self.clear_stats_widgets()
         self.worker.restart_simulation()
         self.main_window.changed_disease = False
@@ -213,8 +216,13 @@ class UiTextSimulationTab:
         self.reset_simulation()
     
     def ask_for_reset(self):
-        if UiWidgetCreator.ask_for_regeneration(self.network, self.main_window.network_edit_tab.group_display.generate_button):
-           return # Did not want to regenerate 
+        if len(self.network.groups) == 0:
+            return
+        msg_box  = UiWidgetCreator.show_message(f'Diseases chagned do you want to restart the simulation?', 'Restart simulation', default_button=0)
+        result = msg_box.exec_()
+        if result != QtWidgets.QMessageBox.AcceptRole:
+            return 
+        self.main_window.network_edit_tab.group_display.generate_button.click()
         self.reset_simulation()
         
     def clear_stats_widgets(self):

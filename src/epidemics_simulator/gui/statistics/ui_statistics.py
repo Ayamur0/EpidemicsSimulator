@@ -12,7 +12,6 @@ from PyQt5.QtGui import QDesktopServices
 class UiStatisticTab:
     def __init__(self, main_window: QtWidgets.QMainWindow):
         self.main_window = main_window
-        
         self.url = f'{self.main_window.server_url}/stats'
                 
         self.open_view_in_browser = self.main_window.open_view_in_browser
@@ -21,6 +20,7 @@ class UiStatisticTab:
         self.tab_widget = self.main_window.stats_view
         
         self.webview = QWebEngineView()
+        self.webview.load(QUrl(self.url))
         self.stat_view_widget.layout().addWidget(self.webview)
         
         
@@ -31,7 +31,6 @@ class UiStatisticTab:
         self.load_webview()
         
     def load_webview(self):
-        self.webview.load(QUrl(self.url))
         self.show_webview()
         
     def hide_webview(self):
@@ -40,7 +39,14 @@ class UiStatisticTab:
     def show_webview(self):
         if not self.main_window.is_server_connected:
             return
-        self.webview.show()
+        try:
+            self.webview.loadFinished.disconnect()
+        except TypeError:
+            pass
+        self.webview.loadFinished.connect(lambda: self.webview.show())
+        self.webview.reload()
+        
+        
         
     def unload(self):
         self.webview.hide()

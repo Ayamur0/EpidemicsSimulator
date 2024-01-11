@@ -12,7 +12,6 @@ from PyQt5.QtGui import QDesktopServices
 class UiSimulationTab:
     def __init__(self, main_window: QtWidgets.QMainWindow):
         self.main_window = main_window
-        
         self.url = f'{self.main_window.server_url}/sim'
                 
         self.open_browser_button = self.main_window.open_browser_button
@@ -20,6 +19,7 @@ class UiSimulationTab:
         self.simulation_view = self.main_window.simulation_view
         self.tab_widget = self.main_window.simulation
         self.webview = QWebEngineView()
+        self.webview.load(QUrl(self.url))
         self.simulation_view.layout().addWidget(self.webview)
         
         
@@ -30,19 +30,20 @@ class UiSimulationTab:
         self.load_webview()
         
     def load_webview(self):
-        if not self.main_window.is_server_connected:
-            return
-        self.webview.load(QUrl(self.url))
         self.show_webview()
         
     def hide_webview(self):
         self.webview.hide()
         
     def show_webview(self):
-        print(self.main_window.is_server_connected)
         if not self.main_window.is_server_connected:
             return
-        self.webview.show()
+        try:
+            self.webview.loadFinished.disconnect()
+        except TypeError:
+            pass
+        self.webview.loadFinished.connect(lambda: self.webview.show())
+        self.webview.reload()
         
     def ask_for_regeneration(self):
         if UiWidgetCreator.ask_for_regeneration(self.main_window.network, self.main_window.network_edit_tab.group_display.generate_button):

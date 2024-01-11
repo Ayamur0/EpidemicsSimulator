@@ -1,19 +1,21 @@
 from functools import partial
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSignal, Qt
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.gui.templates import templates
 
 class UiStartup(QtWidgets.QDialog):
     def __init__(self, parent):
-        super().__init__(parent)
+        super(UiStartup, self).__init__()
+        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setStyleSheet(parent.styleSheet())
         self.parent = parent
         self.resize(300, 600)
         self.setLayout(QtWidgets.QVBoxLayout())
-        
+                
     def launch_startup(self):
         self.add_startup_buttons()
-        
         self.show()
         
     def add_startup_buttons(self):

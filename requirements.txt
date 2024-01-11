@@ -6,3 +6,4 @@ dash
 matplotlib
 pandas
 dash-bootstrap-components
+psutil
