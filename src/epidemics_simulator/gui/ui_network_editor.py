@@ -83,6 +83,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.is_project_loaded = False
         self.server_check_in_progress = False
         self.unsaved_changes = False
+        self.is_asking_for_restart = False
         self.network_changed.connect(self.on_network_change)
         self.disease_changed.connect(self.on_disease_change)
         
@@ -229,7 +230,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
                 return
             if not self.generated_network:
                 self.simulation_tab.ask_for_regeneration()
-        elif index == 2:
+        elif index == 3:
             if len(self.network.groups) == 0:
                 return
             if not self.generated_network:
@@ -295,12 +296,17 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         worker.deleteLater()
         
     def ask_if_server_should_restart(self):
+        if self.is_asking_for_restart:
+            return
+        self.is_asking_for_restart = True
+        
         message = UiWidgetCreator.show_message('Connection to server lost. Do you want to restart the server?', 'Connection lost')
         result = message.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return
         self.terminate_server()
         self.server_process = self.start_server()
+        self.is_asking_for_restart = False
         
     def start_server(self):
         if self.is_server_connected:
