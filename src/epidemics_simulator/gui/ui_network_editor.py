@@ -314,9 +314,11 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.server_check.start()
         
     def connection_established(self):
+        
         self.is_server_connected = True
         self.server_check_in_progress = False
         self.push_to_dash()
+        self.show_webviews()
         
     
         
@@ -337,7 +339,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.server_check = None
         
     def push_finished(self):
-        self.show_webviews()
+        # self.show_webviews()
         if not self.server_push:
             return
         self.server_push.wait()
@@ -437,3 +439,5 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if 'stats' not in data.keys() or 'filename' not in data.keys():
             return
         self.project.stats[data['filename']] = SimStats.from_dict(data["stats"])
+        self.unsaved_changes = True
+        # self.statistics_tab.show_webview()
