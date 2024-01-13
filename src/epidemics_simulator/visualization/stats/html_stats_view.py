@@ -21,7 +21,7 @@ class HTMLStatsView:
         self.use_cumulative_data = False
         self.needs_build = False
         # self.data_dict = self.stats.group_stats["0"].infections
-        self.file_popup = HTMLFilePopup(self.project.stats.keys(), self)
+        self.file_popup = HTMLFilePopup(list(self.project.stats.keys()), self)
         self.content = html.Div(
             [
                 dcc.Graph(
@@ -61,7 +61,7 @@ class HTMLStatsView:
         def check_for_update(_):
             if self.needs_build:
                 self.needs_build = False
-                self.file_popup.files = self.project.stats.keys()
+                self.file_popup.files = list(self.project.stats.keys())
                 return True, self.file_popup.update_files()
             else:
                 raise exceptions.PreventUpdate()

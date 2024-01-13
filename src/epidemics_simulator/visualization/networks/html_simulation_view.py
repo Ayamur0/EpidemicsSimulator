@@ -223,6 +223,12 @@ class HTMLSimulationView(HTMLNetworkView):
             requests.post(
                 "http://localhost:8050/stat-update",
                 json={"filename": name, "stats": self.sim.stats.to_dict()},
+                timeout=0.5,
+            )
+            requests.post(
+                "http://localhost:8050/update-stats",
+                json={"filename": name, "stats": self.sim.stats.to_dict()},
+                timeout=0.5,
             )
             return True
 

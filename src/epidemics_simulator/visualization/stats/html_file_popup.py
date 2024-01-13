@@ -48,17 +48,20 @@ class HTMLFilePopup(dbc.Modal):
                         html.Span(file, className="file-text"),
                     ],
                     className="file-item",
-                    id=f"file-{index}",
+                    id={"index": index, "type": "file-button"},
                 )
             )
 
             @callback(
                 Output(f"file-popup", "is_open"),
-                Input(f"file-{index}", "n_clicks"),
+                Input({"index": ALL, "type": "file-button"}, "n_clicks"),
                 prevent_initial_call=True,
             )
-            def load_file(_, file=file):
-                self.stats_view.load_stats(file)
+            def load_file(_):
+                ind = int(callback_context.triggered_id["index"])
+                print(ind)
+                print(self.files)
+                self.stats_view.load_stats(self.files[ind])
                 return False
 
         return dbc.ModalBody(

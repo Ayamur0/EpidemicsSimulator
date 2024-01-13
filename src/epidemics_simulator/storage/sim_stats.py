@@ -55,6 +55,8 @@ class SimStats:
         return html_el
 
     def _add_log_text(self):
+        if not self.group_stats:
+            return
         step = len(next(iter(self.group_stats.values())).deaths)
         s = f"Step {step}\n"
         for group in self.group_stats:
@@ -79,8 +81,7 @@ class SimStats:
     def from_dict(cls, data):
         instance = cls.__new__(cls)
         instance.group_stats = {
-            group: GroupSimStats.from_dict(stats_data)
-            for group, stats_data in data["group_stats"].items()
+            group: GroupSimStats.from_dict(stats_data) for group, stats_data in data.items()
         }
         instance.log_text_cache = []
         instance._add_full_log_text()
