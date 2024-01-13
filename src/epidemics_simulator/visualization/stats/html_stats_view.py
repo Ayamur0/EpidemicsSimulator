@@ -1,6 +1,7 @@
 import itertools
 from src.epidemics_simulator.visualization.stats.html_sidebar import HTMLSidebar
-from dash import Dash, html, dcc, callback_context
+from dash import Dash, html, dcc, exceptions, callback
+from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
 from src.epidemics_simulator.storage import SimStats
@@ -18,7 +19,9 @@ class HTMLStatsView:
         self.visible_diseases = [None]
         self.data_dict = {}
         self.use_cumulative_data = False
+        self.needs_build = False
         # self.data_dict = self.stats.group_stats["0"].infections
+        self.file_popup = HTMLFilePopup(self.project.stats.keys(), self)
         self.content = html.Div(
             [
                 dcc.Graph(
@@ -29,7 +32,13 @@ class HTMLStatsView:
                     },
                     id="stats-graph",
                 ),
-                HTMLFilePopup(self.project.stats.keys(), self),
+                self.file_popup,
+                dcc.Interval(
+                    id="stats-build-request",
+                    interval=0.5 * 1000,
+                    n_intervals=0,
+                    disabled=False,
+                ),
             ],
             style={
                 "width": "100vw",
@@ -42,6 +51,21 @@ class HTMLStatsView:
         )
         self.layout = html.Div([self.sidebar, self.content])
         self.displayed_data = {}
+
+        @callback(
+            Output("file-popup", "is_open", allow_duplicate=True),
+            Output("file-popup", "children"),
+            Input("stats-build-request", "n_intervals"),
+            prevent_initial_call=True,
+        )
+        def check_for_update(_):
+            if self.needs_build:
+                self.needs_build = False
+                self.file_popup.files = self.project.stats.keys()
+                return True, self.file_popup.update_files()
+            else:
+                raise exceptions.PreventUpdate()
+
         # print(self.get_data("cures", None, None))
 
     def print(self):
@@ -92,24 +116,24 @@ class HTMLStatsView:
     def get_data(self, data, group=None, disease=None):
         if group:
             if disease and ("infections" in data or "cures" in data):
-                return self.stats.group_stats[group].to_json()[data][disease]
+                return self.stats.group_stats[group].to_dict()[data][disease]
             elif not disease and ("infections" in data or "cures" in data):
                 return [
-                    sum(x) for x in zip(*self.stats.group_stats[group].to_json()[data].values())
+                    sum(x) for x in zip(*self.stats.group_stats[group].to_dict()[data].values())
                 ]
             else:
-                return self.stats.group_stats[group].to_json()[data]
+                return self.stats.group_stats[group].to_dict()[data]
         else:
             if disease and ("infections" in data or "cures" in data):
-                arrs = [y.to_json()[data][disease] for y in self.stats.group_stats.values()]
+                arrs = [y.to_dict()[data][disease] for y in self.stats.group_stats.values()]
                 return [sum(x) for x in zip(*arrs)]
             elif not disease and ("infections" in data or "cures" in data):
                 arrs = []
-                for x in (y.to_json()[data].values() for y in self.stats.group_stats.values()):
+                for x in (y.to_dict()[data].values() for y in self.stats.group_stats.values()):
                     arrs.extend([*x])
                 return [sum(x) for x in zip(*arrs)]
             else:
-                arrs = [y.to_json()[data] for y in self.stats.group_stats.values()]
+                arrs = [y.to_dict()[data] for y in self.stats.group_stats.values()]
                 return [sum(x) for x in zip(*arrs)]
 
     def add_data(self, data):

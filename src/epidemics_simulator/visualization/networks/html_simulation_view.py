@@ -1,3 +1,4 @@
+import requests
 from .html_network_view import HTMLNetworkView
 from dash import Dash, html, dcc, callback_context, MATCH, ALL, callback
 from dash.dependencies import Input, Output, State
@@ -219,7 +220,11 @@ class HTMLSimulationView(HTMLNetworkView):
                 name = datetime.now()
             print(name)
             self.project.stats[name] = self.sim.stats
-            self.sim.stats.to_json()
+            requests.post(
+                "http://localhost:8050/stat-update",
+                json={"filname": name, "stats": self.sim.stats.to_dict()},
+            )
+            return True
 
         self.save_popup.register_confirm_callback_with_state(
             Output(self.id_factory("save-toast"), "is_open"),

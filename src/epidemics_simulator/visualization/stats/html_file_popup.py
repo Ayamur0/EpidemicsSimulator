@@ -13,6 +13,9 @@ class HTMLFilePopup(dbc.Modal):
         self.keyboard = False
         self.backdrop = "static"
         self.is_open = True
+        self.update_files()
+
+    def update_files(self):
         self.children = [
             dbc.ModalHeader(
                 dbc.ModalTitle("Pick a stat file to display"),
@@ -24,6 +27,7 @@ class HTMLFilePopup(dbc.Modal):
                 style={"background-color": "#353535", "color": "azure", "border-color": "#353535"},
             ),
         ]
+        return self.children
 
     def _create_modal_body(self):
         if not self.files:

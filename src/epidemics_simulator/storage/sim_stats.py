@@ -72,12 +72,26 @@ class SimStats:
                 s += "\n"
             self.log_text_cache.append(s)
 
-    def to_json(self):
-        with open("test.json", "w", encoding="utf-8") as f:
+    def to_dict(self):
+        return {group: stats.to_dict() for group, stats in self.group_stats.items()}
+
+    @classmethod
+    def from_dict(cls, data):
+        instance = cls.__new__(cls)
+        instance.group_stats = {
+            group: GroupSimStats.from_dict(stats_data)
+            for group, stats_data in data["group_stats"].items()
+        }
+        instance.log_text_cache = []
+        instance._add_full_log_text()
+        return instance
+
+    def to_json(self, filename):
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(
                 {
                     "group_stats": {
-                        group: stats.to_json() for group, stats in self.group_stats.items()
+                        group: stats.to_dict() for group, stats in self.group_stats.items()
                     }
                 },
                 f,
@@ -87,12 +101,12 @@ class SimStats:
         return
 
     @classmethod
-    def from_json(cls, data):
-        with open("test.json", "r", encoding="utf-8") as f:
+    def from_json(cls, filename):
+        with open(filename, "r", encoding="utf-8") as f:
             data = json.load(f)
         instance = cls.__new__(cls)
         instance.group_stats = {
-            group: GroupSimStats.from_json(stats_data)
+            group: GroupSimStats.from_dict(stats_data)
             for group, stats_data in data["group_stats"].items()
         }
         instance.log_text_cache = []
@@ -205,7 +219,7 @@ class GroupSimStats:
     def add_cure(self, disease_id):
         self.cures[disease_id][-1] += 1
 
-    def to_json(self):
+    def to_dict(self):
         return {
             "name": self.name,
             "size": self.size,
@@ -221,7 +235,7 @@ class GroupSimStats:
         }
 
     @classmethod
-    def from_json(cls, data):
+    def from_dict(cls, data):
         instance = cls.__new__(cls)
         instance.name = data["name"]
         instance.size = data["size"]

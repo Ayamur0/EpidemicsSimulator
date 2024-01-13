@@ -64,6 +64,7 @@ class DashServer:
                 sim_view.reset()
                 sim_view.needs_build = True
                 stats_view.project = project
+                stats_view.needs_build = True
                 stats_view.reset()
                 return make_response(jsonify({"status": "OK"}), 200)
             except Exception as e:

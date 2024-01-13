@@ -14,7 +14,7 @@ class Disease:
         initial_infection_count: int = 10,
     ) -> None:
         self.name = name
-        self.id = Disease.id_counter
+        self.id = str(Disease.id_counter)
         Disease.id_counter += 1
         self.color = color
         self.fatality_rate = fatality_rate
@@ -57,12 +57,10 @@ class Disease:
             Disease.id_counter = instance.id + 1
         return instance
 
-
     def get_properties_dict(self):
         original_dict = self.to_dict()
-        del original_dict['id']
+        del original_dict["id"]
         return {key.replace("_", " "): value for key, value in original_dict.items()}
-        
 
     def get_values_from_dict(value_dict: dict):
         name = str(value_dict.get("name"))
@@ -75,18 +73,29 @@ class Disease:
         duration = int(value_dict.get("duration"))
         initial_infection_count = int(value_dict.get("initial infection count"))
 
-        return name, color, fatality_rate, vaccinated_fatality_rate, infection_rate, reinfection_rate, vaccinated_infection_rate, duration, initial_infection_count
+        return (
+            name,
+            color,
+            fatality_rate,
+            vaccinated_fatality_rate,
+            infection_rate,
+            reinfection_rate,
+            vaccinated_infection_rate,
+            duration,
+            initial_infection_count,
+        )
 
     def set_from_dict(self, value_dict: dict):
         (
-            name, color, 
-            fatality_rate, 
-            vaccinated_fatality_rate, 
-            infection_rate, 
-            reinfection_rate, 
-            vaccinated_infection_rate, 
-            duration, 
-            initial_infection_count
+            name,
+            color,
+            fatality_rate,
+            vaccinated_fatality_rate,
+            infection_rate,
+            reinfection_rate,
+            vaccinated_infection_rate,
+            duration,
+            initial_infection_count,
         ) = Disease.get_values_from_dict(value_dict)
         self.name = name
         self.color = color
@@ -100,21 +109,24 @@ class Disease:
 
     def init_from_dict(value_dict):
         (
-            name, color, 
-            fatality_rate, 
-            vaccinated_fatality_rate, 
-            infection_rate, 
-            reinfection_rate, 
-            vaccinated_infection_rate, 
-            duration, 
-            initial_infection_count
+            name,
+            color,
+            fatality_rate,
+            vaccinated_fatality_rate,
+            infection_rate,
+            reinfection_rate,
+            vaccinated_infection_rate,
+            duration,
+            initial_infection_count,
         ) = Disease.get_values_from_dict(value_dict)
-        return Disease(name=name, 
-                       color=color, 
-                       fatality_rate=fatality_rate, 
-                       vaccinated_fatality_rate=vaccinated_fatality_rate, 
-                       infection_rate=infection_rate, 
-                       reinfection_rate=reinfection_rate, 
-                       vaccinated_infection_rate=vaccinated_infection_rate,
-                       duration=duration,
-                       initial_infection_count=initial_infection_count)
+        return Disease(
+            name=name,
+            color=color,
+            fatality_rate=fatality_rate,
+            vaccinated_fatality_rate=vaccinated_fatality_rate,
+            infection_rate=infection_rate,
+            reinfection_rate=reinfection_rate,
+            vaccinated_infection_rate=vaccinated_infection_rate,
+            duration=duration,
+            initial_infection_count=initial_infection_count,
+        )
