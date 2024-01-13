@@ -187,7 +187,6 @@ class HTMLNetworkView:
         def check_for_update(_):
             if self.needs_build:
                 self.needs_build = False
-                self.graph.build()
                 return self.graph.fig, self.sidebar.group_divs
             else:
                 raise exceptions.PreventUpdate()

@@ -8,7 +8,6 @@ from dash.dependencies import Input, Output, State
 from dash import Dash, html, dcc, callback
 import dash_bootstrap_components as dbc
 import os
-import json
 
 
 class DashServer:
@@ -60,13 +59,14 @@ class DashServer:
                 project.network.build()
                 graph.update_network(project.network)
                 html_view.reset()
-                html_view.needs_build = True
                 sim_view.project = project
                 sim_view.reset()
-                sim_view.needs_build = True
                 stats_view.project = project
-                stats_view.needs_build = True
                 stats_view.reset()
+                graph.build()
+                html_view.needs_build = True
+                sim_view.needs_build = True
+                stats_view.needs_build = True
                 return make_response(jsonify({"status": "OK"}), 200)
             except Exception as e:
                 return make_response(jsonify({"status": {str(e)}}), 400)

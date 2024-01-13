@@ -213,4 +213,5 @@ class Graph3D:
         lgd = self.legend.status_legend if self.show_status_colors else self.legend.group_legend
         data = [trace1, trace2, *lgd]
         self.fig = go.Figure(data=data, layout=layout)
+        self.fig.update_layout(title_x=0.5)
         self.fig["layout"]["uirevision"] = "0"

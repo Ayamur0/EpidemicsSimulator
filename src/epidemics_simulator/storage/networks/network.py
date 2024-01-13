@@ -5,7 +5,7 @@ class Network:
     def __init__(self) -> None:
         from src.epidemics_simulator.network_builder import NetworkBuilder
 
-        self.name = "TODO SET NAME"  # TODO set name from UI
+        self.name = "Network"
         self.group_id_counter: int = 0
         self.diseases = []
         self.groups = []
@@ -76,7 +76,7 @@ class Network:
         from src.epidemics_simulator.storage import Disease, NodeGroup
 
         instance = cls()
-        instance.name = data.get("name", "TODO SET NAME")
+        instance.name = data.get("name", "Name")
         instance.group_id_counter = data.get("group_id_counter", 0)
         diseases = data.get("diseases", [])
         instance.diseases = [Disease.from_dict(disease) for disease in diseases]
