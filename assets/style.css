@@ -296,4 +296,7 @@ li.open .fa-chevron-right {
 .file-text {
     font-size: 1.2rem;
     margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
 }
