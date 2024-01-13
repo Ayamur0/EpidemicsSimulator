@@ -19,7 +19,7 @@ if __name__ == "__main__":
     n.groups[0].add_external_connection("1", 5, 0)
     n.build()
     p = Project()
-    p.stats["test"] = SimStats.from_json([])
+    p.stats["test"] = SimStats.from_json("test.json")
     p.network = n
     # p.save_to_file()
     # p = Project.load_from_file("project.json")
