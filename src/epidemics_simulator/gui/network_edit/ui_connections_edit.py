@@ -10,6 +10,8 @@ class UiConnectionEdit:
         self.main_window = main_window
         
         self.save_connection_prop_button = self.main_window.save_connections_btn
+        self.save_connection_prop_button.setText(None)
+        self.save_connection_prop_button.setIcon(self.main_window.save_icon)
         
         self.connection_list = self.main_window.connection_list_content
         self.connection_prop = self.main_window.connection_properties_content

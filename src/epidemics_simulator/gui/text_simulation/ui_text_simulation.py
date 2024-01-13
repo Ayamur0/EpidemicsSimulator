@@ -78,9 +78,21 @@ class UiTextSimulationTab:
         self.main_window = main_window
                 
         self.start_stop_button = self.main_window.start_stop_button
+        self.start_stop_button.setText(None)
+        self.start_stop_button.setIcon(self.main_window.start_icon)
         self.increase_button = self.main_window.increase_button
+        self.increase_button.setText(None)
+        self.increase_button.setIcon(self.main_window.forward_icon)
         self.decrease_button = self.main_window.decrease_button
+        self.decrease_button.setText(None)
+        self.decrease_button.setIcon(self.main_window.rewind_icon)
         self.reset_button = self.main_window.reset_button
+        self.reset_button.setText(None)
+        self.reset_button.setIcon(self.main_window.restart_icon)
+        self.save_button = self.main_window.save_button
+        self.save_button.setText(None)
+        self.save_button.setIcon(self.main_window.save_icon)
+        
         self.tab_widget = self.main_window.simulation_stats
         
         self.start_stop_button.clicked.connect(lambda: self.start_stop_simulation())
@@ -153,9 +165,11 @@ class UiTextSimulationTab:
         else:
             self.speed_label.setText(f'Simulation speed: {simulation_speed}')
         if simulation_speed == 0:
-            self.start_stop_button.setText('Start')
+            self.start_stop_button.setIcon(self.main_window.start_icon)
+            #self.start_stop_button.setText('Start')
         else:
-            self.start_stop_button.setText('Stop')
+            self.start_stop_button.setIcon(self.main_window.stop_icon)
+            #self.start_stop_button.setText('Stop')
             
     def log_text_to_json(self, log_text: str):
         stat = {}
@@ -212,7 +226,9 @@ class UiTextSimulationTab:
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return 
-        self.main_window.network_edit_tab.group_display.generate_button.click()
+        
+        self.main_window.network_edit_tab.group_display.start_generating(self.network, generate_local=True)
+        #self.main_window.network_edit_tab.group_display.generate_button.click()
         self.reset_simulation()
     
     def ask_for_reset(self):
@@ -222,7 +238,8 @@ class UiTextSimulationTab:
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return 
-        self.main_window.network_edit_tab.group_display.generate_button.click()
+        self.main_window.network_edit_tab.group_display.start_generating(self.network, generate_local=True)
+        # self.main_window.network_edit_tab.group_display.generate_button.click()
         self.reset_simulation()
         
     def clear_stats_widgets(self):

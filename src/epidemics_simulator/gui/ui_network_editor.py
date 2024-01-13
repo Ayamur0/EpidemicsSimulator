@@ -7,11 +7,12 @@ import sys
 import time
 
 import requests
-from PyQt5.QtCore import QThreadPool, QRunnable, QThread
+from PyQt5.QtCore import QThreadPool, QRunnable, QThread, Qt, QSize
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.gui.ui_startup import UiStartup
 from src.epidemics_simulator.storage import Network, Project
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QIcon, QColor, QPixmap
 from src.epidemics_simulator.gui.templates import templates
 from PyQt5 import QtWidgets, uic
 from storage import Network
@@ -20,6 +21,8 @@ from src.epidemics_simulator.gui.disease_edit.ui_disease_edit_tab import UiDisea
 from src.epidemics_simulator.gui.simulation.ui_simulation import UiSimulationTab
 from src.epidemics_simulator.gui.statistics.ui_statistics import UiStatisticTab
 from src.epidemics_simulator.gui.text_simulation.ui_text_simulation import UiTextSimulationTab
+from src.epidemics_simulator.storage.sim_stats import SimStats
+from src.epidemics_simulator.gui.listen_server import WebServer
 import psutil
 class PushData(QThread):
     no_response_signal = pyqtSignal()
@@ -31,8 +34,6 @@ class PushData(QThread):
 
     def run(self):
         try:
-            # Make the POST request
-            test = self.project.to_dict()
             response = requests.post(self.url, json=self.project.to_dict())
 
             # Check the response
@@ -72,6 +73,7 @@ class CheckConnection(QThread):
 class UiNetworkEditor(QtWidgets.QMainWindow):
     network_changed = pyqtSignal() # TODO connect emit
     disease_changed = pyqtSignal() # TODO connect emit
+    icon_themes = {'Dark': QColor(Qt.white), 'Light': QColor(Qt.black)}
     def __init__(self):
         super(UiNetworkEditor, self).__init__()
         self.server_process = None
@@ -84,8 +86,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.server_check_in_progress = False
         self.unsaved_changes = False
         self.is_asking_for_restart = False
+        self.server_push = None
         self.network_changed.connect(self.on_network_change)
         self.disease_changed.connect(self.on_disease_change)
+        self.listen_server = WebServer()
+        self.listen_server.signal_update_received.connect(self.stats_update)
+        self.listen_server.start_server()
+        self.init_icons()
         
         self.server_process  = self.start_server()
         uic.loadUi("qt/NetworkEdit/main.ui", self)
@@ -93,7 +100,6 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             self.themes = json.load(fp)
         with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
             self.stylesheet = fp.read()
-        self.change_theme('Dark')
         self.fill_theme(self.themes)
 
         self.connect_menu_actions()
@@ -105,7 +111,20 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.simulation_tab = UiSimulationTab(self)
         self.text_simulation_tab = UiTextSimulationTab(self)
         self.statistics_tab = UiStatisticTab(self)
+        self.change_theme('Dark')
         self.startup.launch_startup()
+        
+    def init_icons(self):
+        self.add_icon = QIcon('assets/add.png')
+        self.save_icon = QIcon('assets/save.png')
+        self.duplicate_icon = QIcon('assets/duplicate.png')
+        self.remove_icon = QIcon('assets/delete.png')
+        
+        self.start_icon = QIcon('assets/play.png')
+        self.stop_icon = QIcon('assets/pause.png')
+        self.forward_icon = QIcon('assets/forward.png')
+        self.rewind_icon = QIcon('assets/rewind.png')
+        self.restart_icon = QIcon('assets/restart.png')
 
     def launch(self):
         self.network = self.project.network
@@ -159,12 +178,30 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             action.triggered.connect(partial(self.change_theme, key))
             menu.addAction(action)
             
-    def change_theme(self, new_Theme):
+    def change_theme(self, new_theme):
         new_style = self.stylesheet
-        for key, value in self.themes[new_Theme].items():
+        for key, value in self.themes[new_theme].items():
             new_style = new_style.replace(key, value)
         self.setStyleSheet(new_style)
+        if new_theme == 'Dark':
+            old_theme = 'Light'
+        else:
+            old_theme = 'Dark'
+        self.add_icon = self.button_change(self.add_icon, old_theme, new_theme)
+        self.duplicate_icon = self.button_change(self.duplicate_icon, old_theme, new_theme)
+        self.remove_icon = self.button_change(self.remove_icon, old_theme, new_theme)
+        self.save_icon = self.button_change(self.save_icon, old_theme, new_theme)
         
+        self.start_icon = self.button_change(self.start_icon, old_theme, new_theme)
+        self.stop_icon = self.button_change(self.stop_icon, old_theme, new_theme)
+        self.forward_icon = self.button_change(self.forward_icon, old_theme, new_theme)
+        self.rewind_icon = self.button_change(self.rewind_icon, old_theme, new_theme)
+        self.restart_icon = self.button_change(self.restart_icon, old_theme, new_theme)
+                
+        self.change_all_button_icons(UiNetworkEditor.icon_themes[old_theme], UiNetworkEditor.icon_themes[new_theme])
+        
+    def button_change(self, icon: QIcon, old_theme: str, new_theme: str) -> QIcon:
+        return QIcon(self.change_icon_color(icon, UiNetworkEditor.icon_themes[old_theme], UiNetworkEditor.icon_themes[new_theme]))
         
     def new_network(self, parent, template_id=None):
         if self.is_project_loaded and self.unsaved_changes:
@@ -239,6 +276,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
                 self.text_simulation_tab.ask_for_reset()
         elif index == 4:
             pass
+            #self.statistics_tab.show_webview()
     
     def hide_webviews(self):
         self.network_edit_tab.group_display.hide_webview()
@@ -254,13 +292,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         ## TODO do i want to reset the text simulation?
         self.generated_network = False
         self.unsaved_changes = True
-        self.push_to_dash()
+        #self.push_to_dash()
         print('Network Changed')
         
     def on_disease_change(self):
         self.changed_disease = True
         self.unsaved_changes = True
-        self.push_to_dash()
+        #self.push_to_dash()
         print('Disease Changed')
         
     def check_server_connection(self, is_initial_test=False):
@@ -272,14 +310,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.server_check_in_progress = True
         self.server_check = CheckConnection(self.server_url)
         self.server_check.connection_established.connect(self.connection_established)
-        self.server_check.finished.connect(self.thread_finished)
+        self.server_check.finished.connect(self.server_check_finished)
         self.server_check.start()
         
     def connection_established(self):
         self.is_server_connected = True
         self.server_check_in_progress = False
         self.push_to_dash()
-        self.show_webviews()
         
     
         
@@ -288,12 +325,25 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             return
         self.server_push = PushData(self.project, self.server_url)
         self.server_push.no_response_signal.connect(self.check_server_connection)
-        self.server_push.finished.connect(self.thread_finished)
+        self.server_push.finished.connect(self.push_finished)
         self.server_push.start()
 
-    def thread_finished(self, worker: QThread):
-        worker.quit()
-        worker.deleteLater()
+    def server_check_finished(self):
+        if not self.server_check:
+            return
+        self.server_check.wait()
+        self.server_check.quit()
+        self.server_check.deleteLater()
+        self.server_check = None
+        
+    def push_finished(self):
+        self.show_webviews()
+        if not self.server_push:
+            return
+        self.server_push.wait()
+        self.server_push.quit()
+        self.server_push.deleteLater()
+        self.server_push = None
         
     def ask_if_server_should_restart(self):
         if self.is_asking_for_restart:
@@ -321,7 +371,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             pass
         try:
             activate_script = os.path.join('venv', 'Scripts' if sys.platform == 'win32' else 'bin', 'activate')
-            activate_command = [activate_script, '&&', 'python', 'test/test_visualization.py']
+            activate_command = [activate_script, '&&', 'python', 'src\epidemics_simulator\launch_webview.py']
 
             creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 
@@ -334,7 +384,10 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
       
     def kill(self, proc_pid):
         # Source: https://stackoverflow.com/a/25134985
-        process = psutil.Process(proc_pid)
+        try:
+            process = psutil.Process(proc_pid)#
+        except psutil.NoSuchProcess:
+            return    
         for proc in process.children(recursive=True):
             proc.kill()
         process.kill()
@@ -349,6 +402,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
                 event.ignore()
                 return
         self.terminate_server()
+        self.listen_server.stop()
+        self.listen_server.deleteLater()
         event.accept()
         
     def ask_to_save(self):
@@ -360,3 +415,25 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             return False
         elif answer == QtWidgets.QMessageBox.Cancel:
             return True
+        
+    def change_icon_color(self, icon: QIcon, original_color: QColor, new_color: QColor):
+        pixel_map = icon.pixmap(QSize(512, 152))
+        image = pixel_map.toImage()
+        for x in range(image.width()):
+            for y in range(image.height()):
+                if image.pixelColor(x, y) == original_color:
+                    image.setPixelColor(x, y, new_color)
+        return QPixmap.fromImage(image)
+    
+    def change_all_button_icons(self, old_color: QColor, new_color: QColor):
+        for button in self.findChildren(QtWidgets.QPushButton):
+            button_icon = button.icon()
+            if button_icon.isNull():
+                continue
+            new_icon = QIcon(self.change_icon_color(button_icon, old_color, new_color))
+            button.setIcon(new_icon)
+            
+    def stats_update(self, data):
+        if 'stats' not in data.keys() or 'filename' not in data.keys():
+            return
+        self.project.stats[data['filename']] = SimStats.from_dict(data["stats"])

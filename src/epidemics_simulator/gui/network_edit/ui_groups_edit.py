@@ -4,7 +4,7 @@ from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.storage import Network, NodeGroup, Project
 from functools import partial
 from PyQt5.QtCore import Qt
-
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 class UiGroupEdit:
     def __init__(self, main_window: QtWidgets.QMainWindow, connection_edit):
         self.main_window = main_window
@@ -23,9 +23,13 @@ class UiGroupEdit:
         self.group_buttons: dict = {}
         
         self.is_creating_group = False
-        
+    
+                
+        self.new_group_button.setText(None)
+        self.save_group_prop_button.setText(None)
+        self.new_group_button.setIcon(self.main_window.add_icon)
+        self.save_group_prop_button.setIcon(self.main_window.save_icon)
 
-        
     def init_ui(self, network: Network):
         self.network = network
         self.save_group_prop_button.hide()
@@ -40,8 +44,11 @@ class UiGroupEdit:
         layout_widget = UiWidgetCreator.create_qwidget('group_select', QtWidgets.QHBoxLayout)
         
         checkbox = UiWidgetCreator.create_qcheckbox('group_activity_checkbox', group.active)
-        duplicate_button = UiWidgetCreator.create_qpush_button('Duplicate', 'duplicate_group_button')
-        remove_button = UiWidgetCreator.create_qpush_button('Delete', 'delete_group_button')
+        duplicate_button = UiWidgetCreator.create_qpush_button(None, 'duplicate_group_button')
+        duplicate_button.setIcon(self.main_window.duplicate_icon)
+        
+        remove_button = UiWidgetCreator.create_qpush_button(None, 'delete_group_button')
+        remove_button.setIcon(self.main_window.remove_icon)
         group_button = UiWidgetCreator.create_qpush_button(group.name, 'group_select_button', is_checkable=True)
         
         checkbox.stateChanged.connect(partial(self.set_group_activity, checkbox, group))
@@ -189,3 +196,10 @@ class UiGroupEdit:
         self.main_window.deselect_other_buttons('None', self.group_buttons)
         self.unload_group_list()
         self.unload_group_properties()
+        
+    def change_icon_theme(self, new_theme):
+        for button in self.group_list.findChildren(QtWidgets.QPushButton):
+            icon = button.icon()
+            if icon.isNull():
+                continue
+            

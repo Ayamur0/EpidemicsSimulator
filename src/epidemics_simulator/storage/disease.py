@@ -68,7 +68,7 @@ class Disease:
         fatality_rate = float(value_dict.get("fatality rate"))
         vaccinated_fatality_rate = float(value_dict.get("vaccinated fatality rate"))
         infection_rate = float(value_dict.get("infection rate"))
-        reinfection_rate = str(value_dict.get("reinfection rate"))
+        reinfection_rate = float(value_dict.get("reinfection rate"))
         vaccinated_infection_rate = float(value_dict.get("vaccinated infection rate"))
         duration = int(value_dict.get("duration"))
         initial_infection_count = int(value_dict.get("initial infection count"))

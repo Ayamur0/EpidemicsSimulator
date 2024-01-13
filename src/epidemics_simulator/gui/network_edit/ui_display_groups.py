@@ -52,19 +52,25 @@ class UiDisplayGroup:
         self.generate_button.clicked.connect(partial(self.start_generating, self.network))
             
         
-    def start_generating(self, network: Network):
-        self.generate_thread = GenerateNetwork(network)
-        self.generate_thread.finished.connect(lambda: self.generating_finished())
-        self.start_time = time.time()
-        self.generate_thread.start() 
+    def start_generating(self, network: Network, generate_local: bool = False):
+        self.main_window.push_to_dash()
+        self.main_window.server_push.finished.connect(self.generating_finished)
         self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
+        self.start_time = time.time()
+        if generate_local:
+            self.generate_thread = GenerateNetwork(network)
+            self.generate_thread.finished.connect(lambda: self.generating_finished())
+            self.generate_thread.start() 
         self.popup.exec_()
         
     def generating_finished(self):
         generation_time = time.time() - self.start_time
         self.refresh_info_label(self.network, generation_time)
-        self.main_window.push_to_dash()
-        self.main_window.server_push.wait()
+        if self.main_window.server_push:
+            try:
+                self.main_window.server_push.wait()
+            except RuntimeError:
+                pass
         self.main_window.generated_network = True
         self.generated_once = True
         print('Finished Generating')

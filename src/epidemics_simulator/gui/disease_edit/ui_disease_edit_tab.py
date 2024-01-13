@@ -54,7 +54,8 @@ class UiDiseaseEditTab:
         
         input_widget.layout().addWidget(form_layout)
         
-        add_disease_button = UiWidgetCreator.create_qpush_button('+', 'add_disease_button')
+        add_disease_button = UiWidgetCreator.create_qpush_button(None, 'add_disease_button')
+        add_disease_button.setIcon(self.main_window.add_icon)
         add_disease_button.clicked.connect(lambda: self.add_disease())
         input_widget.layout().addWidget(add_disease_button)
         #input_widget.setFixedSize(*self.min_frame_size)
@@ -86,26 +87,21 @@ class UiDiseaseEditTab:
         
         button_widget = self.create_input_buttons(line_edits, disease, form_widget)
         frame.layout().addWidget(button_widget, alignment=Qt.AlignBottom)
-        # TODO That way it is no longer so streched out but i dont like this approach
-        #for row in range(self.disease_content.layout().rowCount()):
-        #    for col in range(self.disease_content.layout().columnCount()):
-        #        item = self.disease_content.layout().itemAtPosition(row, col)
-        #        if not item:
-        #            continue
-        #        self.disease_content.layout().setColumnStretch(col, 0)
-        #        item.setAlignment(Qt.AlignLeft)
-   
+  
         
         
     def create_input_buttons(self, line_edits, disease, form_widget):
         layout_widget = UiWidgetCreator.create_qwidget('handle_input_layout', QtWidgets.QHBoxLayout)
-        save_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button('Save', 'add_disease_button')
+        save_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'add_disease_button')
+        save_button.setIcon(self.main_window.save_icon)
         save_button.clicked.connect(partial(self.save_disease, disease, line_edits, form_widget))
         layout_widget.layout().addWidget(save_button)
         
         if disease:
-            duplicate_button = UiWidgetCreator.create_qpush_button('Duplicate', 'dup_disease_button')
-            delete_button = UiWidgetCreator.create_qpush_button('Delete', 'del_disease_button')
+            duplicate_button = UiWidgetCreator.create_qpush_button(None, 'dup_disease_button')
+            duplicate_button.setIcon(self.main_window.duplicate_icon)
+            delete_button = UiWidgetCreator.create_qpush_button(None, 'del_disease_button')
+            delete_button.setIcon(self.main_window.remove_icon)
             
             duplicate_button.clicked.connect(partial(self.duplicate_disease, disease))
             delete_button.clicked.connect(partial(self.delete_disease, disease))
