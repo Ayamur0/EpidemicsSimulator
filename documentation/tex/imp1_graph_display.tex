@@ -1,0 +1,180 @@
+Originally it was intended to display the networks in 2D with a 3D representation only being considered a nice to have feature. Upon testing we found that a 2D representation does not offer a clear view of the network. Even for relatively small networks (\~200 nodes) the 2D representation was very confusing. For this reason the 2D representation was scrapped and only the 3D one was implemented. In 3D even networks with thousands of nodes offer a clear view of the different groups and nodes.
+%TODO add picture ref
+
+\newline
+The python package plotly \cite{plotly} is used to display the networks in 3D. \texttt{plotly.graph\_objs} offers the \texttt{Scatter3d} function which is used to draw both the nodes and edges. For the nodes the function takes in three lists of coordinates, one for each axis x, y and z. For the edges it also requires these three lists but here the first coordinate is the start point for a edge and the second the end point, after that a None entry must follow and then the next edge coordinates. Currently the only information that is generated for graphs is the amount of nodes in each group and lists of which node ids must be connected with edges. This information must be translated into coordinates for plotly to be able to display the network.
+
+\subsection{Displaying the nodes}
+\label{sub:displayNodes}
+All nodes that belong to the same group should be arranged in a sphere. Each sphere thus represents one group and the spheres must have enough space between them so it is easy to differentiate the groups as seen in figure %TODO ref .
+%  TODO insert example image
+
+To spread out the spheres in the coordinate system it is first divided into cubes. Let $n_{max}$ be the amount of nodes in the biggest group. Then to determine the side-length $s$ of the cubes it is necessary to know the radius $r$ of the smallest sphere that can fit $n_{max}$ nodes.
+
+\subsubsection{Creating a sphere}
+The nodes are only placed at coordinates $x,y,z \in \mathbb{N}$. To create a sphere that can fit $n_{max}$ nodes the radius needs to be known before calculating the exact coordinates. The problem with this is the only way to get the exact radius for a sphere that can fit $n_{max}$ nodes that all are at at coordinates $x,y,z \in \mathbb{N}$ is using the algorithm depicted in \ref{alg:exact_radius}.
+\begin{algorithm}
+\caption{Calculating exact radius}
+\label{alg:exact_radius}
+\begin{algorithmic}
+\Require {$(n_{max})$}
+\Ensure {$r$}
+\State $r \gets 0$
+\State $n \gets 0$
+\While{$n < n_{max}$}
+    \State $r \gets r+1$
+    \State coords $\gets$ calculate coordinates for all nodes in sphere with radius $r$
+    \State $n \gets $ length of coords
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+This algorithm is inefficient as it calculates all spheres until $r$ is big enough. This can be improved by estimating the amount of nodes in a sphere with radius $r$ instead of calculating the exact amount. The amount of nodes is estimated using formula \ref{eq:sphere_lattice}.
+\begin{equation}
+\label{eq:sphere_lattice}
+    \dfrac{4 \cdot \pi \cdot r^3}{3}
+\end{equation}
+This estimation incurs an error. \ref{eq:gauss_error} shows best currently known formula for calculating this error which discovered and proven by Zheng \cite{gaussSphereProblem}.
+\begin{equation}
+\label{eq:gauss_error}
+    \sum_{\substack{x \in z^3 \\ |x| \leq r}}{P(x)} = O_{\epsilon, P}(r^{v + 84 / 63 + \epsilon})
+\end{equation}
+The true error bound is suspected to be $O_\epsilon(R^{1 + \epsilon})$ but this is currently not possible to prove. For the context of this work the simpler estimation shown in formula \ref{eq:gauss_error_rough} is sufficient.
+\begin{equation}
+\label{eq:gauss_error_rough}
+    O_{\epsilon}(r^{21/16 + \epsilon})
+\end{equation}
+
+Let $r_e$ be the resulting radius required for $n_{max}$ nodes using the estimation. If $n_{max}$ is close to the boundary between two radii then the incurred error might make the resulting radius too big or too small. For this reason the resulting radius will be decremented by one and the exact calculation is then used to find the correct required radius as shown in algorithm \ref{alg:exact_radius_improved}. This will always find the smallest radius for s sphere containing at least $n_{max}$ points.
+
+\begin{algorithm}
+\caption{Calculating exact radius}
+\label{alg:exact_radius_improved}
+\begin{algorithmic}
+\Require {$(n_{max})$}
+\Ensure {$r$}
+\State $r \gets 0$
+\State $n \gets 0$
+\While{$n < n_{max}$}
+    \State $r \gets r + 1$
+    \State $n \gets$ estimate amount of nodes in sphere with radius $r$
+\EndWhile
+\State $ r \gets r - 1$
+\While{len(coords) $ < n_{max}$}
+    \State coords $\gets$ calculate exact coords of nodes for radius $r$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+Formula \ref{eq:sphere_inequality} represents the inequality for points within or on the surface of a sphere centered at the origin in three-dimensional space as proven by Gui and Moradifam \cite{sphereInequality}. A point is inside the sphere if this inequality is fulfilled.
+\begin{equation}
+\label{eq:sphere_inequality}
+    x^2 + y^2 + z^2 \leq r^2
+\end{equation}
+This means the bigger one of the values $x,y,z$ gets the smaller the other need to be to fulfill the inequality. Using this knowledge it is possible to construct an algorithm (shown in \ref{alg:calc_sphere_points}) that efficiently calculates all triples of $x,y,z$ values that fulfill the inequality. The order of $z,x,y$ in the algorithm is important, so half full sphere create points that fill the sphere from the bottom to the top.
+Starting with $z$ and $y=0$ transforming the formula to $x$ results in $|x| \leq \sqrt{(r^2 - z^2)}$ which corresponds to all possible values for $x$ in respect to $z$ and $r$. This range corresponds to $-a,a$ in the algorithm. Solving by $y$ then results in $|y| \leq \sqrt{(r^2 - z^2 - x^2)}$ which yields all possible values for in in respect to $x,z,r$. This coincides with $-b,b$ in the algorithm.
+
+\begin{algorithm}
+\caption{Calculating lattice points}
+\label{alg:calc_sphere_points}
+\begin{algorithmic}
+\Require {$r$}
+\Ensure {$coords$}
+\State $coords \gets []$
+\For {$z := -r$ to $r$}
+    \State $a \gets \lfloor\sqrt{(r^2 - z^2)}\rfloor$
+    \For {$x := -a$ to $a$}
+        \State $b \gets \lfloor\sqrt{(a^2 - x^2)}\rfloor$
+        \For {$y := -b$ to $b$}
+            \State coords $\gets (x,y,z)$
+        \EndFor
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+The python implementation for this function takes in an amount of points $n$ and returns a list of triples with length $n$ containing the resulting coordinates and the radius $r$ of the sphere.
+
+\subsection{Arranging the spheres}
+After calculating the coordinates and radii for each sphere (one for each group) the biggest radius $r_{max}$ is known. Using this the side-length of the cubes can be calculated. To create some space between the sphere this side-length $s$ is calculated by $s = 2 * r_{max} * 1.25$ to add a free space of 12.5\% of the sphere diameter on each side.
+
+The cubes are always created as a larger cube, eg. the amount of cubes is $c = x^3$. x is the side-length of the bigger cube in cubes (eg. each a side-length of 3 cubes results in $c=27$ smaller cubes). To not spread out the spheres unnecessarily the smallest amount of cubes need to be created. The required amount of cubes is the number of sphere/groups. To get the next bigger value for $c$, $x$ can be calculated by $x =\lceil\sqrt[3]{num\_groups}\rceil$.
+
+Using this the algorithm \ref{alg:cube_offsets} calculates the bottom left corner of each cube.
+
+\begin{algorithm}
+\caption{Calculating cube offsets}
+\label{alg:cube_offsets}
+\begin{algorithmic}
+\Require {$num\_group, r_{max}$}
+\Ensure {$offsets$}
+\State $s \gets \lceil 2 * r_{max} * 1.25\rceil$
+\State $o \gets \lceil 2 * r_{max} * 0.125\rceil$
+\State $c \gets \lceil\sqrt[3]{num\_groups}\rceil$
+\For {$x,y,z := 0$ to $c$}
+    \State offsets $\gets (x \cdot s + o, y \cdot s + o, z \cdot s + o)$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+For each sphere a random cube is selected and its offsets are added to all coordinates, resulting in the final coordinates for all nodes in the network.
+
+\subsection{Creating the scatter graph}
+\label{sub:scatter_graph}
+In the final graph it needs to be possible to toggle the visibility of each group. To achieve this the coordinates for each group are stored separately and only the active ones are added to the coordinate lists for the \texttt{Scatter3d} call.
+
+\begin{lstlisting}[language=python, caption={Creation of the node trace}, label={lst:node_trace}]
+for group in self.network.groups:
+    if group.id not in self.hidden_groups:
+        x, y, z = zip(*self.group_coords[group.id])
+        aXn.extend(x)
+        aYn.extend(y)
+        aZn.extend(z)
+        colors.extend([group.color] * len(x))
+trace1 = go.Scatter3d(
+    x=aXn,
+    y=aYn,
+    z=aZn,
+    mode="markers",
+    name="nodes",
+    marker=dict(
+        symbol="circle",
+        size=6,
+        color=colors,
+        line=dict(color="rgb(50,50,50)", width=0.5),
+    ),
+    uirevision="0",
+    showlegend=False,
+)
+\end{lstlisting}
+
+Using the code in \ref{lst:node_trace} the trace that displays all the active nodes is created. Whenever the visibility of a group is toggled this needs to be rebuilt. It is important to note, that the coordinates for the nodes in the x,y,z arrays contain the nodes in ascending order by their id. This means nodes of group 0 come first starting with node 0, then group 1 etc. This is important for creating color sequences based on the node statuses which is discussed in chapter %TODO ref
+
+\subsection{Displaying the edges}
+The edges are displayed using a second \texttt{Scatter3d} with the \texttt{lines} mode. For this the x,y and z arrays need the format of [xStart, xEnd, None] for each line. Meaning a coordinate array for 100 lines would have length 300.
+
+The current format in which the edges are represented contains only the node ids which need to be connected. This representation was created in section \ref{sub:havel_hakimi}. To translate these node ids to the coordinates of the nodes that were calculated in section \ref{sub:displayNodes} a map is created when the coordinates for each node are calculated. This map stores the node id as a key and the index of its coordinates as value. Using that map for the start and end coordinates for all edges of visible groups can be calculated. The python code that realizes this can be seen in listing \ref{lst:edge_creation}.
+\begin{lstlisting}[language=python, caption={Creation of the edge coordinate arrays}, label={lst:edge_creation}]
+ for edge in edges:
+    _from, to = edge[0], edge[1]
+    if not (_from in node_id_map and to in node_id_map):
+        continue
+    from_ind = node_id_map[_from]
+    to_ind = node_id_map[to]
+    aXe.extend([node_coords_x[from_ind], node_coords_x[to_ind], None])
+    aYe.extend([node_coords_y[from_ind], node_coords_y[to_ind], None])
+    aZe.extend([node_coords_z[from_ind], node_coords_z[to_ind], None])
+\end{lstlisting}
+
+The trace is then created using the \texttt{Scatter3d} call from listing \ref{lst:edge_trace}.
+\begin{lstlisting}[language=python, caption={Creation of the edge trace}, label={lst:edge_trace}]
+trace2 = go.Scatter3d(
+            x=aXe,
+            y=aYe,
+            z=aZe,
+            mode="lines",
+            uirevision="0",
+            line=dict(color="rgb(125,125,125)", width=1),
+            hoverinfo="none",
+            showlegend=False,
+        )
+    \end{lstlisting}

@@ -1,0 +1,148 @@
+
+\documentclass[oneside]{ausarbeitung}
+\bibliography{latexlit}
+
+
+% ----------------------------------------------------------------------
+
+\begin{document}
+
+%--- Sprachauswahl
+% Erlaubte Werte:
+%   \selectlanguage{english}
+%   \selectlanguage{ngerman}
+\selectlanguage{english}
+
+%--- Art der Arbeit
+% Erlaubte Werte:
+%   \Praxissemesterbericht
+%   \Projektbericht
+%   \Bachelorarbeit
+\Seminararbeit
+%   \Masterarbeit
+
+%--- Studiengang:
+% Erlaubte Werte:
+%   \Informatik
+%   \Elektronik
+%   \DataScience
+\Informatik
+
+\title{Algorithmic Game Theory}
+
+\author{Tim Staudenmaier}
+\matrikelnr{75981}
+
+%--- Ist der Erstbetreuer (\examinerA) an der Hochschule ein Professor?
+% Erlaubte Werte:
+%   \examinerIsAProfessortrue   % Ja
+%   \examinerIsAProfessorfalse  % Nein
+\examinerIsAProfessortrue   % Ja
+
+%--- Betreuer
+\examinerA{Prof.~Dr.~Thomas~Thierauf}
+%\examinerB{Prof.~Dr.~Ulrich~Klauck}
+
+%--- Einreichungsdatum
+\date{14.3.2023}
+
+%--- Angaben zur Firma
+% Auskommentieren, wenn die Arbeit nicht bei einer ext. Firma gemacht wurde.
+%\companyname{Beispielfirma}
+%\industrialsector{Beispielbranche}
+%\department{Beispielabteilung}
+%\companystreet{Beispielstr. 1}
+%\companycity{12345 Musterstadt}
+
+%--- Angaben zum Betreuer bei dieser Firma
+%\advisorname{Name des Betreuers}
+%\advisorphone{(01234) 567-890}
+%\advisoremail{name@company.xxx}
+
+%--- Titelseite Anzeigen
+\maketitle
+\cleardoublepage
+
+%---
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+%--- Firmendaten Anzeigen
+% Auskommentieren, wenn die Arbeit nicht bei einer ext. Firma gemacht wurde.
+%\makeworkplace
+%\cleardoublepage
+
+%--- Eidesstattliche Erklärung anzeigen
+\makeaffirmation
+\cleardoublepage
+
+%---
+\begin{abstract}
+  This work serves as an introduction to the topic of Algorithmic Game Theory. The basic principles and applications of Algorithmic Game Theory are explained and discussed. Some basic examples of Algorithmic Game Theory are presented, including popular games and dilemmas, like the Prisoner's Dilemma. Different groups of games, such as coordination games or cooperative games, are introduced and their optimal strategies and differences are outlined.
+
+ The different types of optimal and stable solutions, called Nash equilibria, are presented. If a solution is a Nash equilibrium, none of the players can improve their outcome of the game by changing the choices they made. The requirements and characteristics of these Nash Equilibria are explained and ways to compute them are discussed. The complexity of these computations and possible solutions are outlined. The Lemke-Howson algorithm for calculating Nash equilibria is explained and the PPAD-completeness of Nash is discussed.
+
+ An outlook on current research in the field of Algorithmic Game Theory is given and the importance of Algorithmic Game Theory in today's world is discussed.
+\end{abstract}
+%-----------------------------------------------------------------------
+\cleardoublepage
+\tableofcontents
+
+%---
+\listoffigures
+
+%---
+
+
+\cleardoublepage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+% ----------------------------------------------------------------------
+
+% \chapter{Network Generation}
+% \label{cha:network_generation}
+% \input{tex/imp0_graph_generation}
+
+% \chapter{Network Display}
+% \label{cha:network_display}
+% \input{tex/imp1_graph_display}
+
+\chapter{Visual Simulation}
+\label{cha:visual_simulation}
+\input{tex/imp2_simulation}
+
+% \chapter{Introduction}
+% \label{cha:introduction}
+% \input{tex/introduction}
+
+% \chapter{Terminology}
+% \label{cha:terminology}
+% \input{tex/terminology}
+
+% \chapter{Defining different types of Games}
+% \label{cha:gameDefinitions}
+% \input{tex/gameDefinitions}
+
+% \chapter{Solution Strategies and Nash Equilibria}
+% \label{cha:solutionStrategies}
+% \input{tex/solutionStrategies}
+
+% \chapter{Complexity of finding Nash equilibria}
+% \label{cha:complexityOfFindingNash}
+% \input{tex/complexityOfFindingNash}
+
+% \chapter{Summary}
+% \label{cha:summary}
+% \input{tex/summary}
+
+%-----------------------------------------------------------------------
+\appendix
+
+%---
+\printbibliography[heading=bibintoc]
+
+\end{document}

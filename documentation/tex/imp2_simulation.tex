@@ -1,0 +1,42 @@
+To simulate epidemics in a network, each node needs to store its state. As explained in %TODO ref
+each node can have one of the following states: healthy, cured, infected, vaccinated, deceased. The current state is stored in the node along with the disease it is infected with for the state \texttt{infected}. The amount of cycles the node has been infected and the total amount of times the node has been infected are also stored. Each node also contains all nodes it is connected to.
+
+Using this information the simulation can be done using the algorithm in \ref{alg:simulation}.
+
+\begin{algorithm}
+\caption{Simulate epidemics}
+\label{alg:simulation}
+\begin{algorithmic}
+\Require {$nodes$}
+\For{node in $nodes$}
+    \If {node is not vaccinated}
+        \State vaccinate according to vaccination chance of group
+    \EndIf
+    \If {node is infected}
+        \If {infection time > disease duration}
+            \State kill or cure node according to rates of disease
+        \Else
+            \State infection time $\gets$ infection time + 1
+            \For{each connected node that is not infected}
+                \State infect node according to rate of disease 
+                \State (depending on vaccination status and previous infections)
+            \EndFor
+        \EndIf
+    \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Displaying the status}
+To display the current state of the simulation the nodes are colored according to their state. Each state has a configurable color with infected having different colors for each disease. Since nodes may have multiple concurrent states (eg. vaccinated and infected) each state has a priority and the color of the highest priority state will be displayed. A lower number means a higher priority.
+\begin{enumerate}
+    \item Infected/Deceased
+    \item Vaccinated
+    \item Healthy/Cured
+\end{enumerate}
+
+Using this priority list a sequence of colors can be generated from all node states. This sequence is created for the nodes in ascending order of their ids. This is important because the \texttt{Scatter3d} graph requires the colors in the same order as the coordinates which are also in ascending order as mentioned in section \ref{sub:scatter_graph}. The color of the graph can then be updated using the \texttt{update\_trace} method as seen in listing \ref{lst:update_color}
+
+\begin{lstlisting}[language=python, caption={Updating the colors of the graph}, label={lst:update_color}]
+fig.update_traces(selector=dict(name="nodes"), marker=dict(color=state_colors))
+\end{lstlisting}
