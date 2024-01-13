@@ -217,7 +217,7 @@ class HTMLSimulationView(HTMLNetworkView):
 
         def save_data(_, name):
             if not name:
-                name = datetime.now()
+                name = str(datetime.now())
             print(name)
             self.project.stats[name] = self.sim.stats
             requests.post(

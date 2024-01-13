@@ -78,8 +78,8 @@ class DashServer:
                 stats = SimStats.from_dict(json_data["stats"])
                 project.stats[json_data["filename"]] = stats
                 stats_view.project = project
-                stats_view.needs_build = True
                 stats_view.reset()
+                stats_view.needs_build = True
                 return make_response(jsonify({"status": "OK"}), 200)
             except Exception as e:
                 print(e.with_traceback())

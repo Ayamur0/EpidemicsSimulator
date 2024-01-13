@@ -18,7 +18,14 @@ class HTMLFilePopup(dbc.Modal):
     def update_files(self):
         self.children = [
             dbc.ModalHeader(
-                dbc.ModalTitle("Pick a stat file to display"),
+                [
+                    dbc.ModalTitle("Pick a stat file to display"),
+                    html.Div(
+                        children=html.I(className="fas fa-arrows-rotate file-icon"),
+                        id="reload-files-button",
+                        style={"cursor": "pointer"},
+                    ),
+                ],
                 close_button=False,
                 style={"background-color": "#353535", "color": "azure", "border-color": "#6b6b6b"},
             ),
@@ -27,11 +34,20 @@ class HTMLFilePopup(dbc.Modal):
                 style={"background-color": "#353535", "color": "azure", "border-color": "#353535"},
             ),
         ]
+
+        @callback(
+            Output(f"file-popup", "children", allow_duplicate=True),
+            Input("reload-files-button", "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def reload(_):
+            return self.update_files()
+
         return self.children
 
     def _create_modal_body(self):
         @callback(
-            Output(f"file-popup", "is_open"),
+            Output(f"file-popup", "is_open", allow_duplicate=True),
             Input({"index": ALL, "type": "file-button"}, "n_clicks"),
             prevent_initial_call=True,
         )

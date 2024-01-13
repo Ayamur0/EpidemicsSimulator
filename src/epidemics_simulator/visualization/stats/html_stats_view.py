@@ -54,7 +54,7 @@ class HTMLStatsView:
 
         @callback(
             Output("file-popup", "is_open", allow_duplicate=True),
-            Output("file-popup", "children"),
+            Output("file-popup", "children", allow_duplicate=True),
             Input("stats-build-request", "n_intervals"),
             prevent_initial_call=True,
         )
