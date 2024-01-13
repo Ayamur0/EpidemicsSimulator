@@ -81,8 +81,8 @@ class UiDisplayGroup:
         
         
     def load_webview(self):
-        self.main_window.show_webviews()
-        #self.show_webview()
+        #self.main_window.show_webviews()
+        self.show_webview()
         
     def hide_webview(self):
         if self.generated_once:
@@ -98,9 +98,9 @@ class UiDisplayGroup:
             self.webview.loadFinished.disconnect()
         except TypeError:
             pass
-        self.webview.loadFinished.connect(lambda: self.webview.show())
-        self.webview.reload()
-        #self.webview.show()
+        #self.webview.loadFinished.connect(lambda: self.webview.show())
+        #self.webview.reload()
+        self.webview.show()
         
     def refresh_info_label(self, network: Network, generation_time: float):
         label_text = f'Some stats about graph creation\n'

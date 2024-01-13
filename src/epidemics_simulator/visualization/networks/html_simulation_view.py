@@ -217,16 +217,16 @@ class HTMLSimulationView(HTMLNetworkView):
 
         def save_data(_, name):
             if not name:
-                name = datetime.now()
+                name = str(datetime.now())
             print(name)
             self.project.stats[name] = self.sim.stats
             requests.post(
-                "http://localhost:8050/update-stats",
+                "http://localhost:8051/stat-update",
                 json={"filename": name, "stats": self.sim.stats.to_dict()},
                 timeout=0.5,
             )
             requests.post(
-                "http://localhost:8051/stat-update",
+                "http://localhost:8050/update-stats",
                 json={"filename": name, "stats": self.sim.stats.to_dict()},
                 timeout=0.5,
             )
