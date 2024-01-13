@@ -6,7 +6,7 @@ class SimStats:
     def __init__(self, network) -> None:
         self.group_stats = {}
         self.log_text_cache = []
-        for group in network.groups:
+        for group in network.active_groups:
             self.group_stats[group.id] = GroupSimStats(group.size, group.name, network.diseases)
 
     def new_step(self):

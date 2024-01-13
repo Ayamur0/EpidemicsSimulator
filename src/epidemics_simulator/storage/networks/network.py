@@ -15,6 +15,10 @@ class Network:
         self.vaccinated_color = "rgb(0.067, 0, 0.941)"
         self.deceased_color = "rgb(0.012, 0.012, 0.012)"
 
+    @property
+    def active_groups(self):
+        return [g for g in self.groups if g.active]
+
     def add_disease(self, disease) -> bool:
         if disease in self.diseases:
             return False
