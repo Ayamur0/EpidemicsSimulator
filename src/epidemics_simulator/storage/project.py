@@ -13,7 +13,7 @@ class Project:
         dicts.append(self.network.to_dict())
         stats_dict = {}
         for name, stat in self.stats.items():
-            stats_dict[name] = stat.to_json()
+            stats_dict[name] = stat.to_dict()
         dicts.append(stats_dict)
         with open(self.file_location, "w", encoding="utf-8") as f:
             json.dump(dicts, f, ensure_ascii=False, indent=4)
@@ -28,7 +28,7 @@ class Project:
         instance.network = Network.from_dict(dicts[0])
         stats_dict = dicts[1]
         for name, stat in stats_dict.items():
-            instance.stats[name] = SimStats.from_json(stat)
+            instance.stats[name] = SimStats.from_dict(stat)
         return instance
 
     def to_dict(self):
