@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import Dash, html, dcc, callback_context, MATCH, ALL, callback
+from dash import Dash, html, dcc, callback_context, MATCH, ALL, callback, exceptions
 from dash.dependencies import Input, Output, State
 
 
@@ -30,6 +30,18 @@ class HTMLFilePopup(dbc.Modal):
         return self.children
 
     def _create_modal_body(self):
+        @callback(
+            Output(f"file-popup", "is_open"),
+            Input({"index": ALL, "type": "file-button"}, "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def load_file(n_clicks):
+            if all(i is None for i in n_clicks):
+                raise exceptions.PreventUpdate()
+            ind = int(callback_context.triggered_id["index"])
+            self.stats_view.load_stats(self.files[ind])
+            return False
+
         if not self.files:
             return dbc.ModalBody(
                 html.Div(
@@ -51,18 +63,6 @@ class HTMLFilePopup(dbc.Modal):
                     id={"index": index, "type": "file-button"},
                 )
             )
-
-            @callback(
-                Output(f"file-popup", "is_open"),
-                Input({"index": ALL, "type": "file-button"}, "n_clicks"),
-                prevent_initial_call=True,
-            )
-            def load_file(_):
-                ind = int(callback_context.triggered_id["index"])
-                print(ind)
-                print(self.files)
-                self.stats_view.load_stats(self.files[ind])
-                return False
 
         return dbc.ModalBody(
             html.Div(items, className="file-list"),

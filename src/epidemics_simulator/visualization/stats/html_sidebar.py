@@ -105,6 +105,29 @@ class HTMLSidebar(html.Div):
             id=self.id_factory("cures-button"),
         )
 
+    def change_file_button(self):
+        @callback(
+            Output("file-popup", "is_open", allow_duplicate=True),
+            Input(self.id_factory("change-file-button"), "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def open(_):
+            return True
+
+        return html.Div(
+            [
+                html.I(className=f"fas fa-folder me-3"),
+                html.Span("Open other file"),
+            ],
+            className="toggle",
+            style={
+                "background-color": self.BACKGROUND_COLOR,
+                "color": "azure",
+                "cursor": "pointer",
+            },
+            id=self.id_factory("change-file-button"),
+        )
+
     def infections_submenu(self):
         submenu = HTMLSubmenu("Infections", "bed", "infections", self.stats_view)
         submenu.add_default_entries(
@@ -172,6 +195,8 @@ class HTMLSidebar(html.Div):
                 html.Hr(),
                 dbc.Nav(
                     [
+                        self.change_file_button(),
+                        html.Hr(className="spacer"),
                         self.cumulative_button(),
                         html.Hr(className="spacer"),
                         self.vaccinations_button(),
