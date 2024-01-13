@@ -57,6 +57,7 @@ class DashServer:
             try:
                 json_data = request.get_json()
                 project = Project.from_dict(json_data)
+                project.network.build()
                 graph.update_network(project.network)
                 html_view.reset()
                 html_view.needs_build = True
