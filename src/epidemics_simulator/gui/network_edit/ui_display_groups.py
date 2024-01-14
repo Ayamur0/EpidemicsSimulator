@@ -78,9 +78,6 @@ class UiDisplayGroup:
         self.main_window.show_webviews()
         # self.load_webview()
         
-        
-        
-        
     def load_webview(self):
         #self.main_window.show_webviews()
         self.show_webview()
