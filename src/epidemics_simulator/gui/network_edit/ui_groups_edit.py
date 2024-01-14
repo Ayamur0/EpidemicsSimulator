@@ -5,6 +5,24 @@ from src.epidemics_simulator.storage import Network, NodeGroup, Project
 from functools import partial
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
+
+class GroupsCheckBox(QtWidgets.QCheckBox):
+    def __init__(self, selected_icon: QIcon, deselct_icon: QIcon, checked=False, parent=None):
+        super(GroupsCheckBox, self).__init__(parent)
+        self.selected_icon = selected_icon
+        self.deselct_icon = deselct_icon
+        if checked:
+            self.icon = self.selected_icon
+        else:
+            self.icon = self.deselct_icon
+        
+    def updateIcon(self, state):
+        if state == Qt.Checked:
+            self.setIcon(self.selected_icon)
+        else:
+            self.setIcon(self.deselected_icon)
+
+
 class UiGroupEdit:
     def __init__(self, main_window: QtWidgets.QMainWindow, connection_edit):
         self.main_window = main_window
@@ -15,7 +33,7 @@ class UiGroupEdit:
         
         self.group_list = self.main_window.group_list_content
         self.group_prop = self.main_window.group_properties_content
-        
+
         self.group_list.layout().setAlignment(Qt.AlignTop)
         
         self.new_group_button.clicked.connect(lambda: self.create_new_group())
@@ -49,21 +67,24 @@ class UiGroupEdit:
         
         remove_button = UiWidgetCreator.create_qpush_button(None, 'delete_group_button')
         remove_button.setIcon(self.main_window.remove_icon)
-        group_button = UiWidgetCreator.create_qpush_button(group.name, 'group_select_button', is_checkable=True)
-        
+        group_button = UiWidgetCreator.create_qpush_button(None, 'group_select_button', is_checkable=True)
+        group_button.setIcon(self.main_window.edit_icon)
         checkbox.stateChanged.connect(partial(self.set_group_activity, checkbox, group))
         duplicate_button.clicked.connect(partial(self.dupliacte_group, group))
         remove_button.clicked.connect(partial(self.remove_group, group))
+        group_label = UiWidgetCreator.create_qlabel(group.name, 'group')
+        
         group_button.clicked.connect(partial(self.show_group_properties, group))
         group_button.clicked.connect(partial(self.connection_edit.load_connections, self.network, group))
         
+        #layout_widget.setStyleSheet('background-color: lightblue;')
         self.group_buttons[group.id] = group_button
         
         layout_widget.layout().addWidget(checkbox)
         layout_widget.layout().addWidget(duplicate_button)
         layout_widget.layout().addWidget(remove_button)
+        layout_widget.layout().addWidget(group_label)
         layout_widget.layout().addWidget(group_button)
-        
         self.group_list.layout().addWidget(layout_widget)
         
     def set_group_activity(self, checkbox: QtWidgets.QCheckBox, group: NodeGroup):

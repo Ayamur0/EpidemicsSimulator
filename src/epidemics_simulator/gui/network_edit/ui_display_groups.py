@@ -43,7 +43,7 @@ class UiDisplayGroup:
         
     def init_ui(self, network: Network):
         self.network = network
-        self.stat_label.setText('\n\n\n')
+        self.stat_label.setText('Some stats about graph creation\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         try:
             self.generate_button.clicked.disconnect()
@@ -52,15 +52,15 @@ class UiDisplayGroup:
         self.generate_button.clicked.connect(partial(self.start_generating, self.network))
             
         
-    def start_generating(self, network: Network, generate_local: bool = False):
+    def start_generating(self, network: Network):
         self.main_window.push_to_dash()
-        self.main_window.server_push.finished.connect(self.generating_finished)
+        # self.main_window.server_push.finished.connect(self.generating_finished)
         self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
         self.start_time = time.time()
-        if generate_local:
-            self.generate_thread = GenerateNetwork(network)
-            self.generate_thread.finished.connect(lambda: self.generating_finished())
-            self.generate_thread.start() 
+        #if generate_local:
+        self.generate_thread = GenerateNetwork(network)
+        self.generate_thread.finished.connect(lambda: self.generating_finished())
+        self.generate_thread.start() 
         self.popup.exec_()
         
     def generating_finished(self):
@@ -147,6 +147,6 @@ class UiDisplayGroup:
         except RuntimeError:
             pass
         self.unload_woker()
-        self.stat_label.setText('\n\n\n')
+        self.stat_label.setText('Some stats about graph creation\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         

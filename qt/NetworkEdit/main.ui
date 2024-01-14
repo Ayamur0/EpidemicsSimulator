@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -91,9 +91,9 @@
                   <widget class="QLabel" name="network_stats">
                    <property name="text">
                     <string>Some stats about graph creation
-Total nodes 1000
-Total connections 10000
-Generation time 20.5s</string>
+Total nodes 0
+Total connections 0
+Generation time 0s</string>
                    </property>
                   </widget>
                  </item>
@@ -123,16 +123,24 @@ Generation time 20.5s</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton">
+                     <widget class="QPushButton" name="open_in_browser_button">
                       <property name="text">
-                       <string>Reload</string>
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../assets/web.png</normaloff>../../assets/web.png</iconset>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="open_in_browser_button">
+                     <widget class="QPushButton" name="reload_view">
                       <property name="text">
-                       <string>Open in browser</string>
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
                       </property>
                      </widget>
                     </item>
@@ -156,7 +164,7 @@ Generation time 20.5s</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="4,0,0,4,0">
+          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="4,0,0,4">
            <item row="1" column="3">
             <widget class="QFrame" name="connection_properties_frame">
              <property name="frameShape">
@@ -165,7 +173,17 @@ Generation time 20.5s</string>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9" stretch="9,1">
+             <layout class="QVBoxLayout" name="verticalLayout_9" stretch="0,9,1">
+              <item>
+               <widget class="QLabel" name="con_prop_label">
+                <property name="text">
+                 <string>Connection Properties</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QScrollArea" name="connection_properties">
                 <property name="sizePolicy">
@@ -186,7 +204,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>277</width>
-                   <height>252</height>
+                   <height>233</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_3"/>
@@ -216,7 +234,17 @@ Generation time 20.5s</string>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
+             <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,0">
+              <item>
+               <widget class="QLabel" name="group_label">
+                <property name="text">
+                 <string>Groups</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QScrollArea" name="group_list">
                 <property name="sizePolicy">
@@ -237,7 +265,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>278</width>
-                   <height>252</height>
+                   <height>233</height>
                   </rect>
                  </property>
                  <property name="layoutDirection">
@@ -293,6 +321,16 @@ Generation time 20.5s</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
               <item>
+               <widget class="QLabel" name="con_label">
+                <property name="text">
+                 <string>Connections</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QScrollArea" name="connection_list">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -315,7 +353,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>278</width>
-                   <height>282</height>
+                   <height>263</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6"/>
@@ -334,6 +372,16 @@ Generation time 20.5s</string>
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QLabel" name="group_prop_label">
+                <property name="text">
+                 <string>Group Properties</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QScrollArea" name="group_properties">
                 <property name="sizePolicy">
@@ -354,7 +402,7 @@ Generation time 20.5s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>277</width>
-                   <height>252</height>
+                   <height>233</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_4"/>
@@ -448,17 +496,38 @@ Generation time 20.5s</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_13">
+          <layout class="QVBoxLayout" name="verticalLayout_13" stretch="1,20">
            <item>
-            <widget class="QWidget" name="simulation_view" native="true">
-             <layout class="QVBoxLayout" name="verticalLayout_11"/>
+            <widget class="QWidget" name="widget" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QPushButton" name="open_browser_button">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../../assets/web.png</normaloff>../../assets/web.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="reload_sim">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="open_browser_button">
-             <property name="text">
-              <string>Open in browser</string>
-             </property>
+            <widget class="QWidget" name="simulation_view" native="true">
+             <layout class="QVBoxLayout" name="verticalLayout_11"/>
             </widget>
            </item>
           </layout>
@@ -563,7 +632,12 @@ Generation time 20.5s</string>
                  <item>
                   <widget class="QPushButton" name="save_button">
                    <property name="text">
-                    <string>Save</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normalon>../../assets/save.png</normalon>
+                    </iconset>
                    </property>
                   </widget>
                  </item>
@@ -617,17 +691,38 @@ Generation time 20.5s</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_19">
+          <layout class="QVBoxLayout" name="verticalLayout_19" stretch="1,20">
            <item>
-            <widget class="QWidget" name="stat_view_widget" native="true">
-             <layout class="QVBoxLayout" name="verticalLayout_18"/>
+            <widget class="QWidget" name="browser_contorl" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QPushButton" name="open_view_in_browser">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../../assets/web.png</normaloff>../../assets/web.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="reload_stats">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="open_view_in_browser">
-             <property name="text">
-              <string>Open in browser</string>
-             </property>
+            <widget class="QWidget" name="stat_view_widget" native="true">
+             <layout class="QVBoxLayout" name="verticalLayout_18"/>
             </widget>
            </item>
           </layout>
@@ -665,13 +760,7 @@ Generation time 20.5s</string>
     <addaction name="actionSave"/>
     <addaction name="actionOpen"/>
    </widget>
-   <widget class="QMenu" name="menuThemes">
-    <property name="title">
-     <string>Theme</string>
-    </property>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuThemes"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="locale">

@@ -5,7 +5,6 @@ from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.storage import Network, NodeGroup, Project, Disease
 from src.epidemics_simulator.gui.flowlayout import FlowLayout
 
-#TODO convert to flow layout
 class UiDiseaseEditTab:
     def __init__(self, main_window: QtWidgets.QMainWindow):
         self.main_window = main_window
@@ -79,6 +78,8 @@ class UiDiseaseEditTab:
         frame.setMinimumSize(*self.min_frame_size)
         if default_properties:
             self.disease_layout_list.insert(1, None)
+        elif self.is_creating_disease:
+            self.disease_layout_list.insert(2, disease.id)
         else:
             self.disease_layout_list.insert(1, disease.id)
         self.insert_to_flowlayout_at(self.disease_content.layout, frame, insertion_index)
@@ -95,19 +96,19 @@ class UiDiseaseEditTab:
         save_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'add_disease_button')
         save_button.setIcon(self.main_window.save_icon)
         save_button.clicked.connect(partial(self.save_disease, disease, line_edits, form_widget))
-        layout_widget.layout().addWidget(save_button)
         
+        delete_button = UiWidgetCreator.create_qpush_button(None, 'del_disease_button')
+        delete_button.setIcon(self.main_window.remove_icon)
+        delete_button.clicked.connect(partial(self.delete_disease, disease))
+        
+        layout_widget.layout().addWidget(delete_button)
         if disease:
             duplicate_button = UiWidgetCreator.create_qpush_button(None, 'dup_disease_button')
             duplicate_button.setIcon(self.main_window.duplicate_icon)
-            delete_button = UiWidgetCreator.create_qpush_button(None, 'del_disease_button')
-            delete_button.setIcon(self.main_window.remove_icon)
-            
             duplicate_button.clicked.connect(partial(self.duplicate_disease, disease))
-            delete_button.clicked.connect(partial(self.delete_disease, disease))
-            
+
             layout_widget.layout().addWidget(duplicate_button)
-            layout_widget.layout().addWidget(delete_button)
+        layout_widget.layout().addWidget(save_button)
         return layout_widget
         
     def load_properties(self, form_widget: QtWidgets.QWidget, properties: dict, is_success_save: bool=False):
@@ -192,6 +193,10 @@ class UiDiseaseEditTab:
         self.main_window.disease_changed.emit()
         
     def delete_disease(self, disease: Disease):
+        if not disease:
+            self.delete_disease_from_layout_at(1)
+            self.is_creating_disease = False
+            return
         message = UiWidgetCreator.show_message(f'Are you sure you want to delete disease {disease.name}', 'Disease deletion')
         result = message.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:

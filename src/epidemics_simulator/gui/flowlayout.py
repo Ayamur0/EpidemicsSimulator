@@ -1,3 +1,4 @@
+# Source: https://github.com/baoboa/pyqt5/blob/master/examples/layouts/flowlayout.py
 #!/usr/bin/env python
 
 
@@ -52,24 +53,14 @@ class Window(QWidget):
         super(Window, self).__init__()
 
         flowLayout = FlowLayout()
+        flowLayout.addWidget(QPushButton("Short"))
+        flowLayout.addWidget(QPushButton("Longer"))
+        flowLayout.addWidget(QPushButton("Different text"))
+        flowLayout.addWidget(QPushButton("More text"))
+        flowLayout.addWidget(QPushButton("Even longer button text"))
         self.setLayout(flowLayout)
-        self.layout().addWidget(QPushButton("Short"))
-        
-        
-        self.insert_at(QPushButton("Longer"), 1)
-        self.insert_at(QPushButton("Different text"), 1)
-        self.insert_at(QPushButton("More text"), 1)
-        self.insert_at(QPushButton("Even longer button text"), 1)
-        
 
         self.setWindowTitle("Flow Layout")
-        
-    def insert_at(self, widget, index):
-        widget_list = [widget]
-        for _ in range(index, self.layout().count()):
-            widget_list.append(self.layout().takeAt(index).widget())
-        for item in widget_list:
-            self.layout().addWidget(item)
 
 
 class FlowLayout(QLayout):
