@@ -1,23 +1,48 @@
-This paper aims to serve as an introduction to Algorithmic Game Theory. Algorithmic Game Theory is an area at the intersection of Game Theory and Computer Science. Algorithmic Game Theory analyzes and designs algorithms for strategic interactions between multiple agents who each want to maximize their payoffs and calculate their best strategies or best responses. These strategic interactions can be modeled as algorithmic games.
-
-The main goal of Algorithmic Game Theory is to find algorithmic solutions to these often complex games. Since these games often involve large numbers of players and complex interactions, algorithms must be developed that can find these solutions. The optimal solution that Algorithmic Game Theory seeks to find is one in which no player has an incentive to change their strategy.
-
-Chapter \ref{cha:gameDefinitions} provides examples to make it easier to understand how algorithmic games work. This chapter introduces some well-known examples of algorithmic games, such as the Prisoner's Dilemma \ref{sec:prisonersDilemma}. These examples serve as an introduction to how these types of games work and to the different types of games in Algorithmic Game Theory. Other types of games discussed are Coordination Games \ref{sec:coordinationGames} and Mixed Strategy Games \ref{sec:mixedStrategyGames}. Suggestions on how to formally define such games are given in section \ref{sec:formalDefinintion}.
-
-In chapter \ref{cha:solutionStrategies} different strategies to solve these algorithmic games are discussed. These solution strategies introduce the concept of Nash equilibria. The different strategies and types of Nash equilibria are explained using simple examples. In \ref{sec:learningGames} the concept of best responses for learning games is introduced. The topics of Bayesian and Cooperative Games are also briefly discussed in section \ref{sec:bayesianGames} and \ref{sec:cooperativeGames}.
-
-The complexity of computing Nash equilibria is explained in chapter \ref{cha:complexityOfFindingNash}. Here the PPAD-completeness of Nash is discussed and the Lemke-Howson algorithm for computing Nash is introduced in section \ref{sec:lemkeHowson}.
-
-Chapter \ref{cha:summary} provides a summary of the topic and an overview of the areas that are currently being researched. Interesting new applications and the importance of Algorithmic Game Theory in today's world are discussed.
-
 \section{Motivation}
-Algorithmic Game Theory can be applied to many different areas, such as markets. Here Algorithmic Game Theory is used to understand the effects of existing prices, production, consumption, introduction of new products or changes in taxes. It can be used to ensure price stability and parity between supply and demand of products. Nash equilibria can be used to calculate the optimal price for a product (the price at which the supply and demand curves intersect).
+An epidemic outbreak can have a major impact on the world. Past epidemics have shown that
+if we do not know how to counteract an epidemic outbreak and are not prepared for 
+such cases, a new disease can cause the death of major parts of the world. The black
+death caused the death of about 30\% to 60\% of all Europeans (75-200 million)
+during the 1300s \cite{blackDeath}.
+To better understand such scenarios simulations play an important role since studying real
+cases of epidemic outbreaks is difficult as there are only so many in the history of humans.
+Also it is important in case an outbreak happens to be able to simulate the next few days/weeks
+to accurately predict how the epidemic will evolve.
 
-Another area in which Algorithmic Game Theory can be used is finance. It can be used to design algorithms for high-frequency trading, in which computers automatically execute trades at high frequencies based on complex rules.
+For this reason this work will discuss an approach to simulate such epidemics by modeling
+networks of persons and then simulating the spreading of diseases with different properties
+in these networks.
 
-Other possible applications include modeling of interaction and coordination in a cloud or distributed system. Robotics, network security and resource management are also influenced by Algorithmic Game Theory.
+\section{Problem definition}
+A model of the social network the disease is spreading in is curcial to the simulation.
+Depending on the transmission method of the disease this network can be highly connected in 
+the case of a disease with airborne transmission or have only few connections for diseases
+that are for example sexually transmitted. In addition to that different diseases can spread
+completely different in the same social network even if the have the same transmission method
+because the characteristics of the disease also play an important role in how it spreads. 
+As suggested by Easley and Kleinberg \cite{networks}
+the transmission of computer viruses works in a similar way an thus is also able to be modeled
+by using networks.
 
-The above mentioned areas are only examples for applications of Game Theory. There are many more areas in which Algorithmic Game Theory can be used to for example model or improve systems. This is why Algorithmic Game Theory is becoming more and more important since the introduction of the Internet, as such systems (like trading systems or online markets) will only continue to grow in number, complexity and importance.
+The networks that can be created using the app must be able to model different social
+networks. The important part for the epidemics simulation is the modeling of the amount
+of contacts with other humans each human has. Since each group can contain a significant amount
+of members an efficient method for creation networks with large amounts of nodes is required, which
+still allows to model most social networks.
 
-\section{Related Work}
-This paper is mainly based on the first two chapters of the book "Algorithmic Game Theory" by Nisan et al. \autocite{agt}. This paper serves as an introduction to the basic principles of Algorithmic Game Theory and the more advanced concepts covered in the book. The book provides a very thorough overview of the topic and contains many more in depth explanations on things like graphical games or various algorithms and their design that are not mentioned in this paper. 
+A method to visually display these networks in a clear way is required. The visual 
+representation must still be usable with large amounts of nodes (eg. over 100,000 nodes).
+To make the visualization of the network more usable some settings need to be provided
+to alter the displayed network, like hiding certain connections or nodes. It also needs
+ways to represent the current state of the network in respect to the spread of the diseases.
+
+The app also needs to allow for creation of multiple diseases with different properties.
+To simulate various epidemic scenarios properties like the infectiousness, duration of illnes
+or fatality need to be editable. 
+
+The app should be able to simulate multiple diseases at the same time. The simulation needs
+to take into account which humans have contact with each other and then simulate the spreading
+of the diseases according to the properties of each disease and group of humans.
+
+During the simulation the app will collect statistics to allow a review of key information
+after a simulation, like the amount of new infections over time.

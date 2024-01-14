@@ -78,11 +78,19 @@
 
 %---
 \begin{abstract}
-  This work serves as an introduction to the topic of Algorithmic Game Theory. The basic principles and applications of Algorithmic Game Theory are explained and discussed. Some basic examples of Algorithmic Game Theory are presented, including popular games and dilemmas, like the Prisoner's Dilemma. Different groups of games, such as coordination games or cooperative games, are introduced and their optimal strategies and differences are outlined.
+ Epidemic diseases are an important area of studies. During the history of humans there
+ were multiple instances of epidemics singificantly affecting large parts of the world.
+ One recent example would be the Corona virus which brought most parts of the world to a 
+ standstill. The area of epidemics focuses on such contagious diseases which spread from
+ person to person, like Corona of influenza.
 
- The different types of optimal and stable solutions, called Nash equilibria, are presented. If a solution is a Nash equilibrium, none of the players can improve their outcome of the game by changing the choices they made. The requirements and characteristics of these Nash Equilibria are explained and ways to compute them are discussed. The complexity of these computations and possible solutions are outlined. The Lemke-Howson algorithm for calculating Nash equilibria is explained and the PPAD-completeness of Nash is discussed.
-
- An outlook on current research in the field of Algorithmic Game Theory is given and the importance of Algorithmic Game Theory in today's world is discussed.
+ Depending on the characteristics of the virus epidemics can have a very different progression.
+ Some may explosively affect the whole world while not causing many casualties while others
+ spread very slowly but linger for a long time with a high fatality rate. An important 
+ part of studying these diseases is simulating how different diseases could affect the world.
+ The simulation of such diseases can be accomplished using network graphs. This paper introduces
+ a model wich can be used for simulation and explains how the program that allows to simulate
+ a disease using that model is built.
 \end{abstract}
 %-----------------------------------------------------------------------
 \cleardoublepage
@@ -102,6 +110,14 @@
 \algrenewcommand\algorithmicensure{\textbf{Output:}}
 
 % ----------------------------------------------------------------------
+
+\chapter{Introduction}
+\label{cha:introduction}
+\input{tex/introduction}
+
+\chapter{Theory of modeling epidemics}
+\label{cha:general_principles}
+\input{tex/general_principles}
 
 \chapter{Network Generation}
 \label{cha:network_generation}
