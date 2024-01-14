@@ -1,0 +1,44 @@
+The models the app developed in this work uses are based on chapters 19-21 of the book
+"Networks Crowds and Markets" Easley and Kleinberg \cite{networks}.
+
+\section{Simplest model}
+The first model proposed by Easley and Kleinberg \cite{networks} uses a very simplistic
+representation of networks. The network is represented as a tree with each layer representing
+the nodes who come into contact with infected nodes form the previous cycle. The root
+of the tree is the first person to contract the disease in the social network. During the
+first cycle the $k$ nodes at a depth of 1 may or may not get infected with the disease based
+on the infectiousness of the disease. During the second cycle each of these $k$ nodes
+now comes into contact with $k$ other nodes at a depth of 2. This means during the second
+cycle $k \cdot k = k^2$ people are potentially at risk of infection. During each cycle the
+amount of people that come into contact with the disease increases by a factor of $k$ for
+a total of $k^{cycle}$ that potentially come into contact with the disease during each cycle.
+Figure \ref{fig:tree_network} shows a possible network structure.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/tree_network.png}
+    \caption{Tree representation of a network showing the spread of a disease (source: \cite{networks})}
+    \label{fig:tree_network}
+\end{figure}
+
+The book \cite{networks} also explains the concept of the reproductive number $R_0$ in
+relation to this network. $R_0$ is the expected number of new cases of the disease
+caused by a single infected individual. In the case of the tree network this means 
+$R_0 = pk$ with $p$ being the infectiousness of the disease. If $R_0 > 1$ the amount
+of cases will increase over time because each person infects more than one other person
+on average. Thus there is a possibility that the disease will never
+die out. If $R_0 < 1$ the amount of cases is decreasing on average each person infects less
+than one other person which leads to the disease dying out in a finite number of cycles.
+With this knowledge the importance of $R_0$ in fighting an epidemic is clear. To prevent
+or stop a epidemic the $R_0$ factor of a disease has to be below 0.
+
+\subsection{Limitations}
+This model has several limitations. It assumes each person has contact to the same amount of
+people which is never the case in real social networks. There are always people who come into
+contact with more people than others. Also each person can only infect others during the
+first cycle after they got infected. It does not allow for a person to infect others during
+multiple cycles for longer lasting diseases. Further it is not possible for a person
+to get infected a second time as there are no loops withing the tree.
+
+\section{SIR Model}
+
