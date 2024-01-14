@@ -78,23 +78,24 @@ class UiTextSimulationTab:
         self.main_window = main_window
                 
         self.start_stop_button = self.main_window.start_stop_button
-        self.start_stop_button.setText(None)
-        self.start_stop_button.setIcon(self.main_window.start_icon)
+        #self.start_stop_button.setText(None)
+        #self.start_stop_button.setIcon(self.main_window.start_icon)
         self.increase_button = self.main_window.increase_button
-        self.increase_button.setText(None)
-        self.increase_button.setIcon(self.main_window.forward_icon)
+        #self.increase_button.setText(None)
+        #self.increase_button.setIcon(self.main_window.forward_icon)
         self.decrease_button = self.main_window.decrease_button
-        self.decrease_button.setText(None)
-        self.decrease_button.setIcon(self.main_window.rewind_icon)
+        #self.decrease_button.setText(None)
+        #self.decrease_button.setIcon(self.main_window.rewind_icon)
         self.reset_button = self.main_window.reset_button
-        self.reset_button.setText(None)
-        self.reset_button.setIcon(self.main_window.restart_icon)
+        #self.reset_button.setText(None)
+        #self.reset_button.setIcon(self.main_window.restart_icon)
         self.save_button = self.main_window.save_button
-        self.save_button.setText(None)
-        self.save_button.setIcon(self.main_window.save_icon)
+        #self.save_button.setText(None)
+        #self.save_button.setIcon(self.main_window.save_icon)
         
         self.tab_widget = self.main_window.simulation_stats
         
+        self.save_button.clicked.connect(lambda: self.save_simulation())
         self.start_stop_button.clicked.connect(lambda: self.start_stop_simulation())
         self.increase_button.clicked.connect(lambda: self.increase_simulation_speed())
         self.decrease_button.clicked.connect(lambda: self.decrease_simulation_speed())
@@ -161,9 +162,9 @@ class UiTextSimulationTab:
 
     def update_control_labels(self, simulation_speed: float):
         if simulation_speed >= 1 or simulation_speed == 0:
-            self.speed_label.setText(f'Simulation speed: {int(simulation_speed)}')
+            self.speed_label.setText(f'Simulation speed: {int(simulation_speed)}t/s')
         else:
-            self.speed_label.setText(f'Simulation speed: {simulation_speed}')
+            self.speed_label.setText(f'Simulation speed: {simulation_speed}t/s')
         if simulation_speed == 0:
             self.start_stop_button.setIcon(self.main_window.start_icon)
             #self.start_stop_button.setText('Start')
@@ -227,8 +228,8 @@ class UiTextSimulationTab:
         if result != QtWidgets.QMessageBox.AcceptRole:
             return 
         
-        self.main_window.network_edit_tab.group_display.start_generating(self.network, generate_local=True)
-        #self.main_window.network_edit_tab.group_display.generate_button.click()
+        #self.main_window.network_edit_tab.group_display.start_generating(self.network)
+        self.main_window.network_edit_tab.group_display.generate_button.click()
         self.reset_simulation()
     
     def ask_for_reset(self):
@@ -241,6 +242,16 @@ class UiTextSimulationTab:
         self.main_window.network_edit_tab.group_display.start_generating(self.network, generate_local=True)
         # self.main_window.network_edit_tab.group_display.generate_button.click()
         self.reset_simulation()
+        
+    def save_simulation(self):
+        name = UiWidgetCreator.open_save_sim_popup()
+        if not name:
+            return
+        simulation_stats = self.simulation.stats
+        data = {'filename': name, 'stats': simulation_stats.to_dict()}
+        
+        self.main_window.stats_update(data)
+        self.main_window.push_to_dash(data=data, sub_url='update-stats')
         
     def clear_stats_widgets(self):
         self.stat_labels.clear()

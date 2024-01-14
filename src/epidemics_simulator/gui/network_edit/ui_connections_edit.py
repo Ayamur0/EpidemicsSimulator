@@ -9,23 +9,24 @@ class UiConnectionEdit:
     def __init__(self, main_window: QtWidgets.QMainWindow):
         self.main_window = main_window
         
+        self.con_label = self.main_window.con_label
+        
         self.save_connection_prop_button = self.main_window.save_connections_btn
         self.save_connection_prop_button.setText(None)
         self.save_connection_prop_button.setIcon(self.main_window.save_icon)
         
         self.connection_list = self.main_window.connection_list_content
         self.connection_prop = self.main_window.connection_properties_content
-        
-        self.connection_list.layout().setAlignment(Qt.AlignTop)
                 
         self.connection_buttons: dict = {}
         
     def init_ui(self, network: Network):
         self.network = network
-        self.save_connection_prop_button.hide()
+        self.save_connection_prop_button.hide()        
         
     def load_connections(self, network: Network, group_from: NodeGroup):
         self.unload()
+        self.con_label.setText(f'{group_from.name} Connections')
         other_groups = [g for g in network.groups if g.id != group_from.id]
         for group in other_groups:
             self.load_connection_button(group_from, group)
@@ -101,5 +102,6 @@ class UiConnectionEdit:
         self.main_window.unload_items_from_layout(self.connection_list.layout())
         
     def unload(self):
+        self.con_label.setText(f'Connections')
         self.unload_properties()
         self.unload_connection_list()

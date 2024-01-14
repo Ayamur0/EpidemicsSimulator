@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import partial
 from src.epidemics_simulator.storage import Network, Project
 from src.epidemics_simulator.gui.templates import templates
@@ -294,3 +295,43 @@ class UiWidgetCreator:
             return False
         button_for_generating.click()
         return True
+    
+    def open_save_sim_popup():
+        dialog = SaveDialog()
+        result = dialog.exec_()
+        if result == QtWidgets.QDialog.Accepted:
+            # User clicked OK, retrieve the text from the line edit
+            return dialog.line_edit.text()
+        else:
+            return None
+
+class SaveDialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super(SaveDialog, self).__init__(parent)
+        self.setWindowTitle("Save simulation stats")
+
+        self.label = QtWidgets.QLabel("Simulation name: ")
+        self.line_edit = QtWidgets.QLineEdit(self)
+        current_datetime = datetime.now()
+        formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        self.line_edit.setText(str(formatted_datetime))
+        self.ok_button = QtWidgets.QPushButton("Save", self)
+        self.cancel_button = QtWidgets.QPushButton("Cancel", self)
+
+        # Set up layouts
+        label_line_edit_layout = QtWidgets.QHBoxLayout()
+        label_line_edit_layout.addWidget(self.label)
+        label_line_edit_layout.addWidget(self.line_edit)
+
+        button_layout = QtWidgets.QHBoxLayout()
+        button_layout.addWidget(self.ok_button)
+        button_layout.addWidget(self.cancel_button)
+
+        main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout.addLayout(label_line_edit_layout)
+        main_layout.addLayout(button_layout)
+
+        # Connect buttons to slots
+        self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
+    
