@@ -17,7 +17,7 @@ class PlotlyWrapper:
         node_coords_z,
     ):
         aXe, aYe, aZe = [], [], []
-        for group in network.groups:
+        for group in network.active_groups:
             if group.id in hidden_groups:
                 continue
             if internal_edges:
@@ -42,7 +42,7 @@ class PlotlyWrapper:
     def get_cube_coords(network: Network, visible_node_percent):
         max_group_size = 0
         group_num = 0
-        for group in network.groups:
+        for group in network.active_groups:
             if group.active:
                 group_num += 1
             if group.size > max_group_size:
@@ -73,7 +73,7 @@ class PlotlyWrapper:
         Yn = []
         Zn = []
         cube_coords = PlotlyWrapper.get_cube_coords(network, visible_node_percent)
-        for group in network.groups:
+        for group in network.active_groups:
             node_coords = CircleGrid.get_points_3D(math.ceil(visible_node_percent * group.size))
             node_coords = PlotlyWrapper.adjust_node_coords(cube_coords, node_coords)
             group_coords[group.id] = node_coords

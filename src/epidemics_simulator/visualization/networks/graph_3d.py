@@ -47,7 +47,7 @@ class Graph3D:
     def update_status_colors(self, colors_map):
         self.status_colors_group_map = colors_map
         self.status_colors.clear()
-        for group in self.network.groups:
+        for group in self.network.active_groups:
             if group.id not in self.hidden_groups:
                 if group.id in self.status_colors_group_map:
                     self.status_colors.extend(
@@ -130,13 +130,13 @@ class Graph3D:
         self.hidden_groups.clear()
         self.visible_node_percent = 1
         self.build()
-        return self.network.groups, self.hidden_groups
+        return self.network.active_groups, self.hidden_groups
 
     def build(self):
         aXn, aYn, aZn = [], [], []
         self.colors.clear()
         self.status_colors.clear()
-        for group in self.network.groups:
+        for group in self.network.active_groups:
             if group.id not in self.hidden_groups:
                 x, y, z = zip(*self.group_coords[group.id])
                 aXn.extend(x)

@@ -74,7 +74,7 @@ class Simulation:
     def create_color_seq(self):
         colors = {}
         all = []
-        for group in self.network.groups:
+        for group in self.network.active_groups:
             c = []
             node: Node
             for node in group.members:
@@ -96,7 +96,7 @@ class Simulation:
         self.infected_nodes.clear()
         self.stats = SimStats(self.network)
         nodes = []
-        for group in self.network.groups:
+        for group in self.network.active_groups:
             nodes.extend(group.members)
             group.vaccinated_amount = 0
         for node in nodes:

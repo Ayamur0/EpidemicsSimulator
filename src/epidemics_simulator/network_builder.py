@@ -15,12 +15,12 @@ class NetworkBuilder:
 
     def build(self):
         self.clear()
-        for group in self.network.groups:
+        for group in self.network.active_groups:
             self._create_int_conn(group)
         self._create_ext_conns()
 
     def clear(self):
-        for group in self.network.groups:
+        for group in self.network.active_groups:
             group.clear_connections()
 
     def _create_int_conn(self, group: NodeGroup):
@@ -75,9 +75,11 @@ class NetworkBuilder:
     # contains tuples of (target_id, avrg, delta)
     def _collect_ext_conns(self, network: Network):
         all = {}
-        for group in network.groups:
+        for group in network.active_groups:
             x = []
             for target in group.avrg_ext_con.keys():
+                if not network.get_group_by_id(target).active:
+                    continue
                 x.append((target, group.avrg_ext_con[target], group.delta_ext_con[target]))
             all[group.id] = x
         return all

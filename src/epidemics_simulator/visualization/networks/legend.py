@@ -16,7 +16,7 @@ class Legend:
             status_labels.append(disease.name)
         group_colors = []
         group_labels = []
-        for group in network.groups:
+        for group in network.active_groups:
             group_colors.append(group.color)
             group_labels.append(group.name)
         self.group_legend = self._create_trace(group_colors, group_labels)

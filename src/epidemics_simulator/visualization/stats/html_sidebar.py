@@ -140,7 +140,7 @@ class HTMLSidebar(html.Div):
 
     def groups_submenu(self):
         submenu = HTMLSubmenu("Groups", "people-group", "groups", self.stats_view)
-        submenu.add_group_entries(self.network.groups)
+        submenu.add_group_entries(self.network.active_groups)
         return submenu
 
     def disease_submenu(self):
