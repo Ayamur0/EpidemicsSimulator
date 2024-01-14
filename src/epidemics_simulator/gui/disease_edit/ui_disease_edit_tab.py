@@ -5,7 +5,6 @@ from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.storage import Network, NodeGroup, Project, Disease
 from src.epidemics_simulator.gui.flowlayout import FlowLayout
 
-#TODO convert to flow layout
 class UiDiseaseEditTab:
     def __init__(self, main_window: QtWidgets.QMainWindow):
         self.main_window = main_window
@@ -79,6 +78,8 @@ class UiDiseaseEditTab:
         frame.setMinimumSize(*self.min_frame_size)
         if default_properties:
             self.disease_layout_list.insert(1, None)
+        elif self.is_creating_disease:
+            self.disease_layout_list.insert(2, disease.id)
         else:
             self.disease_layout_list.insert(1, disease.id)
         self.insert_to_flowlayout_at(self.disease_content.layout, frame, insertion_index)
