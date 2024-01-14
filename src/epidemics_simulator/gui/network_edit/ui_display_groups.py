@@ -75,10 +75,8 @@ class UiDisplayGroup:
         self.generated_once = True
         print('Finished Generating')
         self.popup.deleteLater()
-        self.load_webview()
-        
-        
-        
+        self.main_window.show_webviews()
+        # self.load_webview()
         
     def load_webview(self):
         #self.main_window.show_webviews()
@@ -98,9 +96,9 @@ class UiDisplayGroup:
             self.webview.loadFinished.disconnect()
         except TypeError:
             pass
-        #self.webview.loadFinished.connect(lambda: self.webview.show())
-        #self.webview.reload()
-        self.webview.show()
+        self.webview.loadFinished.connect(lambda: self.webview.show())
+        self.webview.reload()
+        # self.webview.show()
         
     def refresh_info_label(self, network: Network, generation_time: float):
         label_text = f'Some stats about graph creation\n'

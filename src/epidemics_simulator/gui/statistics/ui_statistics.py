@@ -7,8 +7,6 @@ from src.epidemics_simulator.storage import Network, NodeGroup, Node, Project
 from functools import partial
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDesktopServices
-
-
 class UiStatisticTab:
     def __init__(self, main_window: QtWidgets.QMainWindow):
         self.main_window = main_window

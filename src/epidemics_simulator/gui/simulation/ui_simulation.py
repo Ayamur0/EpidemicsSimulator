@@ -1,5 +1,5 @@
 import time
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtWebEngineWidgets
 from PyQt5.QtCore import QThread, pyqtSignal, QUrl
 from PyQt5.QtWebEngineWidgets import *
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
@@ -7,7 +7,6 @@ from src.epidemics_simulator.storage import Network, NodeGroup, Node, Project
 from functools import partial
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDesktopServices
-
 
 class UiSimulationTab:
     def __init__(self, main_window: QtWidgets.QMainWindow):
