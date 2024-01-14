@@ -123,6 +123,13 @@ Generation time 20.5s</string>
                      </widget>
                     </item>
                     <item>
+                     <widget class="QPushButton" name="pushButton">
+                      <property name="text">
+                       <string>Reload</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
                      <widget class="QPushButton" name="open_in_browser_button">
                       <property name="text">
                        <string>Open in browser</string>
@@ -178,8 +185,8 @@ Generation time 20.5s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>274</width>
-                   <height>253</height>
+                   <width>277</width>
+                   <height>252</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_3"/>
@@ -189,56 +196,12 @@ Generation time 20.5s</string>
               <item>
                <widget class="QPushButton" name="save_connections_btn">
                 <property name="text">
-                 <string>Save</string>
+                 <string/>
                 </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="0" column="3" colspan="2">
-            <widget class="QFrame" name="group_properties_frame">
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <item>
-               <widget class="QScrollArea" name="group_properties">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>3</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="widgetResizable">
-                 <bool>true</bool>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-                <widget class="QWidget" name="group_properties_content">
-                 <property name="geometry">
-                  <rect>
-                   <x>0</x>
-                   <y>0</y>
-                   <width>280</width>
-                   <height>253</height>
-                  </rect>
-                 </property>
-                 <layout class="QFormLayout" name="formLayout_4"/>
-                </widget>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="save_properties_btn">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Save</string>
+                <property name="icon">
+                 <iconset>
+                  <normalon>../../assets/save.png</normalon>
+                 </iconset>
                 </property>
                </widget>
               </item>
@@ -273,8 +236,8 @@ Generation time 20.5s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>275</width>
-                   <height>253</height>
+                   <width>278</width>
+                   <height>252</height>
                   </rect>
                  </property>
                  <property name="layoutDirection">
@@ -289,8 +252,25 @@ Generation time 20.5s</string>
               </item>
               <item>
                <widget class="QPushButton" name="new_group_btn">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
-                 <string>+</string>
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normalon>../../assets/add.png</normalon>
+                 </iconset>
                 </property>
                 <property name="checkable">
                  <bool>true</bool>
@@ -334,12 +314,66 @@ Generation time 20.5s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>275</width>
+                   <width>278</width>
                    <height>282</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6"/>
                 </widget>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QFrame" name="group_properties_frame">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QScrollArea" name="group_properties">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>3</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="widgetResizable">
+                 <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+                <widget class="QWidget" name="group_properties_content">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>277</width>
+                   <height>252</height>
+                  </rect>
+                 </property>
+                 <layout class="QFormLayout" name="formLayout_4"/>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="save_properties_btn">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normalon>../../assets/save.png</normalon>
+                 </iconset>
+                </property>
                </widget>
               </item>
              </layout>
@@ -389,8 +423,8 @@ Generation time 20.5s</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>28</height>
+                <width>1234</width>
+                <height>612</height>
                </rect>
               </property>
              </widget>
@@ -459,8 +493,8 @@ Generation time 20.5s</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>28</height>
+                <width>1234</width>
+                <height>509</height>
                </rect>
               </property>
              </widget>
@@ -475,28 +509,54 @@ Generation time 20.5s</string>
                  <item>
                   <widget class="QPushButton" name="reset_button">
                    <property name="text">
-                    <string>Reset</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normalon>../../assets/restart.png</normalon>
+                    </iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>16</width>
+                     <height>16</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="decrease_button">
                    <property name="text">
-                    <string>&lt;&lt;</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normalon>../../assets/rewind.png</normalon>
+                    </iconset>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="start_stop_button">
                    <property name="text">
-                    <string>Start</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normalon>../../assets/play.png</normalon>
+                    </iconset>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="increase_button">
                    <property name="text">
-                    <string>&gt;&gt;</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normalon>../../assets/forward.png</normalon>
+                    </iconset>
                    </property>
                   </widget>
                  </item>

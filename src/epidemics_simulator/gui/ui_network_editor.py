@@ -69,7 +69,9 @@ class CheckConnection(QThread):
         self.connection_established.emit()
         self.finished.emit(self)
 
-
+class NullDevice:
+    def write(self, s):
+        pass
 class UiNetworkEditor(QtWidgets.QMainWindow):
     network_changed = pyqtSignal() # TODO connect emit
     disease_changed = pyqtSignal() # TODO connect emit
