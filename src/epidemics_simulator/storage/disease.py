@@ -11,6 +11,9 @@ class Disease:
         reinfection_rate: float = 0.05,
         vaccinated_infection_rate: float = 0.001,
         duration: int = 5,
+        cure_chance: float = 0.2,
+        immunity_period: int = 8,
+        infectiousness_factor: float = 1,
         initial_infection_count: int = 10,
     ) -> None:
         self.name = name
@@ -23,6 +26,9 @@ class Disease:
         self.reinfection_rate = reinfection_rate
         self.vaccinated_infection_rate = vaccinated_infection_rate
         self.duration = duration
+        self.cure_chance = cure_chance
+        self.immunity_period = immunity_period
+        self.infectiousness_factor = infectiousness_factor
         self.initial_infection_count = initial_infection_count
 
     def to_dict(self):

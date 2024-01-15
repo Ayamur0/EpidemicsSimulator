@@ -1,0 +1,109 @@
+In this chapter some experiments will be conducted. These experiments are modeled
+after the scenarios described in the Theory chapter %TODO ref
+The goal is to recreate these situation using the developed tool and running a
+simulation with the described parameters. These simulations can then be used
+to support or refute the assumptions that were made on how the diseases
+theoretically should behave in those scenarios.
+
+\section{Importance of $R_0$}
+The role of the reproductive number $R_0$ was discussed in section \ref{sub:r0}.
+It is the deciding factor for whether a disease is dying out ($R_0 < 1$) 
+or able to live indefinitely ($R_0 > 1$). Calculating $R_0$ in complex social
+networks is very hard because the structure of the networks has a big impact on $R_0$
+in addition to the characteristics of the disease. For these experiments a very
+rough estimation of $R_0=e_\mu \cdot p$ is used as this is sufficient for estimating whether
+the disease should die out in the experiment or life for a long time.
+$e_\mu$ is the average amount of connection per node, let $N$ be the total
+amount of nodes in the network and $E$ the total amount of edges then
+$e_\mu=\frac{E}{N}$. $p$ is the probability for a node to get infected
+if one of its neighbors has the disease.
+
+\subsection{The network}
+The network that is used in these experiments contains 3 groups with 5000 nodes
+each. Group 1 has 5 intra group connections for each node, group 2 has 4 and
+group 3 has 3 intra group connections. Between each pair of groups there are
+2 connections per node. The resulting network can be seen in figure %TODO
+It contains a total of 15,000 nodes. Let $N_i$ be the amount of nodes in group $i$
+then the amount of edges can be calculated using the following equation:
+\begin{equation}
+    E = \frac{n_1}{2} * 5 + \frac{n_2}{2} * 4 + \frac{n_3}{2} * 3 + \frac{n_1+n_2}{2} * 2 + \frac{n_1+n_3}{2} * 2 + \frac{n_2+n_3}{2} * 2
+\end{equation}
+Using that equation the it can be calculated that the network contains 60,000 edges.
+This leads to an average amount of connections per node of $e\mu=\frac{60,000}{15,000} = 4$.
+
+\subsection{Experiment with $R_0 < 1$}
+Since this experiment will use the same network as the one for a $R_0 > 1$ the
+facor $e_\mu$ is static and cannot be changed. This makes $p$ the only deciding
+factor for $R_0$ it can be calculated using $p = \frac{R_0}{e_\mu}$ so in this case
+with $R_0 < 1$, $p < \frac{1}{4}$. For cases with $R_0$ close to 1 there is still
+a decent chance that the disease will live for a long time which is why $p=0.125$
+is chosen for a estimated $R_0=0.5$ to ensure that the disease dies out in a finite
+amount of steps.
+
+The parameters for the disease of this experiment then are:
+\begin{itemize}
+    \item %TODO
+\end{itemize}
+
+Running the simulation shows that the disease is never able to spread to a large
+amount of people and dies out after only \~ %TODO
+steps. This can also be seen in the graph %TODO 
+which shows the amount of new infections per cycle. 
+Increasing the initial amount of infected nodes to 5,000 shows that even with
+such a large amount of infections the disease dies out after a certain amount of steps.
+In this case it took %TODO
+steps, graph %TODO
+shows the amount of new infections up to that point.
+
+This experiment supports the theory that for a $R_0 < 1$ the disease will die out
+in a finite amount of steps.
+
+\subsection{Experiment with $R_0 > 1$}
+This network uses the same network as the previous one, so $p$ is again the deciding
+factor for $R_0$. $p = \frac{R_0}{e_\mu}$ so for this case with $R_0 > 1$, $p > \frac{1}{4}$
+since the closer $R_0$ to 1 the higher the chance the disease dies out $p=0.375$ is chosen
+resulting in a $R_0 = 1.5$.
+
+The properties that were changed from the previous experiment are:
+\begin{itemize}
+    \item %TODO
+\end{itemize}
+
+After running the simulation for 2,000 cycles the disease is still alive and infecting
+new nodes. This supports the theory that with a $R_0 > 1$ there is a probability $> 0$
+that the disease never dies out. Figure %TODO
+shows the amount of new infections which is remains relatively constant 
+from cycle x to %TODO.
+
+\subsubsection{Changing the network}
+To show that the network structure indeed has an impact on $R_0$ this experiment
+uses the same disease as the previous one. The network will have only half as many
+edges, group 1 has 2 intra group connections for each node, group 2 has 2 and
+group 3 has 2 intra group connections. Between each pair of groups there are
+1 connections per node. This new network has 30,000 edges resulting in $e_\mu$ = 2.
+Thus the new estimated $R_0=2\cdot0.375=0.75$ which is smaller than 1 so they
+expectation is that the disease will die out even though it has the same infection 
+rate as before.
+
+After %TODO
+cycles the disease has died out which supports the theory that the network structure
+has an impact on the spreading of diseases along with the characteristics of the disease.
+Graph %TODO 
+shows the amount of infections until the disease died out.
+
+\section{Small World Phenomenon}
+%TODO allgemeiner text
+
+\subsection{Experiment}
+For this experiment a network with only one group is created. That group
+contains 10,000 nodes with each node having %TODO
+connections. To show that each node can be reached in only %TODO
+steps, a disease with an infection rate of 1 and infection duration of
+1000 is used. Initially only one
+node is infected. Figure %TODO shows the network after x cycles.
+After cycle %TODO
+all nodes are infected which means they were all able to be reached from the 
+starting node in only %TODO
+steps.
+
+
