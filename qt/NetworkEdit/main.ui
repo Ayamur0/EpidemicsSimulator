@@ -36,7 +36,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="network_edit">
        <attribute name="title">
@@ -204,7 +204,7 @@ Generation time 0s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>277</width>
-                   <height>233</height>
+                   <height>224</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_3"/>
@@ -265,7 +265,7 @@ Generation time 0s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>278</width>
-                   <height>233</height>
+                   <height>224</height>
                   </rect>
                  </property>
                  <property name="layoutDirection">
@@ -353,7 +353,7 @@ Generation time 0s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>278</width>
-                   <height>263</height>
+                   <height>254</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6"/>
@@ -402,7 +402,7 @@ Generation time 0s</string>
                    <x>0</x>
                    <y>0</y>
                    <width>277</width>
-                   <height>233</height>
+                   <height>224</height>
                   </rect>
                  </property>
                  <layout class="QFormLayout" name="formLayout_4"/>
@@ -471,8 +471,8 @@ Generation time 0s</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1234</width>
-                <height>612</height>
+                <width>98</width>
+                <height>28</height>
                </rect>
               </property>
              </widget>
@@ -499,9 +499,21 @@ Generation time 0s</string>
           <layout class="QVBoxLayout" name="verticalLayout_13" stretch="1,20">
            <item>
             <widget class="QWidget" name="widget" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1,20">
               <item>
                <widget class="QPushButton" name="open_browser_button">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -513,6 +525,18 @@ Generation time 0s</string>
               </item>
               <item>
                <widget class="QPushButton" name="reload_sim">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -521,6 +545,19 @@ Generation time 0s</string>
                   <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </widget>
@@ -548,7 +585,7 @@ Generation time 0s</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_17">
+          <layout class="QVBoxLayout" name="verticalLayout_17" stretch="10,1">
            <item>
             <widget class="QScrollArea" name="stats_list">
              <property name="widgetResizable">
@@ -563,7 +600,7 @@ Generation time 0s</string>
                 <x>0</x>
                 <y>0</y>
                 <width>1234</width>
-                <height>509</height>
+                <height>497</height>
                </rect>
               </property>
              </widget>
@@ -574,9 +611,34 @@ Generation time 0s</string>
              <layout class="QVBoxLayout" name="verticalLayout_16">
               <item>
                <widget class="QWidget" name="control_widget" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="10,1,1,1,1,1,10">
+                 <item>
+                  <spacer name="horizontalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                  <item>
                   <widget class="QPushButton" name="reset_button">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -595,6 +657,18 @@ Generation time 0s</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="decrease_button">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -607,6 +681,18 @@ Generation time 0s</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="start_stop_button">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -619,6 +705,18 @@ Generation time 0s</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="increase_button">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -631,6 +729,18 @@ Generation time 0s</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="save_button">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>50</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -640,6 +750,19 @@ Generation time 0s</string>
                     </iconset>
                    </property>
                   </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </widget>
@@ -694,9 +817,21 @@ Generation time 0s</string>
           <layout class="QVBoxLayout" name="verticalLayout_19" stretch="1,20">
            <item>
             <widget class="QWidget" name="browser_contorl" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,1,20">
               <item>
                <widget class="QPushButton" name="open_view_in_browser">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -708,6 +843,18 @@ Generation time 0s</string>
               </item>
               <item>
                <widget class="QPushButton" name="reload_stats">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -716,6 +863,19 @@ Generation time 0s</string>
                   <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </widget>

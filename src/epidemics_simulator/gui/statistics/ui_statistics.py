@@ -16,6 +16,7 @@ class UiStatisticTab:
         
         self.stat_view_widget = self.main_window.stat_view_widget
         self.tab_widget = self.main_window.stats_view
+        self.reload_stats = self.main_window.reload_stats
         
         self.webview = QWebEngineView()
         self.webview.load(QUrl(self.url))
@@ -23,6 +24,7 @@ class UiStatisticTab:
         
         
         self.open_view_in_browser.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(self.url)))
+        self.reload_stats.clicked.connect(lambda: self.webview.reload())
         
     def init_ui(self):
         self.webview.hide()

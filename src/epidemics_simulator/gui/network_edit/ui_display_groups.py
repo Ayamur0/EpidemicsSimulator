@@ -28,6 +28,7 @@ class UiDisplayGroup:
         self.network_graph = self.main_window.network_graph
         self.stat_label: QtWidgets.QLabel = self.main_window.network_stats
         self.open_browser_button = self.main_window.open_in_browser_button
+        self.reload_view = self.main_window.reload_view
         
         self.webview = QWebEngineView()
         self.webview.load(QUrl(self.url))
@@ -36,7 +37,7 @@ class UiDisplayGroup:
         
         
         self.open_browser_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(self.url)))
-        
+        self.reload_view.clicked.connect(lambda: self.webview.reload())
         self.generated_once = False
         
         
@@ -53,6 +54,15 @@ class UiDisplayGroup:
             
         
     def start_generating(self, network: Network):
+        total_nodes, _ = self.get_network_info(network)
+        if total_nodes >= 20000:
+            msg_box = UiWidgetCreator.show_message('Generating network with more than 20,000 nodes may take a while.\nDo you want to continue?', 'Generating network')
+            result = msg_box.exec_()
+            if result != QtWidgets.QMessageBox.AcceptRole:
+                return
+        
+        
+        
         self.main_window.push_to_dash()
         # self.main_window.server_push.finished.connect(self.generating_finished)
         self.popup = UiWidgetCreator.create_generate_popup(self.main_window)

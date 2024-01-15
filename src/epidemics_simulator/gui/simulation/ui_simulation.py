@@ -18,11 +18,13 @@ class UiSimulationTab:
         self.simulation_view = self.main_window.simulation_view
         self.tab_widget = self.main_window.simulation
         self.webview = QWebEngineView()
+        self.reload_sim = self.main_window.reload_sim
         self.webview.load(QUrl(self.url))
         self.simulation_view.layout().addWidget(self.webview)
         
         
         self.open_browser_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(self.url)))
+        self.reload_sim.clicked.connect(lambda: self.webview.reload())
         
     def init_ui(self):
         self.webview.hide()

@@ -312,7 +312,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if self.server_check_in_progress:
             return
         if not is_initial_test:
-            self.ask_if_server_should_restart() # Could inflict bugs
+            pass
+            # self.ask_if_server_should_restart() # Could inflict bugs
         self.is_server_connected = False
         self.server_check_in_progress = True
         self.server_check = CheckConnection(self.server_url)
@@ -356,18 +357,18 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.server_push.deleteLater()
         self.server_push = None
         
-    def ask_if_server_should_restart(self):
-        if self.is_asking_for_restart:
-            return
-        self.is_asking_for_restart = True
-        
-        message = UiWidgetCreator.show_message('Connection to server lost. Do you want to restart the server?', 'Connection lost')
-        result = message.exec_()
-        if result != QtWidgets.QMessageBox.AcceptRole:
-            return
-        self.terminate_server()
-        self.server_process = self.start_server()
-        self.is_asking_for_restart = False
+    #def ask_if_server_should_restart(self):
+        #if self.is_asking_for_restart:
+        #    return
+        #self.is_asking_for_restart = True
+        #
+        #message = UiWidgetCreator.show_message('Connection to server lost. Do you want to restart the server?', 'Connection lost')
+        #result = message.exec_()
+        #if result != QtWidgets.QMessageBox.AcceptRole:
+        #    return
+        #self.terminate_server()
+        #self.server_process = self.start_server()
+        #self.is_asking_for_restart = False
         
     def start_server(self):
         if self.is_server_connected:
