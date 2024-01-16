@@ -1,0 +1,88 @@
+An app that allows for the simulation of epidemics is created. First the required functionalities
+of the app need to be determined. It must be able to simulate different epidemics cases for
+which different social networks and diseases are required.
+
+\subsection{Network Editor}
+The app needs an editor that allows for the creation of different social networks. Since
+social networks can consist of a huge amount of people this editor needs to allow the user
+to quickly create networks with a high amount of nodes and connections. For this there
+will be three settings for a group of nodes:
+
+\begin{itemize}
+    \item \textbf{Size}: The amount of nodes in the group
+    \item \textbf{Intra group connections}: The amount of edges each node has to other nodes
+    of the same group
+    \item \textbf{Intra group connections delta}: The variation for the amount of edges each
+    node has ot other nodes of the same group. Eg. a connection amount of 5 with a delta of 3
+    would result in each node having between 2 and 8 connections.
+\end{itemize}
+
+A network then consists of any amount of groups each with different settings. To allow
+for connections between these groups there are similar settings availabe for each pair of
+groups:
+
+\begin{itemize}
+    \item \textbf{Inter group connections}: The amount of edges each node has to other nodes
+    of the other group
+    \item \textbf{Inter group connections delta}: The variation for the amount of edges each
+    node has ot other nodes of the other group. Eg. a connection amount of 5 with a delta of 3
+    would result in each node having between 2 and 8 connections.
+\end{itemize}
+
+Using these properties the user is able to quickly generate big networks to model most
+social situations. To visualize the structure of the network there will also be a 3D view
+of the current network which can be updated after each change. Chapters \ref{cha:network_generation}
+and \ref{cha:network_display} explain the implementation of this feature in more detail.
+
+\subsection{Disease Editor}
+To create the diseases that spread in the network the app has a tab were the required properties
+for each diseases can be set. These include the properties discussed for the custom model in
+section \ref{sec:custom_model} as well as some other properties required for visualizing the network:
+\begin{itemize}
+    \item \textbf{Name}: Name of the disease, will be shown in the legend when displaying the network
+    \item \textbf{Color}: Color nodes infected with this disease will have
+    \item \textbf{Fatality rate}: $f$, the chance a node is moved into the deceased state after the infection period is over
+    \item \textbf{Vaccinated fatality rate}: Fatality rate for vaccinated nodes
+    \item \textbf{Infection rate}: $p_I$, the chance an unvaccinated node gets infected by a neighbor
+    \item \textbf{Reinfection rate}: $p_r$, the chance a previously infected node gets infected again by a neighbor
+    \item \textbf{Vaccinated infection rate}: $p_v$, the chance a vaccinated node gets infected by a neighbor
+    \item \textbf{Minimum duration}: $t_{min}$, the minimum cycles an infection lasts
+    \item \textbf{Cure chance}: $t_\rho$, chance a node gets cured (or dies) each cycle after it has been
+    infected for $t_{min}$ cycles
+    \item \textbf{Immunity period}: Amount of cycles a node is immune after being cured
+    \item \textbf{Infectiousness factor}: Decrease of infection rates with each cycle the node has been infected.
+    Eg. with a initial $p_I = 0.5$ and a factor $I = 0.9$ the infection rate after $x$ cycles is $p = p_I \cdot I^x$.
+    \item \textbf{Initial infections}: Amount of nodes infected with this disease in cycle 0, the start of the simulation
+\end{itemize}
+
+\subsection{Simulation}
+To simulate diseases the app contains two different tabs. One where the network is displayed
+in 3D and the current state of each node is indicated by colors. The other tab only contains
+text for each group showing how many nodes are infected, deceased, etc. per group. The simulation
+without visually seeing the graph allows for faster simulation of a high amount of steps and for
+networks with a high amount of nodes (over 100,000, depends on computing power of the system)
+building the graph might take a long time making the simulation with the visual representation
+almost unusable.
+
+Both simulations contain buttons to advance one step, automatically advance steps over time,
+reset the simulation and save the statistics collected during the simulation. The simulation
+which displays the networks also contains buttons to alter the display of the network, eg. to hide
+certain node groups or edges to allow viewing only the areas of the network the user wants to observe.
+Chapter \ref{cha:visual_simulation} explains the implementation of this feature in more detail.
+
+\subsection{Statistics}
+The last tab of the app can be used to view the statistics collected during simulations.
+It displays the individual stats in a coordinate system and contains functions to split
+the stats by different parameters, eg. show only infections with a certain disease or all
+diseases or of only a certain group. The graph can be viewed as the individual value of each
+step as well as the cumulative value up to each step.
+
+\subsection{Frameworks}
+The app is constructed using python. For the UI QT \cite{qt} is used, this is further explained
+in chapter %TODO
+For the display of the graphs the plotly \cite{plotly} is used along with the dash implementation
+it provides for creating webpages. The graphs will then be displayed on the dash webpage
+which is embedded in the QT app. The implementation of the website is explained in chapter %TODO.
+For saving a project the JSON file format is used. The saved project files contain all 
+necessary information, like the groups of the network, diseases and stats of previous simulations
+to allow closing the app after saving without losing any progress.
