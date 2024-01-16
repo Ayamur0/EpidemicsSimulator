@@ -15,9 +15,11 @@ class Simulation:
         self.network = network
         self.infected_nodes = []
         self.unvaccinated_nodes = []
+        self.current_step = 0
         self.stats = SimStats(network)
 
     def simulate_step(self):
+        self.current_step += 1
         self.stats.new_step()
         for node in list(self.unvaccinated_nodes):
             if (
@@ -37,12 +39,14 @@ class Simulation:
         for node in self.infected_nodes:
             disease: Disease = node.infected
             node.infected_time += 1
-            if node.infected_time >= disease.duration:
+            if (
+                node.infected_time >= disease.duration
+                and random.uniform(0, 1) < disease.cure_chance
+            ):
                 fatality = (
                     disease.vaccinated_fatality_rate if node.vaccinated else disease.fatality_rate
                 )
-                r = random.uniform(0, 1)
-                if r <= fatality:
+                if random.uniform(0, 1) <= fatality:
                     node.alive = False
                     self.stats.add_death(node)
                     if not node.vaccinated:
@@ -53,10 +57,16 @@ class Simulation:
                 node.infected = None
                 node.infected_time = 0
                 node.num_of_infections += 1
+                node.immunity_until_step = self.current_step + 1 + disease.immunity_period
                 self.infected_nodes.remove(node)
+                continue
             target: Node
             for target in itertools.chain(node.int_connections, node.ext_connections):
-                if not target.alive or target.infected is not None:
+                if (
+                    not target.alive
+                    or target.infected is not None
+                    or target.immunity_until_step < self.current_step
+                ):
                     continue
                 if node.vaccinated:
                     infection_rate = disease.vaccinated_infection_rate
@@ -64,8 +74,8 @@ class Simulation:
                     infection_rate = disease.reinfection_rate
                 else:
                     infection_rate = disease.infection_rate
-                r = random.uniform(0, 1)
-                if r <= infection_rate:
+                infection_rate *= disease.infectiousness_factor**node.infected_time
+                if random.uniform(0, 1) <= infection_rate:
                     target.infected = disease
                     self.infected_nodes.append(target)
                     self.stats.add_infection(target)

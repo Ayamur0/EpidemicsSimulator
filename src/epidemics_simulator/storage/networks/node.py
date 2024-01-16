@@ -16,6 +16,7 @@ class Node:
         self.num_of_infections: int = 0
         self.vaccinated: bool = False
         self.alive: bool = True
+        self.immunity_until_step = 0
         # other properties, e.g. infected, was infected x times, etc.
         Node.all_instances_by_id[self.id] = self
 
