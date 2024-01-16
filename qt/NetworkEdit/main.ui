@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>719</height>
+    <width>1583</width>
+    <height>992</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -164,7 +164,7 @@ Generation time 0s</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="4,0,0,4">
+          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="7,0,0,10">
            <item row="1" column="3">
             <widget class="QFrame" name="connection_properties_frame">
              <property name="frameShape">
@@ -173,7 +173,13 @@ Generation time 0s</string>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9" stretch="0,9,1">
+             <layout class="QVBoxLayout" name="verticalLayout_9" stretch="0,0,0">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QLabel" name="con_prop_label">
                 <property name="text">
@@ -203,16 +209,110 @@ Generation time 0s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>277</width>
-                   <height>224</height>
+                   <width>437</width>
+                   <height>368</height>
                   </rect>
                  </property>
-                 <layout class="QFormLayout" name="formLayout_3"/>
+                 <layout class="QVBoxLayout" name="verticalLayout_26" stretch="10,1">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QFrame" name="frame_2">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="10,6">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QWidget" name="prop_label_con" native="true">
+                       <layout class="QVBoxLayout" name="verticalLayout_29">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="con_input" native="true">
+                       <layout class="QVBoxLayout" name="verticalLayout_28">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QWidget" name="con_save_status" native="true">
+                    <layout class="QVBoxLayout" name="verticalLayout_27"/>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="save_connections_btn">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">margin-left: 9;
+margin-right: 9;</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -264,8 +364,8 @@ Generation time 0s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>278</width>
-                   <height>224</height>
+                   <width>287</width>
+                   <height>370</height>
                   </rect>
                  </property>
                  <property name="layoutDirection">
@@ -352,8 +452,8 @@ Generation time 0s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>278</width>
-                   <height>254</height>
+                   <width>287</width>
+                   <height>399</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_6"/>
@@ -372,6 +472,12 @@ Generation time 0s</string>
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QLabel" name="group_prop_label">
                 <property name="text">
@@ -401,11 +507,98 @@ Generation time 0s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>277</width>
-                   <height>224</height>
+                   <width>437</width>
+                   <height>369</height>
                   </rect>
                  </property>
-                 <layout class="QFormLayout" name="formLayout_4"/>
+                 <layout class="QVBoxLayout" name="verticalLayout_22" stretch="10,1">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QFrame" name="frame">
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="10,6">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>9</number>
+                     </property>
+                     <item>
+                      <widget class="QWidget" name="prop_label" native="true">
+                       <layout class="QVBoxLayout" name="verticalLayout_24">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="prop_input" native="true">
+                       <layout class="QVBoxLayout" name="verticalLayout_25">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QWidget" name="save_status" native="true">
+                    <layout class="QVBoxLayout" name="verticalLayout_23"/>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </widget>
               </item>
@@ -413,6 +606,16 @@ Generation time 0s</string>
                <widget class="QPushButton" name="save_properties_btn">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">margin-left: 9;
+margin-right: 9;</string>
                 </property>
                 <property name="text">
                  <string/>
@@ -471,8 +674,8 @@ Generation time 0s</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>28</height>
+                <width>1537</width>
+                <height>885</height>
                </rect>
               </property>
              </widget>
@@ -599,8 +802,8 @@ Generation time 0s</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1234</width>
-                <height>497</height>
+                <width>1537</width>
+                <height>782</height>
                </rect>
               </property>
              </widget>
@@ -899,7 +1102,7 @@ Generation time 0s</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1280</width>
+     <width>1583</width>
      <height>21</height>
     </rect>
    </property>

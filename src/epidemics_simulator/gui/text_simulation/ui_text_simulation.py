@@ -139,16 +139,30 @@ class UiTextSimulationTab:
             self.update_widgets(self.stat_labels[group], properties)
 
     def add_properties(self, properties: dict):
-        form_widget = UiWidgetCreator.create_qwidget('stat_form', QtWidgets.QFormLayout)
+        base_widget, _, _, label_widget, input_widget = UiWidgetCreator.create_input_layout_widgets()
+        #form_widget = UiWidgetCreator.create_qwidget('stat_form', QtWidgets.QFormLayout)
         widget_dict = {}
+        i = 0
         for key, value in properties.items():
-            prop_name = UiWidgetCreator.create_qlabel(key, 'stat_label')
-            prop_value = UiWidgetCreator.create_qlabel(value, 'stat_label')
+            if i % 2 == 0:
+                color = 'rgb(65, 65, 65)'
+            else:
+                color = 'rgb(80, 80, 80)'
+            i += 1
+            prop_name = UiWidgetCreator.create_input_label(key, color)
+            prop_value = UiWidgetCreator.create_input_label(value, color)
             widget_dict[key] = prop_value
-            form_widget.layout().addRow(prop_name, prop_value)
+            label_widget.layout().addWidget(prop_name)
+            input_widget.layout().addWidget(prop_value)
+        self.stats_content.layout().addWidget(base_widget)
+        #for key, value in properties.items():
+        #    prop_name = UiWidgetCreator.create_qlabel(key, 'stat_label')
+        #    prop_value = UiWidgetCreator.create_qlabel(value, 'stat_label')
+        #    widget_dict[key] = prop_value
+        #    form_widget.layout().addRow(prop_name, prop_value)
         #row, col = self.get_row_col(self.stats_content)
-        form_widget.setMinimumSize(*self.min_frame_size)
-        self.stats_content.layout().addWidget(form_widget)
+        #form_widget.setMinimumSize(*self.min_frame_size)
+        #self.stats_content.layout().addWidget(form_widget)
         #self.stats_content.layout().addWidget(form_widget, row, col)
         return widget_dict
     def update_widgets(self, widgets: dict, properties: dict):

@@ -17,6 +17,17 @@ class UiConnectionEdit:
         
         self.connection_list = self.main_window.connection_list_content
         self.connection_prop = self.main_window.connection_properties_content
+        
+        self.connection_list.layout().setAlignment(Qt.AlignTop)
+        self.connection_prop.layout().setAlignment(Qt.AlignRight)
+        
+        self.prop_label_con = self.main_window.prop_label_con
+        self.prop_label_con.layout().setAlignment(Qt.AlignTop)
+        self.con_input = self.main_window.con_input
+        self.con_input.layout().setAlignment(Qt.AlignTop)
+        
+        self.save_status = self.main_window.con_save_status
+        self.save_status.layout().setAlignment(Qt.AlignCenter)
                 
         self.connection_buttons: dict = {}
         
@@ -55,6 +66,7 @@ class UiConnectionEdit:
                       "connection delta": group_from.delta_ext_con.get(group_to.id, 0)}
         
         line_edits = self.load_properties_input(properties)
+        
         self.connect_save_button(group_from, group_to, line_edits)
         
     def connect_save_button(self, group_from: NodeGroup, group_to: NodeGroup, line_edits: dict):
@@ -74,28 +86,44 @@ class UiConnectionEdit:
             if con_dc > con_avrg:
                 raise ValueError
         except TypeError:
-            UiWidgetCreator.show_status(self.connection_prop, "Pleas fill out every input", 'error_message', True)
+            UiWidgetCreator.show_status(self.save_status, "Pleas fill out every input", 'error_message', True, is_row=False)
             return
         except ValueError:
-            UiWidgetCreator.show_status(self.connection_prop, "Delta has to be smalller then average", 'error_message', True)
+            UiWidgetCreator.show_status(self.save_status, "Delta has to be smalller then average", 'error_message', True, is_row=False)
             return
         if not group_from.add_external_connection(group_to.id, con_avrg, con_dc):
             group_from.delete_external_connection(group_to.id)
             group_from.add_external_connection(group_to.id, con_avrg, con_dc)
         self.main_window.network_changed.emit()
-        UiWidgetCreator.show_status(self.connection_prop, "Successfully saved", "success_message", True)
+        UiWidgetCreator.show_status(self.save_status, "Successfully saved", "success_message", True, is_row=False)
         
     def load_properties_input(self, properties: dict):
         line_edits: dict = {}
+        i = 0
         for key, value in properties.items():
-            label = UiWidgetCreator.create_qlabel(key, 'connection_label_properties')
-            line_edit = UiWidgetCreator.create_qline_edit(value, 'connection_line_edit_properties', regex_validator='^[0-9]+$')
+            if i % 2 == 0:
+                color = 'rgb(65, 65, 65)'
+            else:
+                color = 'rgb(80, 80, 80)'
+            i += 1
+            label = UiWidgetCreator.create_input_label(key, color)
+            widget = UiWidgetCreator.create_input_field_widget(color)
+            line_edit = UiWidgetCreator.create_input_line_edit(value, '^[0-9]+$', color)
+            widget.layout().addWidget(line_edit)
+            #label = UiWidgetCreator.create_qlabel(key, 'connection_label_properties')
+            #line_edit = UiWidgetCreator.create_qline_edit(value, 'connection_line_edit_properties', regex_validator='^[0-9]+$')
+            #line_edit.setMinimumSize(100, 25)
             line_edits[key] = line_edit
-            self.connection_prop.layout().addRow(label, line_edit)
+            #self.connection_prop.layout().addRow(label, line_edit)
+            self.prop_label_con.layout().addWidget(label)
+            self.con_input.layout().addWidget(widget)
         return line_edits
     
     def unload_properties(self):
-        self.main_window.unload_items_from_layout(self.connection_prop.layout())
+        self.save_connection_prop_button.hide()   
+        self.main_window.unload_items_from_layout(self.prop_label_con.layout())
+        self.main_window.unload_items_from_layout(self.con_input.layout())
+        # self.main_window.unload_items_from_layout(self.connection_prop.layout())
         
     def unload_connection_list(self):
         self.connection_buttons.clear()

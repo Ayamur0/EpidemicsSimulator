@@ -20,6 +20,14 @@ class UiWidgetCreator:
             layout_widget.setStyleSheet(style_sheet)
         return layout_widget
     
+    def create_qframe(object_name: str, layout: QtWidgets.QBoxLayout, style_sheet=None) -> QtWidgets.QWidget:
+        layout_Frame = QtWidgets.QFrame()
+        layout_Frame.setObjectName(object_name)
+        layout_Frame.setLayout(layout())
+        if style_sheet:
+            layout_Frame.setStyleSheet(style_sheet)
+        return layout_Frame
+    
     def create_qcheckbox(object_name: str, is_checked: bool, style_sheet=None)-> QtWidgets.QCheckBox:
         checkbox = QtWidgets.QCheckBox()
         checkbox.setObjectName(object_name)
@@ -71,24 +79,35 @@ class UiWidgetCreator:
         frame.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         return frame
     
-    def create_qcolor_button(color_value=None, content: str = None, widget: QObject = None) -> tuple[QtWidgets.QLineEdit, QtWidgets.QPushButton]:
+    def create_qcolor_button(line_edit_color: str, color_value=None) -> tuple[QtWidgets.QLineEdit, QtWidgets.QPushButton]:
         if color_value:
             color_value_object = UiWidgetCreator.rgb_string_to_qcolor(color_value)
             color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)
         else:
             color_value_object = UiWidgetCreator.generate_random_color()
             color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)
+        
+        #widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget('input', QtWidgets.QVBoxLayout)
+        #widget.layout().setContentsMargins(0, 0, 0, 0)
+        # widget.setStyleSheet('background-color: red; border-radius: 0;')
+            
+            
         regex_validator = '^rgb\((0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\)$'
         float_color = UiWidgetCreator.convert_color_to_float_rgb_string(color_value_object)
-        line_edit = UiWidgetCreator.create_qline_edit(float_color, 'group_line_edit_properties', regex_validator=regex_validator)
-        
-        color_button = UiWidgetCreator.create_qpush_button(None, 'color_button', style_sheet=f'background: {color};')
+        #line_edit = UiWidgetCreator.create_qline_edit(float_color, 'input', regex_validator=regex_validator)
+        line_edit = UiWidgetCreator.create_input_line_edit(float_color, regex_validator, line_edit_color)
+        color_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'input', style_sheet=f'border-radius: 10px; background-color: {color};')
+        color_button.setFixedHeight(20)
+        color_button.setMinimumWidth(100)
+        #color_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'color_button', style_sheet=f'background: {color};')
         color_button.clicked.connect(partial(UiWidgetCreator.show_color_dialog, line_edit, color_button))
         
-        if content and widget:
-            label = UiWidgetCreator.create_qlabel(content, 'color_input_label')
-            widget.layout().addRow(label, color_button)
+        #if content and widget:
+        #    label = UiWidgetCreator.create_qlabel(content, 'color_input_label')
+        #    widget.layout().addRow(label, color_button)
         
+        #widget.layout().addWidget(color_button)
+        #return line_edit, widget
         return line_edit, color_button
     
     def show_color_dialog(line_edit, color_button) -> None:
@@ -133,11 +152,11 @@ class UiWidgetCreator:
         except RuntimeError:
             return
         
-    def show_status(widget, content: str, object_name: str, remove_last_message: bool, is_row=True) -> None:
+    def show_status(widget, content: str, object_name: str, remove_last_message: bool, is_row=True, content_of_last_label:str ='') -> None:
         if remove_last_message:
             if  widget.layout():
                 last_item =  widget.layout().itemAt(widget.layout().count() - 1).widget()
-                if isinstance(last_item, QtWidgets.QLabel):
+                if isinstance(last_item, QtWidgets.QLabel) and last_item.text() != content_of_last_label:
                     last_item.deleteLater()
         label = UiWidgetCreator.create_qlabel(content, object_name)
         if is_row:
@@ -304,7 +323,64 @@ class UiWidgetCreator:
             return dialog.line_edit.text()
         else:
             return None
-
+        
+    def create_input_field_widget(color: str, object_name: str = 'input'):
+        widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
+        widget.layout().setContentsMargins(0, 0, 0, 0)
+        widget.setMinimumSize(100, 35)
+        widget.layout().setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        widget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
+        widget.setStyleSheet(f'border-radius: none;background: {color};')
+            
+        return widget    
+    
+    def create_input_label(content: str, color: str, object_name: str = 'input'):
+        label: QtWidgets.QLabel = UiWidgetCreator.create_qlabel(content, object_name)
+        label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
+        label.setMinimumSize(100, 35)
+        label.setStyleSheet(f'border-radius: none;background: {color};padding-left: 10;')
+        
+        return label
+    
+    def create_input_line_edit(content: str, regex_validator: str, color: str, object_name: str = 'input'):
+        line_edit: QtWidgets.QLineEdit = UiWidgetCreator.create_qline_edit(content, object_name, regex_validator=regex_validator)
+        line_edit.setMinimumSize(10, 20)
+        line_edit.setStyleSheet(f'border-radius: 5px;background: {color};')
+        line_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed) 
+        line_edit.setMaximumSize(100, 35)
+        return line_edit
+    
+    def create_input_layout_widgets(object_name: str = 'input'):
+        base_widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
+        save_widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
+        frame: QtWidgets.QFrame = UiWidgetCreator.create_qframe(object_name, QtWidgets.QHBoxLayout)
+        label_widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
+        input_widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
+        
+        base_widget.layout().setContentsMargins(0, 9, 0, 0)
+        base_widget.layout().setSpacing(9)
+        
+        save_widget.layout().setAlignment(Qt.AlignBottom)
+        
+        frame.layout().setContentsMargins(0, 0, 0, 9)
+        frame.layout().setSpacing(0)
+        
+        label_widget.layout().setContentsMargins(0, 0, 0, 0)
+        label_widget.layout().setSpacing(0)
+        label_widget.layout().setAlignment(Qt.AlignTop)
+        
+        input_widget.layout().setContentsMargins(0, 0, 0, 0)
+        input_widget.layout().setSpacing(0)
+        input_widget.layout().setAlignment(Qt.AlignTop)
+        
+        frame.layout().addWidget(label_widget, stretch=10)
+        frame.layout().addWidget(input_widget, stretch=6)
+        base_widget.layout().addWidget(frame, stretch=10)
+        base_widget.layout().addWidget(save_widget, stretch=1)
+        
+        return base_widget, save_widget, frame, label_widget, input_widget
+        
 class SaveDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(SaveDialog, self).__init__(parent)
@@ -334,4 +410,5 @@ class SaveDialog(QtWidgets.QDialog):
         # Connect buttons to slots
         self.ok_button.clicked.connect(self.accept)
         self.cancel_button.clicked.connect(self.reject)
+    
     

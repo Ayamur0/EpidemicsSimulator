@@ -108,37 +108,40 @@ class NodeGroup:
     def get_properties_dict(self):
         return {
             "name": self.name,
+            "color": self.color,
             "member count": self.size,
             "average internal connections": self.avrg_int_con,
             "internal connection delta": self.delta_int_con,
             "age": self.age,
             "vaccination rate": self.vaccination_rate,
-            "max vaccination rate": self.max_vaccination_rate,
-            "color": self.color,
+            "max vaccination rate": self.max_vaccination_rate
+            
         }
 
     def get_values_from_dict(value_dict: dict):
         name = str(value_dict.get("name"))
+        color = str(value_dict.get("color"))
         member_count = int(value_dict.get("member count"))
         aic = int(value_dict.get("average internal connections"))
         dic = int(value_dict.get("internal connection delta"))
         age = int(value_dict.get("age"))
         vaccination_rate = float(value_dict.get("vaccination rate"))
         max_vaccination_rate = float(value_dict.get("max vaccination rate"))
-        color = str(value_dict.get("color"))
+        
 
         return name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color
 
     def set_from_dict(self, value_dict: dict):
         (
             name,
+            color,
             member_count,
             age,
             vaccination_rate,
             max_vaccination_rate,
             aic,
-            dic,
-            color,
+            dic
+            
         ) = NodeGroup.get_values_from_dict(value_dict)
         if dic > aic:
             raise ValueError("Delta has to be smalller then average")
@@ -162,7 +165,7 @@ class NodeGroup:
             max_vaccination_rate,
             aic,
             dic,
-            color,
+            color
         ) = NodeGroup.get_values_from_dict(value_dict)
         return NodeGroup(
             network,
@@ -173,7 +176,7 @@ class NodeGroup:
             max_vaccination_rate,
             aic,
             dic,
-            color,
+            color
         )
 
     def to_dict(self):
@@ -192,7 +195,7 @@ class NodeGroup:
             "max_vaccination_amount": self.max_vaccination_amount,
             "vaccinated_amount": self.vaccinated_amount,
             "color": self.color,
-            "active": self.active,
+            "active": self.active
         }
 
     @classmethod
@@ -207,7 +210,7 @@ class NodeGroup:
             vaccination_rate=data["vaccination_rate"],
             max_vaccination_rate=data["max_vaccination_rate"],
             color=data["color"],
-            id=data["id"],
+            id=data["id"]
         )
         instance.avrg_int_con = data["avrg_int_con"]
         instance.delta_int_con = data["delta_int_con"]

@@ -102,6 +102,12 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             self.stylesheet = fp.read()
         # self.fill_theme(self.themes)
         self.setStyleSheet(self.stylesheet)
+        label = QtWidgets.QLabel('Hello, PyQt5!', self)
+        label.hide()
+        font = label.font()
+        font.setPointSize(14)  # Change the font size as needed
+        QtWidgets.QApplication.setFont(font)
+        label.deleteLater()
         self.connect_menu_actions()
         self.tabWidget.currentChanged.connect(self.on_tab_change)
         

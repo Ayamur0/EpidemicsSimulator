@@ -6,21 +6,21 @@ from functools import partial
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap, QPainter, QColor
 
-class GroupsCheckBox(QtWidgets.QCheckBox):
-    def __init__(self, selected_icon: QIcon, deselct_icon: QIcon, checked=False, parent=None):
-        super(GroupsCheckBox, self).__init__(parent)
-        self.selected_icon = selected_icon
-        self.deselct_icon = deselct_icon
-        if checked:
-            self.icon = self.selected_icon
-        else:
-            self.icon = self.deselct_icon
-        
-    def updateIcon(self, state):
-        if state == Qt.Checked:
-            self.setIcon(self.selected_icon)
-        else:
-            self.setIcon(self.deselected_icon)
+#class GroupsCheckBox(QtWidgets.QCheckBox):
+#    def __init__(self, selected_icon: QIcon, deselct_icon: QIcon, checked=False, parent=None):
+#        super(GroupsCheckBox, self).__init__(parent)
+#        self.selected_icon = selected_icon
+#        self.deselct_icon = deselct_icon
+#        if checked:
+#            self.icon = self.selected_icon
+#        else:
+#            self.icon = self.deselct_icon
+#        
+#    def updateIcon(self, state):
+#        if state == Qt.Checked:
+#            self.setIcon(self.selected_icon)
+#        else:
+#            self.setIcon(self.deselected_icon)
 
 
 class UiGroupEdit:
@@ -33,10 +33,20 @@ class UiGroupEdit:
         
         self.group_list = self.main_window.group_list_content
         self.group_prop = self.main_window.group_properties_content
-
+        # self.group_prop.layout().setSpacing(0)
         self.group_list.layout().setAlignment(Qt.AlignTop)
+        #self.group_prop.layout().setLabelAlignment(Qt.AlignRight)
+        # self.group_prop.layout().setFormAlignment(Qt.AlignRight)
         
         self.new_group_button.clicked.connect(lambda: self.create_new_group())
+        
+        self.save_status = self.main_window.save_status
+        self.save_status.layout().setAlignment(Qt.AlignCenter)
+        
+        self.porp_label = self.main_window.prop_label
+        self.porp_label.layout().setAlignment(Qt.AlignTop)
+        self.prop_input = self.main_window.prop_input
+        self.prop_input.layout().setAlignment(Qt.AlignTop)
         
         self.group_buttons: dict = {}
         
@@ -60,14 +70,15 @@ class UiGroupEdit:
             
     def load_group_button(self, group: NodeGroup):
         layout_widget = UiWidgetCreator.create_qwidget('group_select', QtWidgets.QHBoxLayout)
+        layout_widget.layout().setAlignment(Qt.AlignCenter)
         
-        checkbox = UiWidgetCreator.create_qcheckbox('group_activity_checkbox', group.active)
-        duplicate_button = UiWidgetCreator.create_qpush_button(None, 'duplicate_group_button')
+        checkbox = UiWidgetCreator.create_qcheckbox('activity_checkbox', group.active)
+        duplicate_button = UiWidgetCreator.create_qpush_button(None, 'duplicate_button')
         duplicate_button.setIcon(self.main_window.duplicate_icon)
         
-        remove_button = UiWidgetCreator.create_qpush_button(None, 'delete_group_button')
+        remove_button = UiWidgetCreator.create_qpush_button(None, 'delete_button')
         remove_button.setIcon(self.main_window.remove_icon)
-        group_button = UiWidgetCreator.create_qpush_button(None, 'group_select_button', is_checkable=True)
+        group_button = UiWidgetCreator.create_qpush_button(None, 'select_button', is_checkable=True)
         group_button.setIcon(self.main_window.edit_icon)
         checkbox.stateChanged.connect(partial(self.set_group_activity, checkbox, group))
         duplicate_button.clicked.connect(partial(self.dupliacte_group, group))
@@ -135,21 +146,46 @@ class UiGroupEdit:
         
     def load_properties_input(self, properties: dict):
         line_edits: dict = {}
+        i = 0
         for key, value in properties.items():
-            label = UiWidgetCreator.create_qlabel(key, 'group_propertie_label')
+            if i % 2 == 0:
+                color = 'rgb(65, 65, 65)'
+            else:
+                color = 'rgb(80, 80, 80)'
+            i += 1
+            label = UiWidgetCreator.create_input_label(key, color)
+            
+            widget = UiWidgetCreator.create_input_field_widget(color)
+            self.porp_label.layout().addWidget(label)
             regex_validator = '.*'
             if key == 'vaccination rate' or key == 'max vaccination rate':
                 regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
             elif key == 'color':
-                line_edit, color_button = UiWidgetCreator.create_qcolor_button(value)
+                line_edit, color_button = UiWidgetCreator.create_qcolor_button(color, value)
                 line_edits[key] = line_edit
-                self.group_prop.layout().addRow(label, color_button)
+                # line_edit.setStyleSheet(f'border-radius: 20px;background: {color};')
+                # color_button.setStyleSheet(f'background: {color};border-radius: 0;')
+                # color_button.layout().setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+                # color_button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
+                # color_button.setMinimumSize(100, 35)
+                widget.layout().addWidget(color_button)
+                self.prop_input.layout().addWidget(widget)
+                #self.prop_input.layout().addWidget(color_widget)
+                #self.group_prop.layout().addRow(label, color_button)
                 continue
             elif key != 'name':
                 regex_validator = '^(?!10000001$)[0-9]{1,8}$ '# Only allows numbers that are below 10 Million
-            line_edit = UiWidgetCreator.create_qline_edit(value, 'group_line_edit_properties', regex_validator=regex_validator)
+            #line_edit = UiWidgetCreator.create_qline_edit(value, 'group_line_edit_properties', regex_validator=regex_validator)
+            line_edit = UiWidgetCreator.create_input_line_edit(value, regex_validator, color)
             line_edits[key] = line_edit
-            self.group_prop.layout().addRow(label, line_edit)
+            widget.layout().addWidget(line_edit)
+            #line_edit.setMinimumSize(100, 35)
+            #line_edit.setStyleSheet(f'border-radius: 5px;background: rgb(40, 40, 40);')
+            #line_edit.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            #line_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed) 
+            self.prop_input.layout().addWidget(widget)
+            #self.prop_input.layout().addWidget(line_edit)
+            #self.group_prop.layout().addRow(label, line_edit)
         return line_edits
     
     def save_group_properties(self, group: NodeGroup, line_edits: dict):
@@ -160,9 +196,9 @@ class UiGroupEdit:
                 self.network.add_group(group)
             except ValueError as e:
                 if str(e) == "Delta has to be smalller then average":
-                    UiWidgetCreator.show_status(self.group_prop, str(e), 'error_message', True)
+                    UiWidgetCreator.show_status(self.save_status, str(e), 'error_message', True, is_row=False)
                 else:
-                    UiWidgetCreator.show_status(self.group_prop, "Pleas fill out every input", 'error_message', True)
+                    UiWidgetCreator.show_status(self.save_status, "Pleas fill out every input", 'error_message', True, is_row=False)
                 return
             success_message = "Successfully added"
         else:
@@ -170,9 +206,9 @@ class UiGroupEdit:
                 group.set_from_dict(update_dict)
             except ValueError as e:
                 if str(e) == "Delta has to be smalller then average":
-                    UiWidgetCreator.show_status(self.group_prop, str(e), 'error_message', True)
+                    UiWidgetCreator.show_status(self.save_status, str(e), 'error_message', True, is_row=False, content_of_last_label='color')
                 else:
-                    UiWidgetCreator.show_status(self.group_prop, "Pleas fill out every input", 'error_message', True)
+                    UiWidgetCreator.show_status(self.save_status, "Pleas fill out every input", 'error_message', True, is_row=False, content_of_last_label='color')
                 return
             success_message = "Successfully saved"
         self.is_creating_group = False
@@ -180,7 +216,7 @@ class UiGroupEdit:
         self.load_groups(self.network)
         self.main_window.network_changed.emit()
         self.group_buttons[group.id].click()
-        UiWidgetCreator.show_status(self.group_prop, success_message, "success_message", True)
+        UiWidgetCreator.show_status(self.save_status, success_message, "success_message", True, is_row=False, content_of_last_label='color')
         
     def create_new_group(self):
         self.unload_group_properties()
@@ -209,7 +245,10 @@ class UiGroupEdit:
            
     def unload_group_properties(self):
         self.save_group_prop_button.hide()
-        self.main_window.unload_items_from_layout(self.group_prop.layout())
+        self.main_window.unload_items_from_layout(self.porp_label.layout())
+        self.main_window.unload_items_from_layout(self.prop_input.layout())
+        
+        # self.main_window.unload_items_from_layout(self.group_prop.layout())
         self.connection_edit.unload()
             
     def unload(self):

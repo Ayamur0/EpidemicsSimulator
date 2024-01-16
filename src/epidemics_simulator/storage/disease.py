@@ -43,6 +43,9 @@ class Disease:
             "vaccinated_infection_rate": self.vaccinated_infection_rate,
             "duration": self.duration,
             "initial_infection_count": self.initial_infection_count,
+            "cure_chance": self.cure_chance,
+            "immunity_period": self.immunity_period,
+            "infectiousness_factor": self.infectiousness_factor
         }
 
     @classmethod
@@ -57,6 +60,9 @@ class Disease:
             vaccinated_infection_rate=data["vaccinated_infection_rate"],
             duration=data["duration"],
             initial_infection_count=data["initial_infection_count"],
+            cure_chance = data["cure_chance"],
+            immunity_period = data["immunity_period"],
+            infectiousness_factor = data["infectiousness_factor"],
         )
         instance.id = data["id"]
         if instance.id >= Disease.id_counter:
@@ -77,7 +83,10 @@ class Disease:
         reinfection_rate = float(value_dict.get("reinfection rate"))
         vaccinated_infection_rate = float(value_dict.get("vaccinated infection rate"))
         duration = int(value_dict.get("duration"))
-        initial_infection_count = int(value_dict.get("initial infection count"))
+        initial_infection_count = int(value_dict.get("cure chance"))
+        cure_chance = float(value_dict.get("cure chance"))
+        immunity_period = int(value_dict.get("immunity period"))
+        infectiousness_factor = int(value_dict.get("infectiousness factor"))
 
         return (
             name,
@@ -89,6 +98,9 @@ class Disease:
             vaccinated_infection_rate,
             duration,
             initial_infection_count,
+            cure_chance,
+            immunity_period,
+            infectiousness_factor
         )
 
     def set_from_dict(self, value_dict: dict):
@@ -102,6 +114,9 @@ class Disease:
             vaccinated_infection_rate,
             duration,
             initial_infection_count,
+            cure_chance,
+            immunity_period,
+            infectiousness_factor
         ) = Disease.get_values_from_dict(value_dict)
         self.name = name
         self.color = color
@@ -112,6 +127,9 @@ class Disease:
         self.vaccinated_infection_rate = vaccinated_infection_rate
         self.duration = duration
         self.initial_infection_count = initial_infection_count
+        self.cure_chance = cure_chance
+        self.immunity_period = immunity_period
+        self.infectiousness_factor = infectiousness_factor
 
     def init_from_dict(value_dict):
         (
@@ -124,6 +142,9 @@ class Disease:
             vaccinated_infection_rate,
             duration,
             initial_infection_count,
+            cure_chance,
+            immunity_period,
+            infectiousness_factor
         ) = Disease.get_values_from_dict(value_dict)
         return Disease(
             name=name,
@@ -135,4 +156,7 @@ class Disease:
             vaccinated_infection_rate=vaccinated_infection_rate,
             duration=duration,
             initial_infection_count=initial_infection_count,
+            cure_chance=cure_chance,
+            immunity_period=immunity_period,
+            infectiousness_factor=infectiousness_factor
         )
