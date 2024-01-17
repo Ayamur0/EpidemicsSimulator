@@ -134,13 +134,13 @@ class NodeGroup:
     def set_from_dict(self, value_dict: dict):
         (
             name,
-            color,
             member_count,
             age,
             vaccination_rate,
             max_vaccination_rate,
             aic,
-            dic
+            dic,
+            color
             
         ) = NodeGroup.get_values_from_dict(value_dict)
         if dic > aic:

@@ -105,7 +105,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         label = QtWidgets.QLabel('Hello, PyQt5!', self)
         label.hide()
         font = label.font()
-        font.setPointSize(14)  # Change the font size as needed
+        font.setPointSize(12)  # Change the font size as needed
         QtWidgets.QApplication.setFont(font)
         label.deleteLater()
         self.connect_menu_actions()

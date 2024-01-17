@@ -219,21 +219,21 @@ class UiGroupEdit:
         UiWidgetCreator.show_status(self.save_status, success_message, "success_message", True, is_row=False, content_of_last_label='color')
         
     def create_new_group(self):
-        self.unload_group_properties()
         self.main_window.deselect_other_buttons('-1', self.group_buttons)
         if self.is_creating_group:
-            return  
+            return
+        self.unload_group_properties()
         self.is_creating_group = True
         
         default_dict = {
-            "name": '',
-            "member count": '',
-            "average internal connections": '',
-            "internal connection delta": '',
-            "age": '',
-            "vaccination rate": '',
-            "max vaccination rate": '',
-            "color": ''
+            "name": 'NodeGroup',
+            "color": '',
+            "member count": 100,
+            "average internal connections": 4,
+            "internal connection delta": 2,
+            "age": 25,
+            "vaccination rate": 0.5,
+            "max vaccination rate": 0.7
         }
         self.show_group_properties(default_properties=default_dict)
         

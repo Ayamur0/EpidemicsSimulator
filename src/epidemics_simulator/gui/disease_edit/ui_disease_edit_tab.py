@@ -200,18 +200,18 @@ class UiDiseaseEditTab:
             return  
         self.is_creating_disease = True
         default_dict = {
-            "name": '',
+            "name": 'Disease',
             "color": '',
-            "fatality rate": '',
-            "vaccinated fatality rate": '',
-            "infection rate": '',
-            "reinfection rate": '',
-            "vaccinated infection rate": '',
-            "duration": '',
-            "initial infection count": '',
-            "cure chance": '',
-            "immunity period": '',
-            "infectiousness factor": ''
+            "fatality rate": 0.2,
+            "vaccinated fatality rate": 0.05,
+            "infection rate": 0.2,
+            "reinfection rate": 0.05,
+            "vaccinated infection rate": 0.001,
+            "duration": 5,
+            "initial infection count": 10,
+            "cure chance": 0.2,
+            "immunity period": 8,
+            "infectiousness factor": 1
         }
         self.load_disease(None, default_properties=default_dict)
      

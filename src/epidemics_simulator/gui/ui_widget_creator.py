@@ -8,7 +8,7 @@ from storage import Network
 import random
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QRegExp, QTimer, QThread, QSize
-from PyQt5.QtGui import QRegExpValidator, QColor, QMovie
+from PyQt5.QtGui import QRegExpValidator, QColor, QMovie, QPainter, QFontMetrics
 
 
 class UiWidgetCreator:
@@ -335,11 +335,13 @@ class UiWidgetCreator:
         return widget    
     
     def create_input_label(content: str, color: str, object_name: str = 'input'):
-        label: QtWidgets.QLabel = UiWidgetCreator.create_qlabel(content, object_name)
+        #label: QtWidgets.QLabel = UiWidgetCreator.create_qlabel(content, object_name)
+        label: ElidedLabel = ElidedLabel(content)
+        label.setObjectName(object_name)
         label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
         label.setMinimumSize(100, 35)
-        label.setStyleSheet(f'border-radius: none;background: {color};padding-left: 10;')
+        label.setStyleSheet(f'border-radius: none;background: {color};padding-left: 10;padding-right: 10;')
         
         return label
     
@@ -380,6 +382,17 @@ class UiWidgetCreator:
         base_widget.layout().addWidget(save_widget, stretch=1)
         
         return base_widget, save_widget, frame, label_widget, input_widget
+      
+class ElidedLabel(QtWidgets.QLabel):
+    def paintEvent(self, event ):
+        painter = QPainter(self)
+
+        metrics = QFontMetrics(self.font())
+        elided  = metrics.elidedText(self.text(), Qt.ElideRight, self.width())
+
+        painter.drawText(self.rect(), self.alignment(), elided)
+
+      
         
 class SaveDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
