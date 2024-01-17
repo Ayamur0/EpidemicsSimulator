@@ -11,9 +11,10 @@ It is the deciding factor for whether a disease is dying out ($R_0 < 1$)
 or able to live indefinitely ($R_0 > 1$). Calculating $R_0$ in complex social
 networks is very hard because the structure of the networks has a big impact on $R_0$
 in addition to the characteristics of the disease. For these experiments a very
-rough estimation of $R_0=e_\mu \cdot p$ is used as this is sufficient for estimating whether
+rough estimation of $R_0=e_\mu \cdot p \cdot t_I$ is used as this is sufficient for estimating whether
 the disease should die out in the experiment or life for a long time.
-$e_\mu$ is the average amount of connection per node, let $N$ be the total
+$e_\mu$ is the average amount of connection per node and $t_I$ the time it takes
+for an infection to be cured, let $N$ be the total
 amount of nodes in the network and $E$ the total amount of edges then
 $e_\mu=\frac{E}{N}$. $p$ is the probability for a node to get infected
 if one of its neighbors has the disease.
@@ -23,74 +24,189 @@ if one of its neighbors has the disease.
 The network that is used in these experiments contains 3 groups with 5000 nodes
 each. Group 1 has 5 intra group connections for each node, group 2 has 4 and
 group 3 has 3 intra group connections. Between each pair of groups there are
-2 connections per node. The resulting network can be seen in figure %TODO
-It contains a total of 15,000 nodes. Let $N_i$ be the amount of nodes in group $i$
+2 connections per node. The resulting network can be seen in figure \ref{fig:exp_r0_network}
+It contains a total of 15,000 nodes.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/experiment_r0_network.png}
+    \caption{Structure of the network used for the $R_0$ experiments}
+    \label{fig:exp_r0_network}
+\end{figure}
+
+Let $N_i$ be the amount of nodes in group $i$
 then the amount of edges can be calculated using the following equation:
 \begin{equation}
-    E = \frac{n_1}{2} * 5 + \frac{n_2}{2} * 4 + \frac{n_3}{2} * 3 + \frac{n_1+n_2}{2} * 2 + \frac{n_1+n_3}{2} * 2 + \frac{n_2+n_3}{2} * 2
+    E = \frac{n_1}{2} \cdot 5 + \frac{n_2}{2} \cdot 4 + \frac{n_3}{2} \cdot 3 + \frac{n_1+n_2}{2} \cdot 2 + \frac{n_1+n_3}{2} \cdot 2 + \frac{n_2+n_3}{2} \cdot 2
 \end{equation}
 Using that equation the it can be calculated that the network contains 60,000 edges.
-This leads to an average amount of connections per node of $e\mu=\frac{60,000}{15,000} = 4$.
+This leads to an average amount of connections per node of $e\mu=\frac{60,000}{15,000} \cdot 2 = 8$.
+But the different groups also need to be viewed in isolation. If the $R_0$ value within
+one group of nodes is bigger than one, the disease is likely to never die out in that group
+and the nodes of that group will constantly spread the disease to the other groups.
+An example of this is shown in the next section.
 
 \subsection{Experiment with $R_0 < 1$}
 Since this experiment will use the same network as the one for a $R_0 > 1$ the
 facor $e_\mu$ is static and cannot be changed. This makes $p$ the only deciding
-factor for $R_0$ it can be calculated using $p = \frac{R_0}{e_\mu}$ so in this case
-with $R_0 < 1$, $p < \frac{1}{4}$. For cases with $R_0$ close to 1 there is still
-a decent chance that the disease will live for a long time which is why $p=0.125$
-is chosen for a estimated $R_0=0.5$ to ensure that the disease dies out in a finite
+factor for $R_0$ it can be calculated using $p = \frac{R_0}{e_\mu \cdot t_I}$ so in this case with $t_I=5$
+with $R_0 < 1$, $p < \frac{1}{40}$. For cases with $R_0$ close to 1 there is still
+a decent chance that the disease dies out even if $R_0 < 1$. $p=0.024$
+is chosen for an estimated $R_0=0.96$ to ensure that the disease dies out in a finite
 amount of steps.
 
 The parameters for the disease of this experiment then are:
 \begin{itemize}
-    \item %TODO
+    \item (vaccinated) fatality rate: 0
+    \item (re-, vaccinated) infection rate: 0.024
+    \item infection period $t_I$: 5
+    \item initial infections: 5
+    \item cure chance: 1
+    \item immunity period: 0
+    \item infectiousness factor: 1
 \end{itemize}
 
 Running the simulation shows that the disease is never able to spread to a large
-amount of people and dies out after only \~ %TODO
-steps. This can also be seen in the graph %TODO 
+amount of people and dies out after only \~9 steps. This can also be seen in the first graph
+of figure \ref{fig:exp_r0_small}
 which shows the amount of new infections per cycle. 
-Increasing the initial amount of infected nodes to 5,000 shows that even with
-such a large amount of infections the disease dies out after a certain amount of steps.
-In this case it took %TODO
-steps, graph %TODO
+Increasing the initial amount of infected nodes to 5,000 shows that with
+such a large amount of infections the disease still dies out after only \~20 steps
+
+% is now able to spread to a lot of nodes intially.
+% As the disease now has enough infected nodes to avoid dying out at random because of 
+% randomness, it can be seen that it actually never dies out, as can be seen in the second graph
+% of figure \ref{fig:exp_r0_small}. It constantly has between 50-100 new infections eveen though
+% the estimated $R_0$ was only 0.96. This is due to the fact mentioned earlier, that each group
+% also needs to be viewed in isolation: Group 1 has 9 connections per node so $R_0^1 = 0.02 * 7 * 5 = 1.08$
+% which is bigger than 1. This means the disease has a chance to never die out within group 1 and is constantly
+% spreading to the other groups from group 1.
+
+Lowering $p$ to 0.02 results in an $R_0=0.9$ for group 1 and a total estimated $R_0=0.8$,
+with these values the disease should die out in a finite amount of steps.
+In this case it took \~40 steps for the disease to die out, the right graph of figure \ref{fig:exp_r0_small}
 shows the amount of new infections up to that point.
 
+\begin{figure*}
+    \centering
+    \begin{subfigure}[b]{0.475\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/exp_r0_small_1.png}
+        \caption[Network2]%
+        {{\small Infection counts with 5 initial infections}}   
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.475\textwidth}  
+        \centering 
+        \includegraphics[width=\textwidth]{images/exp_r0_success.png}
+        \caption[]%
+        {{\small Infection counts with 5000 initial infections, showing that the disease
+        still dies out after \~40 steps}}    
+    \end{subfigure}
+    \caption[ Experiment with an estimated $R_0$ of 0.96 and $p = 0.024$ ]
+    {\small Experiment with an estimated $R_0$ of 0.96 and $p = 0.024$} 
+    \label{fig:exp_r0_small}
+\end{figure*}
+
+
+
 This experiment supports the theory that for a $R_0 < 1$ the disease will die out
-in a finite amount of steps.
+in a finite amount of steps. 
 
 \subsection{Experiment with $R_0 > 1$}
 This network uses the same network as the previous one, so $p$ is again the deciding
-factor for $R_0$. $p = \frac{R_0}{e_\mu}$ so for this case with $R_0 > 1$, $p > \frac{1}{4}$
-since the closer $R_0$ to 1 the higher the chance the disease dies out $p=0.375$ is chosen
-resulting in a $R_0 = 1.5$.
+factor for $R_0$. $p = \frac{R_0}{e_\mu \cdot t_I}$ so for this case with $R_0 > 1$, $p > \frac{1}{40}$.
+The theory created said that it should be sufficient to have a $p$
+big enough to ensure $R_0 > 1$ in only one of the groups. Since group 1 has the most connections
+$R_0^1 > 1$ if $p > \frac{1}{9\cdot5} = 0.0222$.
+Since the closer $R_0$ to 1 the higher the chance the disease randomly dies out $p=0.03$ is chosen
+resulting in a $R_0^1 = 1.35$ and $R_0 = 1.2$ where $R_0^1$ is big enough for the disease
+to have a decent chance to survive indefinitely.
 
 The properties that were changed from the previous experiment are:
 \begin{itemize}
-    \item %TODO
+    \item (re-, vaccinated) infection rate: 0.04
+    \item initial infections: 50
 \end{itemize}
 
-After running the simulation for 2,000 cycles the disease is still alive and infecting
+Running the simulation shows that the disease consistenly dies out at around 70 steps.
+The left graph in figure \ref{fig:exp_r0_big} shows the infection counts. The expectation
+was that the disease has a decent chance to survive but even after 20 tries it never
+survived once. This can be explained by the network structure: the nodes in group 1
+have 9 connections but 4 of those are "worth less" as the nodes it can spread to in the
+other groups are not able to spread the disease to another 9 new nodes but only 7 or 8
+depending on the group. This means that when calculating $R_0$ the nodes in group 1 can not
+be considered to have 9 connections, somewhere around 8 would be more accurate. This makes
+$R_0^1 = R_0 = 1.2$ which is not high enough wor a decent chance of indefinite survival.
+
+Increasing $p$ to 0.036 is enough to make the disease live indefinitely with $R_0 = 1.44$.
+After running the simulation for 20,000 cycles the disease is still alive and infecting
 new nodes. This supports the theory that with a $R_0 > 1$ there is a probability $> 0$
-that the disease never dies out. Figure %TODO
-shows the amount of new infections which is remains relatively constant 
-from cycle x to %TODO.
+that the disease never dies out. 
+
+
+\begin{figure*}
+    \centering
+    \begin{subfigure}[b]{0.475\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/exp_big_r0_fail.png}
+        \caption[Network2]%
+        {{\small Infection counts with 50 initial infections and $p = 0.032$}}   
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.475\textwidth}  
+        \centering 
+        \includegraphics[width=\textwidth]{images/exp_big_r0_success.png}
+        \caption[]%
+        {{\small Infection counts with 150 initial infections and $p = 0.036$}}    
+    \end{subfigure}
+    \caption[Experiment with an estimated $R_0$ of 0.64 and $R_0^1 = 1.12$]
+    {\small Experiment with an estimated $R_0$ of 0.64 and $R_0^1 = 1.12$} 
+    \label{fig:exp_r0_big}
+\end{figure*}
 
 \subsubsection{Changing the network}
 To show that the network structure indeed has an impact on $R_0$ this experiment
-uses the same disease as the previous one. The network will have only half as many
+uses the same disease as the previous one with $p=0.036$ and 150 initial infections.
+The network will have only half as many
 edges, group 1 has 2 intra group connections for each node, group 2 has 2 and
 group 3 has 2 intra group connections. Between each pair of groups there are
-1 connections per node. This new network has 30,000 edges resulting in $e_\mu$ = 2.
+1 connections per node. This new network has 30,000 edges resulting in $e_\mu$ = 4.
 Thus the new estimated $R_0=2\cdot0.375=0.75$ which is smaller than 1 so they
 expectation is that the disease will die out even though it has the same infection 
 rate as before.
 
-After %TODO
-cycles the disease has died out which supports the theory that the network structure
-has an impact on the spreading of diseases along with the characteristics of the disease.
-Graph %TODO 
-shows the amount of infections until the disease died out.
+After 20 cycles the disease has died out which supports the theory that the network structure
+and thus $e_\mu$ has an impact on the spreading of diseases and the value $R_0$.
+Graph \ref{fig:exp_change_network} shows the amount of infections until the disease died out.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/exp_changed_network.png}
+    \caption{Amount of infections with the same diseases ($p = 0.036$) but a network with half as many connections}
+    \label{fig:exp_change_network}
+\end{figure}
+
+To support the theory from earlier that each group also needs to be viewed in isolation
+when calculating $R_0$ the network is again changed. Group 1 has 8 intra group connections for each node,
+group 2 has 1 and group 3 has 1 intra group connections. Between each pair of groups there are
+2 connections per node which recuces $e_\mu$. The same $p = 0.036$ will be used resulting in $R_0 = 0.9$
+while $R_0^1 = 1.44$. Running the simulation again it is shown that even though $R_0 < 1$ the
+disease manages to survive indefinitely. But $R_0^1 = 1.44$ means the disease has a chance to never
+die out within group 1 and is constantly spreading to the other groups from group 1. Figure
+\ref{fig:exp_subgroups} shows the amount of infections per group. Group 1 has significantly more
+infections and is keeping the disease alive, while group 2 and 3 have similar infection amounts.
+This experiment shows how hard it is to estimate $R_0$
+for complex networks, as the network might contain highly connected subgroups in which
+the disease can live longer and spread to the rest of the network again.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/exp_subgroups.png}
+    \caption{Infections per group with $p = 0.036$ and $R_0 = 0.9$, the disease never dies out}
+    \label{fig:exp_subgroups}
+\end{figure}
+
 
 \section{Multiple Diseases}
 Interesting dynamics can be observed if multiple diseases are introduced into the same
@@ -128,14 +244,41 @@ Two diseases are used for this simulation:
 \end{itemize}
 
 First the experiment is run with the two diseases separately to show that they never die out
-on their own. The results can be seen in figure %TODO
-which shows the amount of new infections until cycle %TODO
-indicating that the diseases have not died out until then.
+on their own. The results can be seen in figure \ref{fig:exp_multiple_diseases_individual}
+which shows the amount of new infections until cycle 5000 indicating that the individual 
+diseases have not died out until then.
 
-Now both diseseases are used at the same time. After only %TODO cycles
-$d_1$ has died out because the new infections of $d_2$ have increased so much that
-no new nodes are availabe for $d_1$ to infect. This increases in infections with $d_2$ and
-decrease in infections with $d_1$ is shown in figure %TODO
+\begin{figure*}
+    \centering
+    \begin{subfigure}[b]{0.475\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/exp_multiple_diseases_d1.png}
+        \caption[Network2]%
+        {{\small Infection counts for disease 1 with 50 initial infections and $p = 0.06$}}   
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.475\textwidth}  
+        \centering 
+        \includegraphics[width=\textwidth]{images/exp_multiple_diseases_d2.png}
+        \caption[]%
+        {{\small Infection counts for disease 2 with 150 initial infections and $p = 0.04$}}    
+    \end{subfigure}
+    \caption[Experiment to show both diseases never die out on their own]
+    {\small Experiment to show both diseases never die out on their own} 
+    \label{fig:exp_multiple_diseases_individual}
+\end{figure*}
+
+Now both diseseases are used at the same time. After 40 cycles
+$d_2$ has died out because the new infections of $d_1$ have increased so much that
+not enough nodes are availabe for $d_2$ to infect. This increase in infections with $d_1$ and
+decrease in infections with $d_2$ is shown in figure \ref{fig:exp_multiple_diseases}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/exp_subgroups.png}
+    \caption{Infections per disease with $p = 0.06$ and $p = 0.04$, disease 2 dies out after 40 steps even though it did not die out when the two diseases were simulated in isolation}
+    \label{fig:exp_multiple_diseases}
+\end{figure}
 
 This supports the theory that in networks with multiple highly infectious diseases the
 one with the highest $R_0$ value is the one most likely to survive.
@@ -163,7 +306,7 @@ letter that needed the least amount of persons to arrive.
 
 \subsection{Experiment}
 For this experiment a network with only one group is created. That group
-contains 10,000 nodes with each node having %TODO
+contains 10,000 nodes with each node having 6
 connections. Though this network is not totally accurate to a real situation. Usually 
 a friends network of a person is tightly coupled, the friends of a person usually also know
 each other and their friends know the initial person etc. Also a person mostly knows
@@ -186,23 +329,44 @@ the used network more valid in that context.
 
 To show that each node can be reached in only six steps, a disease with an infection rate
 of 1 and infection duration of 1000 is used. Initially only one
-node is infected. Figure %TODO shows the network after x cycles.
-After cycle %TODO
-all nodes are infected which means they were all able to be reached from the 
-starting node in only %TODO
-steps.
+node is infected. Figure \ref{fig:small_world_network} shows the network after 6 cycles.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/small_world_network.png}
+    \caption{Network after 6 cycles, yellow nodes have a shortest connection with 6 or less steps to the starting node,
+    green ones have a shotest connection with more than 6 edges to the starting node}
+    \label{fig:small_world_network}
+\end{figure}
+
+After cycle 7 all nodes are infected which means they were all able to be reached from the 
+starting node in a maximum of 7 steps. The exact amounts of new infections per step are:
+6, 30, 150, 717, 2893, 5306 and 897. Using these values the average shortest path length
+can be calculated, it is \~5.5964. This coincides with the findings of Milgram \cite{smallWorld}
+whose experiments showed the average length is somewhere between 5 and 6.
 
 To reduce the limitation of the used network in regards to the random connections another
 network structure could be used. This one closer models the existance of highly coupled
 local friend groups where everyone knows each other and a few random connections to people
 from other friend groups who are further away. This network uses a high amount of
 groups with relatively few members each. In this case 100 groups of 5-10 people are used
-and each group of people is connected to 3-4 other groups with only 2-3 edges each.
+where each node is connected to 4 others of the same group and each group of people is
+connected to 3-4 other groups with only 0-1 edges per node. This again results in a network
+where on average each node has 6 connections.
 
-The same disease is used in this network and the state of the network after cycle %TODO
-can be seen in figure %TODO
+The same disease is used in this network and the state of the network after cycle 6
+can be seen in figure \ref{fig:small_world_groups}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/small_world_groups.png}
+    \caption{Network after 6 cycles, yellow nodes have a shortest connection with 6 or less steps to the starting node,
+    green ones have a shotest connection with more than 6 edges to the starting node}
+    \label{fig:small_world_groups}
+\end{figure}
+
 This shows that in this network it is also possible to reach all other nodes in only six steps,
 even though there are only a few long distance connections and a lot of thightly coupled
-small groups.
+small groups. The average path length in this experiment was \~5.6621
 
 

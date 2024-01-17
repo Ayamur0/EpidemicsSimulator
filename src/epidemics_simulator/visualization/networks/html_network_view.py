@@ -47,11 +47,11 @@ class HTMLNetworkView:
         self.layout = html.Div([self.sidebar, content])
 
     def reset(self, is_sim=False):
-        groups, hidden_groups = self.graph.on_reload(is_sim)
+        groups, hidden_groups = self.graph.on_reload(True)
         self.sidebar.show_grid = True
         self.sidebar.show_internal_edges = False
         self.sidebar.show_external_edges = True
-        self.sidebar.show_status_colors = is_sim
+        self.sidebar.show_status_colors = True
         self.sidebar.rebuild()
         self.sidebar.update_group_divs(groups, hidden_groups)
         self.build_layout()

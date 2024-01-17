@@ -64,8 +64,8 @@ class NodeGroup:
         self.external_edges[to_group].add(f"{_from}/{to}")
 
     def add_external_connection(self, target_group_id: str, ac: int, dc: int) -> bool:
-        if dc > ac:
-            raise ValueError
+        # if dc > ac:
+        #     raise ValueError
         if (target := self.network.get_group_by_id(target_group_id)) is None:
             raise KeyError
         self.avrg_ext_con[target_group_id] = ac
@@ -114,8 +114,7 @@ class NodeGroup:
             "internal connection delta": self.delta_int_con,
             "age": self.age,
             "vaccination rate": self.vaccination_rate,
-            "max vaccination rate": self.max_vaccination_rate
-            
+            "max vaccination rate": self.max_vaccination_rate,
         }
 
     def get_values_from_dict(value_dict: dict):
@@ -127,7 +126,6 @@ class NodeGroup:
         age = int(value_dict.get("age"))
         vaccination_rate = float(value_dict.get("vaccination rate"))
         max_vaccination_rate = float(value_dict.get("max vaccination rate"))
-        
 
         return name, member_count, age, vaccination_rate, max_vaccination_rate, aic, dic, color
 
@@ -140,8 +138,7 @@ class NodeGroup:
             max_vaccination_rate,
             aic,
             dic,
-            color
-            
+            color,
         ) = NodeGroup.get_values_from_dict(value_dict)
         if dic > aic:
             raise ValueError("Delta has to be smalller then average")
@@ -165,7 +162,7 @@ class NodeGroup:
             max_vaccination_rate,
             aic,
             dic,
-            color
+            color,
         ) = NodeGroup.get_values_from_dict(value_dict)
         return NodeGroup(
             network,
@@ -176,7 +173,7 @@ class NodeGroup:
             max_vaccination_rate,
             aic,
             dic,
-            color
+            color,
         )
 
     def to_dict(self):
@@ -195,7 +192,7 @@ class NodeGroup:
             "max_vaccination_amount": self.max_vaccination_amount,
             "vaccinated_amount": self.vaccinated_amount,
             "color": self.color,
-            "active": self.active
+            "active": self.active,
         }
 
     @classmethod
@@ -210,7 +207,7 @@ class NodeGroup:
             vaccination_rate=data["vaccination_rate"],
             max_vaccination_rate=data["max_vaccination_rate"],
             color=data["color"],
-            id=data["id"]
+            id=data["id"],
         )
         instance.avrg_int_con = data["avrg_int_con"]
         instance.delta_int_con = data["delta_int_con"]

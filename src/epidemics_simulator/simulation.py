@@ -36,7 +36,7 @@ class Simulation:
                 self.unvaccinated_nodes.remove(node)
         node: Node
         random.shuffle(self.infected_nodes)
-        for node in self.infected_nodes:
+        for node in self.infected_nodes.copy():
             disease: Disease = node.infected
             node.infected_time += 1
             if (
@@ -65,7 +65,7 @@ class Simulation:
                 if (
                     not target.alive
                     or target.infected is not None
-                    or target.immunity_until_step < self.current_step
+                    or target.immunity_until_step > self.current_step
                 ):
                     continue
                 if node.vaccinated:

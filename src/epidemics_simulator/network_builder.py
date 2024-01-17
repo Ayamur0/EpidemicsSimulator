@@ -26,7 +26,7 @@ class NetworkBuilder:
     def _create_int_conn(self, group: NodeGroup):
         h = HavelHakimi(
             group.size,
-            group.avrg_int_con - group.delta_int_con,
+            max(0, group.avrg_int_con - group.delta_int_con),
             group.avrg_int_con + group.delta_int_con,
         )
         h.run()
@@ -47,7 +47,7 @@ class NetworkBuilder:
                 self._add_ext_conn(
                     _from=self.network.get_group_by_id(from_id),
                     to=self.network.get_group_by_id(target_id),
-                    min=avrg - delta,
+                    min=max(0, avrg - delta),
                     max=avrg + delta,
                 )
                 # remove connections from target -> source so it isn't created twice

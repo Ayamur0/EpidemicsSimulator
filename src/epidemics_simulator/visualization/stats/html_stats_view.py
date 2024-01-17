@@ -79,6 +79,8 @@ class HTMLStatsView:
         self.visible_diseases = [None]
         self.data_dict = {}
         self.use_cumulative_data = False
+        self.sidebar.network = self.project.network
+        self.sidebar.rebuild()
 
     def load_stats(self, name):
         self.stats = self.project.stats[name]

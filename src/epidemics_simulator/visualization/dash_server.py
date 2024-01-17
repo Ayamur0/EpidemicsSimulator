@@ -76,8 +76,7 @@ class DashServer:
             try:
                 json_data = request.get_json()
                 stats = SimStats.from_dict(json_data["stats"])
-                project.stats[json_data["filename"]] = stats
-                stats_view.project = project
+                stats_view.project.stats[json_data["filename"]] = stats
                 stats_view.reset()
                 stats_view.needs_build = True
                 return make_response(jsonify({"status": "OK"}), 200)

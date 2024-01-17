@@ -24,7 +24,9 @@ app.run()
 
 After calling \texttt{app.run()} this app automatically starts a flask server which hosts 
 the website on \texttt{http://localhost:8050}. To specify what the website displays the
-\texttt{layout} property of the \texttt{app} is set to the desired HTML components. In this
+\texttt{layout} property of the \texttt{app} is set to the desired HTML components. For this
+plotly offers HTML components as python classes as well as some custom bootstrap components
+which are more advanced HTML elements like a sidebar. In this
 case a simple div with the id \texttt{page-content} is used. The children of this div
 are then changed according to which website needs to be displayed.
 

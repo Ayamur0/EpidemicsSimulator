@@ -45,7 +45,7 @@ class Disease:
             "initial_infection_count": self.initial_infection_count,
             "cure_chance": self.cure_chance,
             "immunity_period": self.immunity_period,
-            "infectiousness_factor": self.infectiousness_factor
+            "infectiousness_factor": self.infectiousness_factor,
         }
 
     @classmethod
@@ -60,13 +60,13 @@ class Disease:
             vaccinated_infection_rate=data["vaccinated_infection_rate"],
             duration=data["duration"],
             initial_infection_count=data["initial_infection_count"],
-            cure_chance = data["cure_chance"],
-            immunity_period = data["immunity_period"],
-            infectiousness_factor = data["infectiousness_factor"],
+            cure_chance=data["cure_chance"],
+            immunity_period=data["immunity_period"],
+            infectiousness_factor=data["infectiousness_factor"],
         )
         instance.id = data["id"]
-        if instance.id >= Disease.id_counter:
-            Disease.id_counter = instance.id + 1
+        if int(instance.id) >= Disease.id_counter:
+            Disease.id_counter = int(instance.id) + 1
         return instance
 
     def get_properties_dict(self):
@@ -100,7 +100,7 @@ class Disease:
             initial_infection_count,
             cure_chance,
             immunity_period,
-            infectiousness_factor
+            infectiousness_factor,
         )
 
     def set_from_dict(self, value_dict: dict):
@@ -116,7 +116,7 @@ class Disease:
             initial_infection_count,
             cure_chance,
             immunity_period,
-            infectiousness_factor
+            infectiousness_factor,
         ) = Disease.get_values_from_dict(value_dict)
         self.name = name
         self.color = color
@@ -144,7 +144,7 @@ class Disease:
             initial_infection_count,
             cure_chance,
             immunity_period,
-            infectiousness_factor
+            infectiousness_factor,
         ) = Disease.get_values_from_dict(value_dict)
         return Disease(
             name=name,
@@ -158,5 +158,5 @@ class Disease:
             initial_infection_count=initial_infection_count,
             cure_chance=cure_chance,
             immunity_period=immunity_period,
-            infectiousness_factor=infectiousness_factor
+            infectiousness_factor=infectiousness_factor,
         )
