@@ -4,14 +4,14 @@ Originally it was intended to display the networks in 2D with a 3D representatio
 
 The python package plotly \cite{plotly} is used to display the networks in 3D. \texttt{plotly.graph\_objs} offers the \texttt{Scatter3d} function which is used to draw both the nodes and edges. For the nodes the function takes in three lists of coordinates, one for each axis x, y and z. For the edges it also requires these three lists but here the first coordinate is the start point for a edge and the second the end point, after that a None entry must follow and then the next edge coordinates. Currently the only information that is generated for graphs is the amount of nodes in each group and lists of which node ids must be connected with edges. This information must be translated into coordinates for plotly to be able to display the network.
 
-\subsection{Displaying the nodes}
+\section{Displaying the nodes}
 \label{sub:displayNodes}
 All nodes that belong to the same group should be arranged in a sphere. Each sphere thus represents one group and the spheres must have enough space between them so it is easy to differentiate the groups as seen in figure %TODO ref .
 %  TODO insert example image
 
 To spread out the spheres in the coordinate system it is first divided into cubes. Let $n_{max}$ be the amount of nodes in the biggest group. Then to determine the side-length $s$ of the cubes it is necessary to know the radius $r$ of the smallest sphere that can fit $n_{max}$ nodes.
 
-\subsubsection{Creating a sphere}
+\subsection{Creating a sphere}
 The nodes are only placed at coordinates $x,y,z \in \mathbb{N}$. To create a sphere that can fit $n_{max}$ nodes the radius needs to be known before calculating the exact coordinates. The problem with this is the only way to get the exact radius for a sphere that can fit $n_{max}$ nodes that all are at at coordinates $x,y,z \in \mathbb{N}$ is using the algorithm depicted in \ref{alg:exact_radius}.
 \begin{algorithm}
 \caption{Calculating exact radius}
@@ -94,7 +94,7 @@ Starting with $z$ and $y=0$ transforming the formula to $x$ results in $|x| \leq
 
 The python implementation for this function takes in an amount of points $n$ and returns a list of triples with length $n$ containing the resulting coordinates and the radius $r$ of the sphere.
 
-\subsection{Arranging the spheres}
+\section{Arranging the spheres}
 After calculating the coordinates and radii for each sphere (one for each group) the biggest radius $r_{max}$ is known. Using this the side-length of the cubes can be calculated. To create some space between the sphere this side-length $s$ is calculated by $s = 2 * r_{max} * 1.25$ to add a free space of 12.5\% of the sphere diameter on each side.
 
 The cubes are always created as a larger cube, eg. the amount of cubes is $c = x^3$. x is the side-length of the bigger cube in cubes (eg. each a side-length of 3 cubes results in $c=27$ smaller cubes). To not spread out the spheres unnecessarily the smallest amount of cubes need to be created. The required amount of cubes is the number of sphere/groups. To get the next bigger value for $c$, $x$ can be calculated by $x =\lceil\sqrt[3]{num\_groups}\rceil$.
@@ -118,7 +118,7 @@ Using this the algorithm \ref{alg:cube_offsets} calculates the bottom left corne
 
 For each sphere a random cube is selected and its offsets are added to all coordinates, resulting in the final coordinates for all nodes in the network.
 
-\subsection{Creating the scatter graph}
+\section{Creating the scatter graph}
 \label{sub:scatter_graph}
 In the final graph it needs to be possible to toggle the visibility of each group. To achieve this the coordinates for each group are stored separately and only the active ones are added to the coordinate lists for the \texttt{Scatter3d} call.
 
@@ -149,7 +149,7 @@ trace1 = go.Scatter3d(
 
 Using the code in \ref{lst:node_trace} the trace that displays all the active nodes is created. Whenever the visibility of a group is toggled this needs to be rebuilt. It is important to note, that the coordinates for the nodes in the x,y,z arrays contain the nodes in ascending order by their id. This means nodes of group 0 come first starting with node 0, then group 1 etc. This is important for creating color sequences based on the node statuses which is discussed in chapter %TODO ref
 
-\subsection{Displaying the edges}
+\section{Displaying the edges}
 The edges are displayed using a second \texttt{Scatter3d} with the \texttt{lines} mode. For this the x,y and z arrays need the format of [xStart, xEnd, None] for each line. Meaning a coordinate array for 100 lines would have length 300.
 
 The current format in which the edges are represented contains only the node ids which need to be connected. This representation was created in section \ref{sub:havel_hakimi}. To translate these node ids to the coordinates of the nodes that were calculated in section \ref{sub:displayNodes} a map is created when the coordinates for each node are calculated. This map stores the node id as a key and the index of its coordinates as value. Using that map for the start and end coordinates for all edges of visible groups can be calculated. The python code that realizes this can be seen in listing \ref{lst:edge_creation}.
