@@ -1,3 +1,4 @@
+
 QMainWindow {
     background: rgb(100, 100, 100);
 }
@@ -26,9 +27,12 @@ QTabBar::tab {
     color: white;
     background: rgb(60, 60, 60); /* Set background color for tabs */
     padding: 5px;
+    border: 2px;
+    border-left: 1px solid gray;
 }
 QTabBar::tab:first {
     border-top-left-radius: 5px;
+    border-left: none;
 }
 QTabBar::tab:last {
     border-top-right-radius: 5px;
@@ -77,6 +81,7 @@ QPushButton:checked {
 QPushButton:hover {
     background: rgb(90, 90, 90);
 }
+QPushButton:disabled { background: rgb(100,100,100); }
 #select_frame QPushButton,
 #info_frame QPushButton,
 #group_display QPushButton,
@@ -88,6 +93,12 @@ QPushButton:hover {
     color: white;
     background: rgb(60, 60, 60);
     border-radius: 0px;
+}
+#info_buttons QPushButton,
+#simulate_button_widget QPushButton,
+#control_widget QPushButton,
+#browser_contorl QPushButton{
+    border-radius: 10px;
 }
 #select_frame QPushButton:hover,
 #info_frame QPushButton:hover,
@@ -126,14 +137,37 @@ QMessageBox {
     background: rgb(80, 80, 80);
 }
 
-QDialog#generate_popup {
+/*
+QDialog {
+    border: 1 solid rgb(40, 40, 40);;
+    background: rgb(90, 90, 90);
+    border-radius: 5px;
+}
+*/
+QDialog {
+    border: none;
+    background: rgb(100, 100, 100);
+    border-radius: 5px;
+}
+QDialog QWidget{
+    border: none;
+    background: rgb(80, 80, 80);
+}
+QDialog QPushButton{
+    border: 1px;
+    color: white;
+    background: rgb(60, 60, 60);
+    border-radius: 10px;
+    min-width: 50px;
+    min-height: 30px;
+}
+QDialog QPushButton:hover {
     background: rgb(90, 90, 90);
 }
 QCheckBox{
     padding: 0px;
     spacing: 0px;
 }
-
 QCheckBox::indicator:checked {
     image: url(assets:selected.png);
     width: 24px;
@@ -144,3 +178,31 @@ QCheckBox::indicator:unchecked {
     width: 24px;
     height: 24px;
 }
+/* Not needed anymore 
+QFileDialog {
+    background:rgb(80, 80, 80);
+    color: white;
+} 
+QFileDialog QWidget {
+    background:rgb(80, 80, 80);
+    color: white;
+}
+QFileDialog QPushButton, 
+QFileDialog QToolButton {
+    background:rgb(60, 60, 60);
+    color: white;
+}
+QFileDialog QPushButton:hover,
+QFileDialog QToolButton:hover {
+    background:rgb(90, 90, 90);
+    color: white;
+}
+QFileDialog QPushButton:checked,
+QFileDialog QToolButton:checked {
+    background:rgb(70, 120, 190);
+    color: white;
+}
+QFileDialog QListView {
+    background:rgb(80, 80, 80);
+    color: white;
+}*/

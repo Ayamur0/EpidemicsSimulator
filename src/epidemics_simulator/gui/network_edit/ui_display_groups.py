@@ -44,7 +44,7 @@ class UiDisplayGroup:
         
     def init_ui(self, network: Network):
         self.network = network
-        self.stat_label.setText('Some stats about graph creation\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
+        self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         try:
             self.generate_button.clicked.disconnect()
@@ -62,10 +62,10 @@ class UiDisplayGroup:
                 return
         
         
-        
+        self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
         self.main_window.push_to_dash()
         # self.main_window.server_push.finished.connect(self.generating_finished)
-        self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
+        
         self.start_time = time.time()
         #if generate_local:
         self.generate_thread = GenerateNetwork(network)
@@ -84,8 +84,10 @@ class UiDisplayGroup:
         self.main_window.generated_network = True
         self.generated_once = True
         print('Finished Generating')
-        self.popup.deleteLater()
+        
         self.main_window.show_webviews()
+        self.main_window.reset_button.click()
+        self.popup.deleteLater()
         # self.load_webview()
         
     def load_webview(self):
@@ -111,7 +113,7 @@ class UiDisplayGroup:
         # self.webview.show()
         
     def refresh_info_label(self, network: Network, generation_time: float):
-        label_text = f'Some stats about graph creation\n'
+        label_text = f'Graph creating stats\n'
         total_nodes, total_connections = self.get_network_info(network)
         label_text += f'Total nodes {total_nodes}\n'
         label_text += f'Total connections {total_connections}\n'
@@ -157,6 +159,6 @@ class UiDisplayGroup:
         except RuntimeError:
             pass
         self.unload_woker()
-        self.stat_label.setText('Some stats about graph creation\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
+        self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         

@@ -56,16 +56,18 @@ class UiDiseaseEditTab:
             widget = UiWidgetCreator.create_input_field_widget(color)
             line_edit, color_button = UiWidgetCreator.create_qcolor_button(color, line_edit)
             self.line_edits[typ] = line_edit
+            widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
+            label.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
             widget.layout().addWidget(color_button)
             input_widget.layout().addWidget(widget)
             label_widget.layout().addWidget(label)
             line_edit.textChanged.connect(lambda: self.update_type_colors())
             line_edit.textChanged.connect(lambda: self.main_window.disease_changed.emit())
             
-        add_disease_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'add_button')
-        add_disease_button.setIcon(self.main_window.add_icon)
-        add_disease_button.clicked.connect(lambda: self.add_disease())
-        button_widget.layout().addWidget(add_disease_button)
+        self.add_disease_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'add_button')
+        self.add_disease_button.setIcon(self.main_window.add_icon)
+        self.add_disease_button.clicked.connect(lambda: self.add_disease())
+        button_widget.layout().addWidget(self.add_disease_button)
         base_widget.setFixedSize(*self.min_frame_size)
         base_widget.setMinimumSize(*self.min_frame_size)
         self.disease_layout_list.insert(0, -1)
@@ -170,6 +172,8 @@ class UiDiseaseEditTab:
             elif key == 'color':
                 line_edit, color_button = UiWidgetCreator.create_qcolor_button(color, value)
                 line_edits[key] = line_edit
+                widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
+                label.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
                 widget.layout().addWidget(color_button)
                 input_widget.layout().addWidget(widget)
                 # form_widget.layout().addRow(label, color_button)
@@ -179,6 +183,8 @@ class UiDiseaseEditTab:
             # line_edit = UiWidgetCreator.create_qline_edit(value, 'group_line_edit_properties', regex_validator=regex_validator)
             line_edit = UiWidgetCreator.create_input_line_edit(value, regex_validator, color)
             line_edits[key] = line_edit
+            widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
+            label.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
             widget.layout().addWidget(line_edit)
             
             input_widget.layout().addWidget(widget)
@@ -198,6 +204,7 @@ class UiDiseaseEditTab:
     def add_disease(self):
         if self.is_creating_disease:
             return  
+        self.add_disease_button.setDisabled(True)
         self.is_creating_disease = True
         default_dict = {
             "name": 'Disease',
@@ -239,6 +246,7 @@ class UiDiseaseEditTab:
         else:
             self.disease_layout_list[1] = disease.id
         self.is_creating_disease = False
+        self.add_disease_button.setDisabled(False)
         #self.unload()
         #self.load_inputs(self.network, id_success_save=disease.id)
         self.load_disease(disease, is_success_save=True)
@@ -255,6 +263,7 @@ class UiDiseaseEditTab:
         if not disease:
             self.delete_disease_from_layout_at(1)
             self.is_creating_disease = False
+            self.add_disease_button.setDisabled(False)
             return
         message = UiWidgetCreator.show_message(f'Are you sure you want to delete disease {disease.name}', 'Disease deletion')
         result = message.exec_()
@@ -289,4 +298,8 @@ class UiDiseaseEditTab:
     def unload(self):
         self.disease_layout_list.clear()
         self.is_creating_disease = False
+        try:
+            self.add_disease_button.setDisabled(False)
+        except AttributeError:
+            pass
         self.main_window.unload_items_from_layout(self.disease_content.layout())

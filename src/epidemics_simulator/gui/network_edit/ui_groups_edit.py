@@ -153,15 +153,17 @@ class UiGroupEdit:
             else:
                 color = 'rgb(80, 80, 80)'
             i += 1
-            label = UiWidgetCreator.create_input_label(key, color)
+            label: QtWidgets.QLabel = UiWidgetCreator.create_input_label(key, color)
             
-            widget = UiWidgetCreator.create_input_field_widget(color)
+            widget: QtWidgets.QWidget = UiWidgetCreator.create_input_field_widget(color)
             self.porp_label.layout().addWidget(label)
             regex_validator = '.*'
             if key == 'vaccination rate' or key == 'max vaccination rate':
                 regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
             elif key == 'color':
                 line_edit, color_button = UiWidgetCreator.create_qcolor_button(color, value)
+                label.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
+                widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
                 line_edits[key] = line_edit
                 # line_edit.setStyleSheet(f'border-radius: 20px;background: {color};')
                 # color_button.setStyleSheet(f'background: {color};border-radius: 0;')
@@ -176,7 +178,9 @@ class UiGroupEdit:
             elif key != 'name':
                 regex_validator = '^(?!10000001$)[0-9]{1,8}$ '# Only allows numbers that are below 10 Million
             #line_edit = UiWidgetCreator.create_qline_edit(value, 'group_line_edit_properties', regex_validator=regex_validator)
-            line_edit = UiWidgetCreator.create_input_line_edit(value, regex_validator, color)
+            line_edit: QtWidgets.QLineEdit = UiWidgetCreator.create_input_line_edit(value, regex_validator, color)
+            widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
+            label.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
             line_edits[key] = line_edit
             widget.layout().addWidget(line_edit)
             #line_edit.setMinimumSize(100, 35)
