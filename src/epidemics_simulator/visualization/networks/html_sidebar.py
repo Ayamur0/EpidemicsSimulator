@@ -113,7 +113,7 @@ class HTMLSidebar(html.Div):
                         html.Div(
                             [
                                 html.I(className="fas fa-circle-nodes me-2"),
-                                html.Span("Show inner Edges"),
+                                html.Span("Show intra group edges"),
                             ],
                             id=self.id_factory("internal-edge-button"),
                             className="toggle",
