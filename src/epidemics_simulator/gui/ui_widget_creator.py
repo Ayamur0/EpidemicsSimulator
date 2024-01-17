@@ -1,9 +1,10 @@
+from typing import Type, Union
 from datetime import datetime
 from functools import partial
 from src.epidemics_simulator.storage import Network, Project
 from src.epidemics_simulator.gui.templates import templates
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import QObject, QPoint, pyqtSignal
+from PyQt5.QtCore import QObject, QPoint, pyqtSignal, QRect
 from storage import Network
 import random
 from PyQt5.QtCore import Qt
@@ -117,7 +118,8 @@ class UiWidgetCreator:
             color_string = UiWidgetCreator.convert_color_to_float_rgb_string(color)
             hex_color = color.name()
             line_edit.setText(color_string)
-            color_button.setStyleSheet(f'background: {hex_color};')
+            rgb_color = UiWidgetCreator.convert_color_to_int_rgb_string(color)
+            color_button.setStyleSheet(f'border-radius: 10px; background-color: {rgb_color};')
             
     def generate_random_color() -> QColor:
         red = random.randint(0, 255)
@@ -151,7 +153,12 @@ class UiWidgetCreator:
             timer.deleteLater()  # Delete the timer to avoid memory leaks
         except RuntimeError:
             return
-        
+    message_box_qss = """QWidget {background: rgb(100, 100, 100); color: white;} 
+        QPushButton {background: rgb(60, 60, 60); border-radius: 5px; min-width: 50; min-height: 30;}
+        QPushButton:hover {background: rgb(90, 90, 90);}
+        QPushButton:checked {background: rgb(70, 120, 190);}
+        QPushButton:default {border: 1; border-style: outset; border-color: rgba(70, 120, 190, 200);}
+        """
     def show_status(widget, content: str, object_name: str, remove_last_message: bool, is_row=True, content_of_last_label:str ='') -> None:
         if remove_last_message:
             if  widget.layout():
@@ -166,12 +173,16 @@ class UiWidgetCreator:
         timer = QTimer()
         timer.singleShot(2000, lambda: UiWidgetCreator.hide_message(label, timer))
     
-    def show_message(content: str, title: str, default_button=1) -> QtWidgets.QMessageBox:
+    def show_message(content: str, title: str, default_button=1, only_ok=False) -> QtWidgets.QMessageBox:
         msg_box = QtWidgets.QMessageBox()
+        msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
         msg_box.setWindowTitle(title)
         msg_box.setText(content)
         
+        if only_ok:
+            ok_button = msg_box.addButton('Ok', QtWidgets.QMessageBox.AcceptRole)
+            return msg_box
         
         yes_button = msg_box.addButton('Yes', QtWidgets.QMessageBox.AcceptRole)
         cancel_button = msg_box.addButton('Cancel', QtWidgets.QMessageBox.RejectRole)
@@ -184,6 +195,7 @@ class UiWidgetCreator:
         return msg_box
     def save_popup(content: str):
         msg_box = QtWidgets.QMessageBox()
+        msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
         msg_box.setWindowTitle('Unsaved Changes Detected')
         msg_box.setText('Do you want to save your changes before closing?')
@@ -210,7 +222,7 @@ class UiWidgetCreator:
     
     def create_file(window) -> str:     
         options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
+        # options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
 
         # Add a filter to allow only JSON files
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(window, "Save File", "", "Json Files (*.json);;All Files (*)", options=options)
@@ -223,17 +235,18 @@ class UiWidgetCreator:
 
     def open_file(window) -> str:
         options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
+        # options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
 
         # Add a filter to allow only JSON files
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(window, "Open File", "", "Json Files (*.json);;All Files (*)", options=options)
         
         return file_name
     
-    def create_generate_popup(parent) -> QtWidgets.QDialog:
+    def create_generate_popup(parent, content: str='Generating...') -> QtWidgets.QDialog:
         dialog = QtWidgets.QDialog(parent, flags=Qt.FramelessWindowHint)
         dialog.setWindowModality(Qt.ApplicationModal)
-        dialog.setObjectName('generate_popup')
+        #dialog.setObjectName('generate_popup')
+        dialog.setStyleSheet('background: rgb(70, 70, 70); border-radius: 5px;')
         dialog.setLayout(QtWidgets.QHBoxLayout())
         # Asset source: https://gifer.com/en/ZKZg
         loading = QMovie('assets/loading.gif')
@@ -243,7 +256,7 @@ class UiWidgetCreator:
         loading.start()
         #loading_label.setFixedSize(50, 50)
         
-        text_label = UiWidgetCreator.create_qlabel('Generating...', 'generating_label')
+        text_label = UiWidgetCreator.create_qlabel(content, 'generating_label')
         dialog.layout().addWidget(loading_label)
         dialog.layout().addWidget(text_label)
         
@@ -335,15 +348,27 @@ class UiWidgetCreator:
         return widget    
     
     def create_input_label(content: str, color: str, object_name: str = 'input'):
-        label: QtWidgets.QLabel = UiWidgetCreator.create_qlabel(content, object_name)
+        # label: QtWidgets.QLabel = UiWidgetCreator.create_qlabel(content, object_name)
+        label: ElidedLabel = ElidedLabel(content)
+        label.setObjectName(object_name)
         #label: ElidingLabel = ElidingLabel(text=content, mode= Qt.ElideRight, padding=15)
-        #label.setObjectName(object_name)
+        font_metrics = label.fontMetrics()
+        elided_text = font_metrics.elidedText(label.text(), Qt.ElideRight, label.width())
+        label.setText(elided_text)
         label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
         label.setMinimumSize(100, 35)
-        label.setStyleSheet(f'border-radius: none;background: {color};padding-left: 10;padding-right: 10;')
+        label.setStyleSheet(f'border-radius: none;background: {color};padding-left: 15px;padding-right: 15px;')
         
         return label
+    
+    def label_clicked(input: Union[Type[QtWidgets.QLineEdit], Type[QtWidgets.QPushButton]], is_button: bool, event):
+        print(event)
+        if is_button:
+            input.click()
+        else:
+            input.setFocus()
+        
     
     def create_input_line_edit(content: str, regex_validator: str, color: str, object_name: str = 'input'):
         line_edit: QtWidgets.QLineEdit = UiWidgetCreator.create_qline_edit(content, object_name, regex_validator=regex_validator)
@@ -383,100 +408,21 @@ class UiWidgetCreator:
         
         return base_widget, save_widget, frame, label_widget, input_widget
       
-# Source: https://stackoverflow.com/a/67628976
-class ElidingLabel(QtWidgets.QLabel):
-    """Label with text elision.
-
-    QLabel which will elide text too long to fit the widget.  Based on:
-    https://doc-snapshots.qt.io/qtforpython-5.15/overviews/qtwidgets-widgets-elidedlabel-example.html
-
-    Parameters
-    ----------
-    text : str
-
-        Label text.
-
-    mode : QtCore.Qt.TextElideMode
-
-       Specify where ellipsis should appear when displaying texts that
-       don’t fit.
-
-       Default is QtCore.Qt.ElideMiddle.
-
-       Possible modes:
-         QtCore.Qt.ElideLeft
-         QtCore.Qt.ElideMiddle
-         QtCore.Qt.ElideRight
-
-    parent : QWidget
-
-       Parent widget.  Default is None.
-
-    f : Qt.WindowFlags()
-
-       https://doc-snapshots.qt.io/qtforpython-5.15/PySide2/QtCore/Qt.html#PySide2.QtCore.PySide2.QtCore.Qt.WindowType
-
-    """
-
-    elision_changed = pyqtSignal(bool)
-
-    def __init__(self, text='', mode=Qt.ElideMiddle, padding=10, **kwargs):
-        super().__init__(**kwargs)
-
-        self._mode = mode
-        self.is_elided = False
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
-        self.setText(text)
+# Source: https://gist.github.com/rsgalloway/9514597
+class ElidedLabel(QtWidgets.QLabel):
+    def __init__(self, text, parent=None, padding = 15):
+        super(ElidedLabel, self).__init__(text, parent)
         self.padding = padding
 
-    def setText(self, text):
-        self._contents    = text
-
-        # This line set for testing.  Its value is the return value of
-        # QFontMetrics.elidedText, set in paintEvent.  The variable
-        # must be initialized for testing.  The value should always be
-        # the same as contents when not elided.
-        self._elided_line = text
-
-        self.update()
-
-    def text(self):
-        return self._contents
-
     def paintEvent(self, event):
-        super().paintEvent(event)
-
-        did_elide = False
-
         painter = QPainter(self)
-        font_metrics = painter.fontMetrics()
-        text_width = font_metrics.horizontalAdvance(self.text())
+        metrics = QFontMetrics(self.font())
+        
+        available_width = self.width() - self.padding
+        
+        elided_text = metrics.elidedText(self.text(), Qt.ElideRight, available_width)
 
-        # layout phase
-        text_layout = QTextLayout(self._contents, painter.font())
-        text_layout.beginLayout()
-
-        while True:
-            line = text_layout.createLine()
-
-            if not line.isValid():
-                break
-
-            line.setLineWidth(self.width())
-
-            if text_width >= self.width():
-                self._elided_line = font_metrics.elidedText(self._contents, self._mode, self.width())
-                painter.drawText(QPoint(self.padding, font_metrics.ascent()), self._elided_line)
-                did_elide = line.isValid()
-                break
-            else:
-                line.draw(painter, QPoint(self.padding, 0))
-
-        text_layout.endLayout()
-
-        if did_elide != self.is_elided:
-            self.is_elided = did_elide
-            self.elision_changed.emit(did_elide)
+        painter.drawText(QRect(self.padding, 0, available_width, self.height()), self.alignment(), elided_text)
 
       
         

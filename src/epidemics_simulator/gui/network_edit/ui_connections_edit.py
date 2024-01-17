@@ -109,6 +109,8 @@ class UiConnectionEdit:
             label = UiWidgetCreator.create_input_label(key, color)
             widget = UiWidgetCreator.create_input_field_widget(color)
             line_edit = UiWidgetCreator.create_input_line_edit(value, '^[0-9]+$', color)
+            widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
+            label.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
             widget.layout().addWidget(line_edit)
             #label = UiWidgetCreator.create_qlabel(key, 'connection_label_properties')
             #line_edit = UiWidgetCreator.create_qline_edit(value, 'connection_line_edit_properties', regex_validator='^[0-9]+$')

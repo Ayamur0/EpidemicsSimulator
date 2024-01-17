@@ -68,7 +68,16 @@ class CheckConnection(QThread):
                 time.sleep(1)
         self.connection_established.emit()
         self.finished.emit(self)
-
+class SaveStats(QThread):
+    finished = pyqtSignal(str, SimStats)
+    def __init__(self, data):
+        super().__init__()
+        self.data = data
+    def run(self):
+        filename = self.data['filename']
+        stats = SimStats.from_dict(self.data["stats"])
+        self.finished.emit(filename, stats)
+        return
 class UiNetworkEditor(QtWidgets.QMainWindow):
     network_changed = pyqtSignal() # TODO connect emit
     disease_changed = pyqtSignal() # TODO connect emit
@@ -102,7 +111,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             self.stylesheet = fp.read()
         # self.fill_theme(self.themes)
         self.setStyleSheet(self.stylesheet)
-        label = QtWidgets.QLabel('Hello, PyQt5!', self)
+        label = QtWidgets.QLabel('change_font', self)
         label.hide()
         font = label.font()
         font.setPointSize(12)  # Change the font size as needed
@@ -119,6 +128,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.statistics_tab = UiStatisticTab(self)
         #self.change_theme('Dark')
         self.startup.launch_startup()
+        self.setWindowTitle('Network tool')
         
     def init_icons(self):
         self.add_icon = QIcon('assets/add.png')
@@ -183,40 +193,9 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             if not btn_object.isChecked():
                 continue
             btn_object.setChecked(False)
-        
-    #def fill_theme(self, theme: dict):
-    #    menu = self.menuThemes
-    #    for key in theme.keys():
-    #        action = UiWidgetCreator.create_qaction(key, 'theme_action', self)
-    #        action.triggered.connect(partial(self.change_theme, key))
-    #        menu.addAction(action)
-            
-    #def change_theme(self, new_theme):
-    #    new_style = self.stylesheet
-    #    for key, value in self.themes[new_theme].items():
-    #        new_style = new_style.replace(key, value)
-    #    self.setStyleSheet(new_style)
-    #    if new_theme == 'Dark':
-    #        old_theme = 'Light'
-    #    else:
-    #        old_theme = 'Dark'
-        #self.add_icon = self.button_change(self.add_icon, old_theme, new_theme)
-        #self.duplicate_icon = self.button_change(self.duplicate_icon, old_theme, new_theme)
-        #self.remove_icon = self.button_change(self.remove_icon, old_theme, new_theme)
-        #self.save_icon = self.button_change(self.save_icon, old_theme, new_theme)
-        #
-        #self.start_icon = self.button_change(self.start_icon, old_theme, new_theme)
-        #self.stop_icon = self.button_change(self.stop_icon, old_theme, new_theme)
-        # self.forward_icon = self.button_change(self.forward_icon, old_theme, new_theme)
-        # self.rewind_icon = self.button_change(self.rewind_icon, old_theme, new_theme)
-        # self.restart_icon = self.button_change(self.restart_icon, old_theme, new_theme)
-                
-        # self.change_all_button_icons(UiNetworkEditor.icon_themes[old_theme], UiNetworkEditor.icon_themes[new_theme])
-        
-    # def button_change(self, icon: QIcon, old_theme: str, new_theme: str) -> QIcon:
-    #    return QIcon(self.change_icon_color(icon, UiNetworkEditor.icon_themes[old_theme], UiNetworkEditor.icon_themes[new_theme]))
-        
+
     def new_network(self, parent, template_id=None):
+        self.text_simulation_tab.stop_simulation()
         if self.is_project_loaded and self.unsaved_changes:
             if self.ask_to_save():
                 return
@@ -241,6 +220,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.project.save_to_file()
         
     def open_network(self, parent):
+        self.text_simulation_tab.stop_simulation()
         if self.is_project_loaded and self.unsaved_changes:
             if self.ask_to_save():
                 return
@@ -433,27 +413,27 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             return False
         elif answer == QtWidgets.QMessageBox.Cancel:
             return True
-        
-    def change_icon_color(self, icon: QIcon, original_color: QColor, new_color: QColor):
-        pixel_map = icon.pixmap(QSize(512, 152))
-        image = pixel_map.toImage()
-        for x in range(image.width()):
-            for y in range(image.height()):
-                if image.pixelColor(x, y) == original_color:
-                    image.setPixelColor(x, y, new_color)
-        return QPixmap.fromImage(image)
-    
-    def change_all_button_icons(self, old_color: QColor, new_color: QColor):
-        for button in self.findChildren(QtWidgets.QPushButton):
-            button_icon = button.icon()
-            if button_icon.isNull():
-                continue
-            new_icon = QIcon(self.change_icon_color(button_icon, old_color, new_color))
-            button.setIcon(new_icon)
             
     def stats_update(self, data):
         if 'stats' not in data.keys() or 'filename' not in data.keys():
             return
+        self.popup = UiWidgetCreator.create_generate_popup(self, content='Saving...')
+        self.save_thread = SaveStats(data)
+        self.save_thread.finished.connect(self.save_finsihed)
+        self.save_thread.start()
+        self.popup.exec_()
+        return
+        
+        
         self.project.stats[data['filename']] = SimStats.from_dict(data["stats"])
-        self.unsaved_changes = True
+        self.unsaved_changes = True#
         # self.statistics_tab.show_webview()
+        
+    def save_finsihed(self, filename: str, stats: SimStats):
+        self.project.stats[filename] = stats
+        self.unsaved_changes = True
+        self.save_thread.quit()
+        self.save_thread.deleteLater()
+        self.save_thread = None
+        self.popup.deleteLater()
+        return

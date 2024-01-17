@@ -176,9 +176,9 @@ class UiTextSimulationTab:
 
     def update_control_labels(self, simulation_speed: float):
         if simulation_speed >= 1 or simulation_speed == 0:
-            self.speed_label.setText(f'Simulation speed: {int(simulation_speed)}t/s')
+            self.speed_label.setText(f'Simulation speed: {int(simulation_speed)} t/s')
         else:
-            self.speed_label.setText(f'Simulation speed: {simulation_speed}t/s')
+            self.speed_label.setText(f'Simulation speed: {simulation_speed} t/s')
         if simulation_speed == 0:
             self.start_stop_button.setIcon(self.main_window.start_icon)
             #self.start_stop_button.setText('Start')
@@ -214,8 +214,8 @@ class UiTextSimulationTab:
     def reset_simulation(self):
         if not self.simuilation_started:
             self.start_worker()
-        self.clear_stats_widgets()
         self.worker.restart_simulation()
+        # self.clear_stats_widgets()
         self.main_window.changed_disease = False
         
     def stop_simulation(self):
@@ -253,11 +253,12 @@ class UiTextSimulationTab:
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return 
-        self.main_window.network_edit_tab.group_display.start_generating(self.network, generate_local=True)
+        # self.main_window.network_edit_tab.group_display.start_generating(self.network, generate_local=True)
         # self.main_window.network_edit_tab.group_display.generate_button.click()
         self.reset_simulation()
         
     def save_simulation(self):
+        self.stop_simulation()
         name = UiWidgetCreator.open_save_sim_popup()
         if not name:
             return
