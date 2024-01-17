@@ -83,7 +83,7 @@ class Disease:
         reinfection_rate = float(value_dict.get("reinfection rate"))
         vaccinated_infection_rate = float(value_dict.get("vaccinated infection rate"))
         duration = int(value_dict.get("duration"))
-        initial_infection_count = int(value_dict.get("cure chance"))
+        initial_infection_count = int(value_dict.get("initial infection count"))
         cure_chance = float(value_dict.get("cure chance"))
         immunity_period = int(value_dict.get("immunity period"))
         infectiousness_factor = int(value_dict.get("infectiousness factor"))

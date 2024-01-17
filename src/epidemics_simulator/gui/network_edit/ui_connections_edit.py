@@ -86,7 +86,7 @@ class UiConnectionEdit:
             if con_dc > con_avrg:
                 raise ValueError
         except TypeError:
-            UiWidgetCreator.show_status(self.save_status, "Pleas fill out every input", 'error_message', True, is_row=False)
+            UiWidgetCreator.show_status(self.save_status, "Please fill out every input", 'error_message', True, is_row=False)
             return
         except ValueError:
             UiWidgetCreator.show_status(self.save_status, "Delta has to be smalller then average", 'error_message', True, is_row=False)

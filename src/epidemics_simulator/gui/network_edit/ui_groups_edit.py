@@ -198,7 +198,7 @@ class UiGroupEdit:
                 if str(e) == "Delta has to be smalller then average":
                     UiWidgetCreator.show_status(self.save_status, str(e), 'error_message', True, is_row=False)
                 else:
-                    UiWidgetCreator.show_status(self.save_status, "Pleas fill out every input", 'error_message', True, is_row=False)
+                    UiWidgetCreator.show_status(self.save_status, "Please fill out every input", 'error_message', True, is_row=False)
                 return
             success_message = "Successfully added"
         else:
@@ -208,7 +208,7 @@ class UiGroupEdit:
                 if str(e) == "Delta has to be smalller then average":
                     UiWidgetCreator.show_status(self.save_status, str(e), 'error_message', True, is_row=False, content_of_last_label='color')
                 else:
-                    UiWidgetCreator.show_status(self.save_status, "Pleas fill out every input", 'error_message', True, is_row=False, content_of_last_label='color')
+                    UiWidgetCreator.show_status(self.save_status, "Please fill out every input", 'error_message', True, is_row=False, content_of_last_label='color')
                 return
             success_message = "Successfully saved"
         self.is_creating_group = False

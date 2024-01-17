@@ -221,7 +221,7 @@ class UiDiseaseEditTab:
             try:
                 disease.set_from_dict(updated_dict)
             except ValueError:
-                UiWidgetCreator.show_status(save_widget, "Pleas fill out every input", 'error_message', True, is_row=False)
+                UiWidgetCreator.show_status(save_widget, "Please fill out every input", 'error_message', True, is_row=False)
                 return
             UiWidgetCreator.show_status(save_widget, "Successfully saved", 'success_message', True, is_row=False)
             self.main_window.disease_changed.emit()
@@ -231,7 +231,7 @@ class UiDiseaseEditTab:
                 disease = Disease.init_from_dict(updated_dict)
                 self.network.add_disease(disease)
             except ValueError:
-                UiWidgetCreator.show_status(save_widget, "Pleas fill out every input", 'error_message', True, is_row=False)
+                UiWidgetCreator.show_status(save_widget, "Please fill out every input", 'error_message', True, is_row=False)
                 return
         self.delete_disease_from_layout_at(1)
         if len(self.disease_layout_list) == 1:
