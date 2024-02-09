@@ -10,10 +10,9 @@ from .html_file_popup import HTMLFilePopup
 
 class HTMLStatsView:
     def __init__(self, project) -> None:
-        self.project = project
-        self.sidebar = HTMLSidebar(project.network, self)
-        # self.stats: SimStats = project.stats["test"]
         self.stats: SimStats = None
+        self.project = project
+        self.sidebar = HTMLSidebar(self)
         self.visible_data = []
         self.visible_groups = [None]
         self.visible_diseases = [None]
@@ -21,7 +20,7 @@ class HTMLStatsView:
         self.use_cumulative_data = False
         self.needs_build = False
         # self.data_dict = self.stats.group_stats["0"].infections
-        self.file_popup = HTMLFilePopup(list(self.project.stats.keys()), self)
+        self.file_popup = HTMLFilePopup(list(self.project.stat_file_names), self)
         self.content = html.Div(
             [
                 dcc.Graph(
@@ -49,7 +48,7 @@ class HTMLStatsView:
                 "background-color": "#353535",
             },
         )
-        self.layout = html.Div([self.sidebar, self.content])
+        self.layout = html.Div([self.sidebar, self.content], id="stats-main")
         self.displayed_data = {}
 
         @callback(
@@ -79,11 +78,14 @@ class HTMLStatsView:
         self.visible_diseases = [None]
         self.data_dict = {}
         self.use_cumulative_data = False
-        self.sidebar.network = self.project.network
         self.sidebar.rebuild()
+        self.file_popup.update_files()
+
+    def rebuild_sidebar(self):
+        self.sidebar = HTMLSidebar(self)
 
     def load_stats(self, name):
-        self.stats = self.project.stats[name]
+        self.stats = self.project.load_stats(name)
 
     def build_graph(self):
         self.update_data()

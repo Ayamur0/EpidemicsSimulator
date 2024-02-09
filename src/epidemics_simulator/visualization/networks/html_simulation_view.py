@@ -23,7 +23,10 @@ class HTMLSimulationView(HTMLNetworkView):
                 dcc.Input(
                     id="sim-save-input",
                     type="text",
-                    placeholder=datetime.now(),
+                    placeholder=str(datetime.now())
+                    .split(".")[0]
+                    .replace(" ", "T")
+                    .replace(":", "_"),
                     className="form-control save-input",
                     style={
                         "margin": "0 1rem 0 1rem",
@@ -217,19 +220,8 @@ class HTMLSimulationView(HTMLNetworkView):
 
         def save_data(_, name):
             if not name:
-                name = str(datetime.now())
-            print(name)
-            self.project.stats[name] = self.sim.stats
-            requests.post(
-                "http://localhost:8051/stat-update",
-                json={"filename": name, "stats": self.sim.stats.to_dict()},
-                timeout=0.5,
-            )
-            requests.post(
-                "http://localhost:8050/update-stats",
-                json={"filename": name, "stats": self.sim.stats.to_dict()},
-                timeout=0.5,
-            )
+                name = str(datetime.now()).replace(" ", "T").split(".")[0].replace(":", "_")
+            self.sim.stats.to_csv(self.project.stat_file_location, name)
             return True
 
         self.save_popup.register_confirm_callback_with_state(

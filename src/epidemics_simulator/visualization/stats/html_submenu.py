@@ -1,4 +1,4 @@
-from dash import html, callback, ALL, MATCH
+from dash import html, callback, ALL, MATCH, callback_context
 import dash_bootstrap_components as dbc
 from src.epidemics_simulator.visualization.id_factory import id_factory
 from dash.dependencies import Input, Output, State
@@ -88,59 +88,59 @@ class HTMLSubmenu(dbc.Nav):
                 style={"background-color": self.ENABLED_COLOR},
             )
         )
-        for group in groups:
+        for id, name in groups:
             self.content.append(
                 html.Div(
                     [
                         html.I(className=f"fas fa-{icon2} me-2"),
-                        html.Span(f" Show {group.name}"),
+                        html.Span(f" Show {name}"),
                     ],
-                    id={"index": group.id, "type": self.id_factory(f"{identifier}-button")},
+                    id={"index": id, "type": self.id_factory(f"{identifier}-button")},
                     className="toggle",
                     style={"background-color": self.BACKGROUND_COLOR},
                 )
             )
 
-            @callback(
-                Output(self.id_factory(f"all-{identifier}s-button"), "style", allow_duplicate=True),
-                Output(
-                    {"index": group.id, "type": self.id_factory(f"{identifier}-button")},
-                    "style",
-                    allow_duplicate=True,
-                ),
-                Output("stats-graph", "figure", allow_duplicate=True),
-                Input(
-                    {"index": group.id, "type": self.id_factory(f"{identifier}-button")}, "n_clicks"
-                ),
-                State(
-                    {"index": group.id, "type": self.id_factory(f"{identifier}-button")}, "style"
-                ),
-                prevent_initial_call=True,
-            )
-            def toggle(_, style, identifier=identifier, id=group.id):
-                if style["background-color"] == self.BACKGROUND_COLOR:
-                    new_color = self.ENABLED_COLOR
-                    if identifier == "group":
-                        self.stats_view.add_group(id)
-                    else:
-                        self.stats_view.add_disease(id)
+        @callback(
+            Output(
+                {"index": MATCH, "type": self.id_factory(f"{identifier}-button")},
+                "style",
+                allow_duplicate=True,
+            ),
+            Input({"index": ALL, "type": self.id_factory(f"{identifier}-button")}, "n_clicks"),
+            State({"index": MATCH, "type": self.id_factory(f"{identifier}-button")}, "style"),
+            prevent_initial_call=True,
+        )
+        def toggle(_, style):
+            if style["background-color"] == self.BACKGROUND_COLOR:
+                new_color = self.ENABLED_COLOR
+            else:
+                new_color = self.BACKGROUND_COLOR
+            # add / remove group.id/disease.id from groups/diseases
+            return {"background-color": new_color}
+
+        @callback(
+            Output(self.id_factory(f"all-{identifier}s-button"), "style", allow_duplicate=True),
+            Output("stats-graph", "figure", allow_duplicate=True),
+            Input({"index": ALL, "type": self.id_factory(f"{identifier}-button")}, "n_clicks"),
+            prevent_initial_call=True,
+        )
+        def toggle(_, identifier=identifier):
+            id = callback_context.triggered_id["index"]
+            if identifier == "group":
+                if id in self.stats_view.visible_groups:
+                    self.stats_view.remove_group(id)
                 else:
-                    new_color = self.BACKGROUND_COLOR
-                    if identifier == "group":
-                        self.stats_view.remove_group(id)
-                    else:
-                        self.stats_view.remove_disease(id)
-                # add / remove group.id/disease.id from groups/diseases
-                new_color = (
-                    self.ENABLED_COLOR
-                    if style["background-color"] == self.BACKGROUND_COLOR
-                    else self.BACKGROUND_COLOR
-                )
-                return (
-                    {"background-color": self.BACKGROUND_COLOR},
-                    {"background-color": new_color},
-                    self.stats_view.build_graph(),
-                )
+                    self.stats_view.add_group(id)
+            else:
+                if id in self.stats_view.visible_diseases:
+                    self.stats_view.remove_disease(id)
+                else:
+                    self.stats_view.add_disease(id)
+            return (
+                {"background-color": self.BACKGROUND_COLOR},
+                self.stats_view.build_graph(),
+            )
 
         @callback(
             Output(
@@ -157,8 +157,10 @@ class HTMLSubmenu(dbc.Nav):
         def toggle(_, style, identifier=identifier):
             if identifier == "group":
                 self.stats_view.set_all_groups()
+                n_buttons = len(self.stats_view.stats.group_ids)
             else:
                 self.stats_view.set_all_diseases()
+                n_buttons = len(self.stats_view.stats.disease_ids)
             # set groups/diseases to only "all"
             new_color = (
                 self.ENABLED_COLOR
@@ -166,7 +168,7 @@ class HTMLSubmenu(dbc.Nav):
                 else self.BACKGROUND_COLOR
             )
             return (
-                [{"background-color": self.BACKGROUND_COLOR}] * len(groups),
+                [{"background-color": self.BACKGROUND_COLOR}] * n_buttons,
                 {"background-color": new_color},
                 self.stats_view.build_graph(),
             )

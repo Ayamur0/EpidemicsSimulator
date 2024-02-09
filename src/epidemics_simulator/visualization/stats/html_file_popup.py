@@ -48,6 +48,7 @@ class HTMLFilePopup(dbc.Modal):
     def _create_modal_body(self):
         @callback(
             Output(f"file-popup", "is_open", allow_duplicate=True),
+            Output(f"stats-main", "children", allow_duplicate=True),
             Input({"index": ALL, "type": "file-button"}, "n_clicks"),
             prevent_initial_call=True,
         )
@@ -56,7 +57,11 @@ class HTMLFilePopup(dbc.Modal):
                 raise exceptions.PreventUpdate()
             ind = int(callback_context.triggered_id["index"])
             self.stats_view.load_stats(self.files[ind])
-            return False
+            self.stats_view.rebuild_sidebar()
+            self.is_open = False
+            return False, [self.stats_view.sidebar, self.stats_view.content]
+
+        self.files = self.stats_view.project.stat_file_names
 
         if not self.files:
             return dbc.ModalBody(

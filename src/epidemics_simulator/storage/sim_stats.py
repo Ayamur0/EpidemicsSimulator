@@ -1,13 +1,29 @@
+from io import StringIO
 import json
 from dash import html
+import pandas as pd
+import os
+from pathlib import Path
 
 
 class SimStats:
     def __init__(self, network) -> None:
         self.group_stats = {}
         self.log_text_cache = []
-        for group in network.active_groups:
-            self.group_stats[group.id] = GroupSimStats(group.size, group.name, network.diseases)
+        self.group_ids = []
+        self.group_names = []
+        self.group_sizes = []
+        self.disease_ids = []
+        self.disease_names = []
+        if network:
+            for disease in network.diseases:
+                self.disease_ids.append(disease.id)
+                self.disease_names.append(disease.name)
+            for group in network.active_groups:
+                self.group_ids.append(group.id)
+                self.group_names.append(group.name)
+                self.group_sizes.append(group.size)
+                self.group_stats[group.id] = GroupSimStats(group.size, group.name, self.disease_ids)
 
     def new_step(self):
         for group in self.group_stats:
@@ -114,9 +130,101 @@ class SimStats:
         instance._add_full_log_text()
         return instance
 
+    def to_csv(self, path, name):
+        df = self.to_dataframe()
+        df.to_pickle(Path(os.path.join(path, name + ".pkl")))
+
+    @classmethod
+    def from_csv(cls, filepath):
+        df = pd.read_pickle(Path(filepath))
+        return SimStats.from_dataframe(df)
+
+    def to_dataframe(self):
+        data = {
+            "Group": [],
+            "Disease": [],
+            "Infections": [],
+            "Reinfections": [],
+            "VaccInfections": [],
+            "UnvaccInfections": [],
+            "Cures": [],
+            "Vaccinations": [],
+            "Deaths": [],
+            "VaccDeaths": [],
+            "UnvaccDeaths": [],
+        }
+
+        group_data = {
+            "GroupIds": self.group_ids,
+            "GroupNames": self.group_names,
+            "GroupSizes": self.group_sizes,
+        }
+        disease_data = {
+            "DiseaseIds": self.disease_ids,
+            "DiseaseNames": self.disease_names,
+        }
+
+        for group_id, group_stat in self.group_stats.items():
+            for disease_id, disease_stat in group_stat.infections.items():
+                data["Group"].append(group_id)
+                data["Disease"].append(disease_id)
+                data["Infections"].append(disease_stat)
+                data["Reinfections"].append(group_stat.reinfections[disease_id])
+                data["VaccInfections"].append(group_stat.vacc_infections[disease_id])
+                data["UnvaccInfections"].append(group_stat.unvacc_infections[disease_id])
+                data["Cures"].append(group_stat.cures[disease_id])
+
+            data["Vaccinations"].append(group_stat.vaccinations)
+            data["Deaths"].append(group_stat.deaths)
+            data["VaccDeaths"].append(group_stat.vacc_deaths)
+            data["UnvaccDeaths"].append(group_stat.unvacc_deaths)
+
+        df1 = pd.DataFrame(group_data)
+        df1["Source"] = "groups"
+        df2 = pd.DataFrame(disease_data)
+        df2["Source"] = "diseases"
+        df3 = pd.DataFrame(data)
+        df3["Source"] = "data"
+        return pd.concat([df1, df2, df3])
+
+    @classmethod
+    def from_dataframe(cls, df):
+        df1 = df[df["Source"] == "groups"].drop(columns="Source")
+        df2 = df[df["Source"] == "diseases"].drop(columns="Source")
+        df3 = df[df["Source"] == "data"].drop(columns="Source")
+        sim_stats = cls(None)
+
+        sim_stats.group_names = df1["GroupNames"].tolist()
+        sim_stats.group_ids = df1["GroupIds"].tolist()
+        sim_stats.group_sizes = df1["GroupSizes"].tolist()
+        sim_stats.disease_ids = df2["DiseaseIds"].tolist()
+        sim_stats.disease_names = df2["DiseaseNames"].tolist()
+
+        for id, name, size in zip(
+            sim_stats.group_ids, sim_stats.group_names, sim_stats.group_sizes
+        ):
+            sim_stats.group_stats[id] = GroupSimStats(size, name, sim_stats.disease_ids)
+
+        for _, row in df3.iterrows():
+            group_id = row["Group"]
+            disease_id = row["Disease"]
+
+            group_stat = sim_stats.group_stats[group_id]
+            group_stat.infections[disease_id] = row["Infections"]
+            group_stat.reinfections[disease_id] = row["Reinfections"]
+            group_stat.vacc_infections[disease_id] = row["VaccInfections"]
+            group_stat.unvacc_infections[disease_id] = row["UnvaccInfections"]
+            group_stat.cures[disease_id] = row["Cures"]
+
+            group_stat.vaccinations = row["Vaccinations"]
+            group_stat.deaths = row["Deaths"]
+            group_stat.vacc_deaths = row["VaccDeaths"]
+            group_stat.unvacc_deaths = row["UnvaccDeaths"]
+        return sim_stats
+
 
 class GroupSimStats:
-    def __init__(self, group_size, group_name, diseases) -> None:
+    def __init__(self, group_size, group_name, diseases_ids) -> None:
         self.name = group_name
         self.size = group_size
         self.unvacc_infections = {}
@@ -124,12 +232,12 @@ class GroupSimStats:
         self.reinfections = {}
         self.infections = {}
         self.cures = {}
-        for disease in diseases:
-            self.infections[disease.id] = [0]
-            self.unvacc_infections[disease.id] = [0]
-            self.vacc_infections[disease.id] = [0]
-            self.reinfections[disease.id] = [0]
-            self.cures[disease.id] = [0]
+        for id in diseases_ids:
+            self.infections[id] = [0]
+            self.unvacc_infections[id] = [0]
+            self.vacc_infections[id] = [0]
+            self.reinfections[id] = [0]
+            self.cures[id] = [0]
         self.vaccinations = [0]
         self.deaths = [0]
         self.vacc_deaths = [0]

@@ -14,9 +14,8 @@ class HTMLSidebar(html.Div):
 
     SPACER = html.Hr(className="spacer")
 
-    def __init__(self, network, stats_view) -> None:
+    def __init__(self, stats_view) -> None:
         super().__init__()
-        self.network = network
         self.stats_view = stats_view
         self.show_total_deaths = False
         self.show_vacc_deaths = False
@@ -112,6 +111,7 @@ class HTMLSidebar(html.Div):
             prevent_initial_call=True,
         )
         def open(_):
+            self.stats_view.reset()
             return True
 
         return html.Div(
@@ -138,15 +138,37 @@ class HTMLSidebar(html.Div):
         )
         return submenu
 
-    def groups_submenu(self):
-        submenu = HTMLSubmenu("Groups", "people-group", "groups", self.stats_view)
-        submenu.add_group_entries(self.network.active_groups)
-        return submenu
+    def add_groups_submenu(self):
+        self.groups_submenu = HTMLSubmenu(
+            "Groups",
+            "people-group",
+            "groups",
+            self.stats_view,
+            id=self.id_factory("groups-submenu"),
+        )
+        if self.stats_view.stats:
+            self.groups_submenu.add_group_entries(
+                zip(self.stats_view.stats.group_ids, self.stats_view.stats.group_names)
+            )
+        else:
+            self.groups_submenu.add_group_entries([])
+        return self.groups_submenu
 
-    def disease_submenu(self):
-        submenu = HTMLSubmenu("Diseases", "viruses", "diseases", self.stats_view)
-        submenu.add_disease_entries(self.network.diseases)
-        return submenu
+    def add_disease_submenu(self):
+        self.disease_submenu = HTMLSubmenu(
+            "Diseases",
+            "viruses",
+            "diseases",
+            self.stats_view,
+            id=self.id_factory("diseases-submenu"),
+        )
+        if self.stats_view.stats:
+            self.disease_submenu.add_disease_entries(
+                zip(self.stats_view.stats.disease_ids, self.stats_view.stats.disease_names)
+            )
+        else:
+            self.disease_submenu.add_disease_entries([])
+        return self.disease_submenu
 
     def vaccinations_button(self):
         @callback(
@@ -207,9 +229,9 @@ class HTMLSidebar(html.Div):
                         html.Hr(className="spacer"),
                         self.infections_submenu(),
                         html.Hr(className="spacer"),
-                        self.disease_submenu(),
+                        self.add_disease_submenu(),
                         html.Hr(className="spacer"),
-                        self.groups_submenu(),
+                        self.add_groups_submenu(),
                     ],
                     vertical=True,
                     pills=True,

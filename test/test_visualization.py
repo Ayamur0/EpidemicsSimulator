@@ -8,19 +8,19 @@ import random
 if __name__ == "__main__":
     server = DashServer()
     n = Network()
-    # n.add_group(NodeGroup(n, "Test1", 100, 10, 0.005, 0.9, 5, 0, "red"))
-    # n.add_group(NodeGroup(n, "Test2", 100, 10, 0.005, 0.9, 5, 0, "blue"))
-    # n.add_group(NodeGroup(n, "Test3", 100, 10, 0.005, 0.9, 5, 0, "yellow"))
-    for i in range(100):
-        size = random.randint(5, 10)
-        n.add_group(NodeGroup(n, "Test", 100, size, 0, 0, 4, 0, "red"))
-    for group in n.groups:
-        targets = random.choices(n.groups, k=4)
-        targets = [x.id for x in targets]
-        if group.id in targets:
-            targets.remove(group.id)
-        for target in targets:
-            group.add_external_connection(target, 0, 1)
+    n.add_group(NodeGroup(n, "Test1", 100, 10, 0.005, 0.9, 5, 0, "red"))
+    n.add_group(NodeGroup(n, "Test2", 100, 10, 0.005, 0.9, 5, 0, "blue"))
+    n.add_group(NodeGroup(n, "Test3", 100, 10, 0.005, 0.9, 5, 0, "yellow"))
+    # for i in range(100):
+    #     size = random.randint(5, 10)
+    #     n.add_group(NodeGroup(n, "Test", 100, size, 0, 0, 4, 0, "red"))
+    # for group in n.groups:
+    #     targets = random.choices(n.groups, k=4)
+    #     targets = [x.id for x in targets]
+    #     if group.id in targets:
+    #         targets.remove(group.id)
+    #     for target in targets:
+    #         group.add_external_connection(target, 0, 1)
     d = Disease(
         "Disease 1",
         color="yellow",
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # n.add_disease(d2)
     # n.groups[0].add_external_connection("1", 5, 0)
     n.build()
-    p = Project()
+    p = Project("test_project")
     # p.stats["test"] = SimStats.from_json("test.json")
     p.network = n
     # p.save_to_file()

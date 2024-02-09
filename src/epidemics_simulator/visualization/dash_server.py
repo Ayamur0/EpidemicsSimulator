@@ -71,17 +71,4 @@ class DashServer:
             except Exception as e:
                 return make_response(jsonify({"status": {str(e)}}), 400)
 
-        @app.server.route("/update-stats", methods=["POST"])
-        def update_stats():
-            try:
-                json_data = request.get_json()
-                stats = SimStats.from_dict(json_data["stats"])
-                stats_view.project.stats[json_data["filename"]] = stats
-                stats_view.reset()
-                stats_view.needs_build = True
-                return make_response(jsonify({"status": "OK"}), 200)
-            except Exception as e:
-                print(e.with_traceback())
-                return make_response(jsonify({"status": {str(e)}}), 400)
-
         app.run(debug=True, use_reloader=True)
