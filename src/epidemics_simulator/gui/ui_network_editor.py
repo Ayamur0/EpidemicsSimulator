@@ -437,9 +437,11 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
     def save_finsihed(self):
         # self.project.stats[filename] = stats
+        self.push_to_dash(data={})
         self.unsaved_changes = True
         self.save_thread.quit()
         self.save_thread.deleteLater()
         self.save_thread = None
         self.popup.deleteLater()
+        
         return

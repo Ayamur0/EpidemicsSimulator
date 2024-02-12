@@ -5,6 +5,7 @@ from PyQt5.QtWebEngineWidgets import *
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.storage import Network
 from src.epidemics_simulator.simulation import Simulation
+from src.epidemics_simulator.storage.sim_stats import SimStats
 from functools import partial
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDesktopServices
@@ -262,11 +263,17 @@ class UiTextSimulationTab:
         name = UiWidgetCreator.open_save_sim_popup()
         if not name:
             return
+        is_valid, reason = SimStats.is_valid_file_name(name)
+        if not is_valid:
+            msg_box = UiWidgetCreator.show_message(reason, 'Invalid filename', only_ok=True)
+            msg_box.exec_()
+            return
+            
         simulation_stats = self.simulation.stats
         # data = {'filename': name, 'stats': simulation_stats.to_dict()}
         self.main_window.stats_update(name, simulation_stats)
         
-        #self.main_window.push_to_dash(data=data, sub_url='update-stats')
+        #self.main_window.push_to_dash(data={})
         
     def clear_stats_widgets(self):
         self.stat_labels.clear()
