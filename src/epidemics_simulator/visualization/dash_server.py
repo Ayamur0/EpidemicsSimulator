@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output, State
 from dash import Dash, html, dcc, callback
 import dash_bootstrap_components as dbc
 import os
+import traceback
 
 
 class DashServer:
@@ -69,6 +70,8 @@ class DashServer:
                 stats_view.needs_build = True
                 return make_response(jsonify({"status": "OK"}), 200)
             except Exception as e:
-                return make_response(jsonify({"status": {str(e)}}), 400)
+                return make_response(
+                    jsonify({"status": str(e), "stack_trace": traceback.format_exc()}), 400
+                )
 
         app.run(debug=True, use_reloader=True)
