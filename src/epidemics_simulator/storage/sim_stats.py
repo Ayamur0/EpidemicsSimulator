@@ -165,7 +165,17 @@ class SimStats:
         }
 
         for group_id, group_stat in self.group_stats.items():
+            data["Vaccinations"].append(group_stat.vaccinations)
+            data["Deaths"].append(group_stat.deaths)
+            data["VaccDeaths"].append(group_stat.vacc_deaths)
+            data["UnvaccDeaths"].append(group_stat.unvacc_deaths)
+            first = True
             for disease_id, disease_stat in group_stat.infections.items():
+                if not first:
+                    data["Vaccinations"].append([])
+                    data["Deaths"].append([])
+                    data["VaccDeaths"].append([])
+                    data["UnvaccDeaths"].append([])
                 data["Group"].append(group_id)
                 data["Disease"].append(disease_id)
                 data["Infections"].append(disease_stat)
@@ -173,11 +183,15 @@ class SimStats:
                 data["VaccInfections"].append(group_stat.vacc_infections[disease_id])
                 data["UnvaccInfections"].append(group_stat.unvacc_infections[disease_id])
                 data["Cures"].append(group_stat.cures[disease_id])
-
-            data["Vaccinations"].append(group_stat.vaccinations)
-            data["Deaths"].append(group_stat.deaths)
-            data["VaccDeaths"].append(group_stat.vacc_deaths)
-            data["UnvaccDeaths"].append(group_stat.unvacc_deaths)
+                first = False
+            if not group_stat.infections.items():
+                data["Group"].append([])
+                data["Disease"].append([])
+                data["Infections"].append([])
+                data["Reinfections"].append([])
+                data["VaccInfections"].append([])
+                data["UnvaccInfections"].append([])
+                data["Cures"].append([])
 
         df1 = pd.DataFrame(group_data)
         df1["Source"] = "groups"
