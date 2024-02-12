@@ -10,6 +10,8 @@ class Project:
     def __init__(self, file_location) -> None:
         self.network: Network = None
         self.file_location = file_location
+        if not file_location:
+            return
         if not os.path.exists(file_location):
             os.mkdir(file_location)
 
@@ -18,6 +20,8 @@ class Project:
 
     @property
     def stat_file_names(self):
+        if not self.file_location:
+            return []
         return os.listdir(os.path.join(self.file_location, self.STAT_FILE_FOLDER))
 
     @property
@@ -44,7 +48,7 @@ class Project:
             json.dump(self.to_dict(), f, ensure_ascii=False, indent=4)
 
     @classmethod
-    def load_from_file(file_location):
+    def load_from_file(_, file_location):
         with open(
             os.path.join(file_location, Project.NETWORK_FILE_NAME), "r", encoding="utf-8"
         ) as f:
@@ -61,13 +65,15 @@ class Project:
     def from_dict(cls, data):
         from src.epidemics_simulator.storage import SimStats
 
-        project = cls()
+        try:
+            file_location = data["file_location"]
+        except KeyError as e:
+            return None
+
+        project = cls(file_location)
 
         # Handle network
         if "network" in data and data["network"]:
             project.network = Network.from_dict(data["network"])
-
-        # Handle other attributes
-        project.file_location = data.get("file_location", "project.json")
 
         return project

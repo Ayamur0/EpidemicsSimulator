@@ -10,11 +10,13 @@ from PyQt5.QtGui import QDesktopServices
 
 class GenerateNetwork(QThread):
     finished = pyqtSignal()
-    def __init__(self, network: Network) -> None:
+    def __init__(self, network: Network, push_to_dash_method) -> None:
         super().__init__()
         self.network = network
+        self.push_to_dash_method = push_to_dash_method
         
     def run(self):
+        self.push_to_dash_method()
         self.network.build()    
         self.finished.emit()
 
@@ -63,12 +65,12 @@ class UiDisplayGroup:
         
         
         self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
-        self.main_window.push_to_dash()
+        # self.main_window.push_to_dash()
         # self.main_window.server_push.finished.connect(self.generating_finished)
         
         self.start_time = time.time()
         #if generate_local:
-        self.generate_thread = GenerateNetwork(network)
+        self.generate_thread = GenerateNetwork(network, self.main_window.push_to_dash)
         self.generate_thread.finished.connect(lambda: self.generating_finished())
         self.generate_thread.start() 
         self.popup.exec_()
