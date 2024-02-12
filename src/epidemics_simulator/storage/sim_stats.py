@@ -4,6 +4,7 @@ from dash import html
 import pandas as pd
 import os
 from pathlib import Path
+import re
 
 
 class SimStats:
@@ -244,6 +245,50 @@ class SimStats:
                 group_stat.vacc_deaths = row["VaccDeaths"]
                 group_stat.unvacc_deaths = row["UnvaccDeaths"]
         return sim_stats
+
+    def is_valid_file_name(name: str):
+        # Define a regular expression pattern to match forbidden characters
+        ILLEGAL_NTFS_CHARS = r"[<>:/\\|?*\"]|[\0-\31]"
+        # Define a list of forbidden names
+        FORBIDDEN_NAMES = [
+            "CON",
+            "PRN",
+            "AUX",
+            "NUL",
+            "COM1",
+            "COM2",
+            "COM3",
+            "COM4",
+            "COM5",
+            "COM6",
+            "COM7",
+            "COM8",
+            "COM9",
+            "LPT1",
+            "LPT2",
+            "LPT3",
+            "LPT4",
+            "LPT5",
+            "LPT6",
+            "LPT7",
+            "LPT8",
+            "LPT9",
+        ]
+        # Check for forbidden characters
+        match = re.search(ILLEGAL_NTFS_CHARS, name)
+        if match:
+            return False, f"Invalid character {match[0]} for filename {name}"
+        # Check for forbidden names
+        if name.upper() in FORBIDDEN_NAMES:
+            return False, f"{name} is a reserved folder name in windows"
+        # Check for empty name (disallowed in Windows)
+        if name.strip() == "":
+            return False, "Empty file name not allowed in Windows"
+        # Check for names starting or ending with dot or space
+        match = re.match(r"^[. ]|.*[. ]$", name)
+        if match:
+            return False, f"Invalid start or end character ({match[0]})" f" in folder name {name}"
+        return True, ""
 
 
 class GroupSimStats:

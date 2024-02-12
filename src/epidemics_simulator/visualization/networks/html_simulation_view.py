@@ -219,13 +219,29 @@ class HTMLSimulationView(HTMLNetworkView):
         )
 
         def save_data(_, name):
+            from src.epidemics_simulator.storage.sim_stats import SimStats
+
             if not name:
                 name = str(datetime.now()).replace(" ", "T").split(".")[0].replace(":", "_")
+
+            error = html.P(
+                "Error saving simulation",
+                className="mb-0",
+            )
+            valid, msg = SimStats.is_valid_file_name(name)
+            if not valid:
+                error = html.P(msg, className="mb-0")
+                return False, True, error, True
+
             self.sim.stats.to_csv(self.project.stat_file_location, name)
-            return True
+            return True, False, error, False
 
         self.save_popup.register_confirm_callback_with_state(
-            Output(self.id_factory("save-toast"), "is_open"),
+            [
+                Output(self.id_factory("save-toast"), "is_open"),
+                Output("save-error-toast", "is_open"),
+                Output("save-error-toast", "children"),
+            ],
             save_data,
             [
                 State(self.id_factory("save-input"), "value"),

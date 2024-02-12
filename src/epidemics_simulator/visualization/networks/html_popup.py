@@ -15,6 +15,21 @@ class HTMLPopup(dbc.Modal):
         else:
             body = None
         self.children = [
+            dbc.Toast(
+                [
+                    html.P(
+                        "Error saving simulation",
+                        className="mb-0",
+                    )
+                ],
+                id="save-error-toast",
+                header="Error Saving",
+                icon="danger",
+                className="toast",
+                duration=4000,
+                is_open=False,
+                style={"position": "fixed", "top": 66},
+            ),
             dbc.ModalHeader(
                 dbc.ModalTitle(title),
                 close_button=False,
@@ -65,10 +80,10 @@ class HTMLPopup(dbc.Modal):
 
     def register_confirm_callback_with_state(self, output, cb, state):
         @callback(
-            output=[output, Output(self.id, "is_open", allow_duplicate=True)],
+            output=output + [Output(self.id, "is_open", allow_duplicate=True)],
             inputs=[Input(f"{self.id}-confirm", "n_clicks")],
             state=state,
             prevent_initial_call=True,
         )
         def func(*args):
-            return cb(*args), False
+            return cb(*args)
