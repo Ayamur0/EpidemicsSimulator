@@ -172,10 +172,10 @@ class SimStats:
             first = True
             for disease_id, disease_stat in group_stat.infections.items():
                 if not first:
-                    data["Vaccinations"].append([])
-                    data["Deaths"].append([])
-                    data["VaccDeaths"].append([])
-                    data["UnvaccDeaths"].append([])
+                    data["Vaccinations"].append(None)
+                    data["Deaths"].append(None)
+                    data["VaccDeaths"].append(None)
+                    data["UnvaccDeaths"].append(None)
                 data["Group"].append(group_id)
                 data["Disease"].append(disease_id)
                 data["Infections"].append(disease_stat)
@@ -185,8 +185,8 @@ class SimStats:
                 data["Cures"].append(group_stat.cures[disease_id])
                 first = False
             if not group_stat.infections.items():
-                data["Group"].append([])
-                data["Disease"].append([])
+                data["Group"].append(group_id)
+                data["Disease"].append(-1)
                 data["Infections"].append([])
                 data["Reinfections"].append([])
                 data["VaccInfections"].append([])
@@ -222,18 +222,27 @@ class SimStats:
         for _, row in df3.iterrows():
             group_id = row["Group"]
             disease_id = row["Disease"]
-
             group_stat = sim_stats.group_stats[group_id]
-            group_stat.infections[disease_id] = row["Infections"]
-            group_stat.reinfections[disease_id] = row["Reinfections"]
-            group_stat.vacc_infections[disease_id] = row["VaccInfections"]
-            group_stat.unvacc_infections[disease_id] = row["UnvaccInfections"]
-            group_stat.cures[disease_id] = row["Cures"]
 
-            group_stat.vaccinations = row["Vaccinations"]
-            group_stat.deaths = row["Deaths"]
-            group_stat.vacc_deaths = row["VaccDeaths"]
-            group_stat.unvacc_deaths = row["UnvaccDeaths"]
+            if disease_id != -1:
+                group_stat.infections[disease_id] = row["Infections"]
+                group_stat.reinfections[disease_id] = row["Reinfections"]
+                group_stat.vacc_infections[disease_id] = row["VaccInfections"]
+                group_stat.unvacc_infections[disease_id] = row["UnvaccInfections"]
+                group_stat.cures[disease_id] = row["Cures"]
+            else:  # no diseases exist, fill all related data with zeroes
+                dummy_data = [0] * len(row["Vaccinations"])
+                group_stat.infections[disease_id] = dummy_data
+                group_stat.reinfections[disease_id] = dummy_data
+                group_stat.vacc_infections[disease_id] = dummy_data
+                group_stat.unvacc_infections[disease_id] = dummy_data
+                group_stat.cures[disease_id] = dummy_data
+
+            if row["Vaccinations"]:
+                group_stat.vaccinations = row["Vaccinations"]
+                group_stat.deaths = row["Deaths"]
+                group_stat.vacc_deaths = row["VaccDeaths"]
+                group_stat.unvacc_deaths = row["UnvaccDeaths"]
         return sim_stats
 
 
