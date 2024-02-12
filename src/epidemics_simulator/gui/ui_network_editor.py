@@ -22,7 +22,7 @@ from src.epidemics_simulator.gui.simulation.ui_simulation import UiSimulationTab
 from src.epidemics_simulator.gui.statistics.ui_statistics import UiStatisticTab
 from src.epidemics_simulator.gui.text_simulation.ui_text_simulation import UiTextSimulationTab
 from src.epidemics_simulator.storage.sim_stats import SimStats
-from src.epidemics_simulator.gui.listen_server import WebServer
+#from src.epidemics_simulator.gui.listen_server import WebServer
 import psutil
 class PushData(QThread):
     no_response_signal = pyqtSignal()
@@ -69,14 +69,17 @@ class CheckConnection(QThread):
         self.connection_established.emit()
         self.finished.emit(self)
 class SaveStats(QThread):
-    finished = pyqtSignal(str, SimStats)
-    def __init__(self, data):
+    finished = pyqtSignal()
+    def __init__(self, path, filename, stats):
         super().__init__()
-        self.data = data
+        self.path = path
+        self.filename = filename
+        self.stats = stats
     def run(self):
-        filename = self.data['filename']
-        stats = SimStats.from_dict(self.data["stats"])
-        self.finished.emit(filename, stats)
+        self.stats.to_csv(self.path, self.filename)
+        #filename = self.data['filename']
+        #stats = SimStats.from_dict(self.data["stats"])
+        self.finished.emit()
         return
 class UiNetworkEditor(QtWidgets.QMainWindow):
     network_changed = pyqtSignal() # TODO connect emit
@@ -98,9 +101,9 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.server_push = None
         self.network_changed.connect(self.on_network_change)
         self.disease_changed.connect(self.on_disease_change)
-        self.listen_server = WebServer()
-        self.listen_server.signal_update_received.connect(self.stats_update)
-        self.listen_server.start_server()
+        #self.listen_server = WebServer()
+        #self.listen_server.signal_update_received.connect(self.stats_update)
+        #self.listen_server.start_server()
         self.init_icons()
         
         self.server_process  = self.start_server()
@@ -199,18 +202,19 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if self.is_project_loaded and self.unsaved_changes:
             if self.ask_to_save():
                 return
-        file_name = UiWidgetCreator.create_file(parent)
-        if not file_name:
+        folder_path, folder_name = UiWidgetCreator.open_folder(parent)
+        if not folder_path:
             return False
         if template_id:
             network = templates[template_id]
         else:
             network = Network()
-        network.name = os.path.basename(file_name[0:-5])
-        self.project = Project()
+        network.name = os.path.basename(folder_name)
+        self.project = Project(folder_path)
         self.project.network = network
-        self.project.file_location = file_name
+        # self.project.file_location = file_name
         self.project.save_to_file()
+        self.push_to_dash()
         
         self.launch()
         return True
@@ -224,11 +228,12 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if self.is_project_loaded and self.unsaved_changes:
             if self.ask_to_save():
                 return
-        file_name = UiWidgetCreator.open_file(parent)
-        if not file_name:
+        folder_path, _ = UiWidgetCreator.open_folder(parent)
+        if not folder_path:
             return False
-        self.project = Project.load_from_file(file_name)
-        self.project.file_location = file_name
+        self.project = Project.load_from_file(folder_path)
+        # self.project.file_location = file_name
+        self.push_to_dash()
         self.launch()
         return True
     
@@ -374,6 +379,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
 
             process = subprocess.Popen(activate_command, stdout=subprocess.PIPE, shell=True, executable=os.environ.get('SHELL'), creationflags=creation_flags)
+            
             self.check_server_connection(is_initial_test=True)
             return process
         except Exception as e:
@@ -400,8 +406,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
                 event.ignore()
                 return
         self.terminate_server()
-        self.listen_server.stop()
-        self.listen_server.deleteLater()
+        #self.listen_server.stop()
+        #self.listen_server.deleteLater()
         event.accept()
         
     def ask_to_save(self):
@@ -414,11 +420,11 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         elif answer == QtWidgets.QMessageBox.Cancel:
             return True
             
-    def stats_update(self, data):
-        if 'stats' not in data.keys() or 'filename' not in data.keys():
-            return
+    def stats_update(self, filename, stats):
+        #if 'stats' not in data.keys() or 'filename' not in data.keys():
+        #    return
         self.popup = UiWidgetCreator.create_generate_popup(self, content='Saving...')
-        self.save_thread = SaveStats(data)
+        self.save_thread = SaveStats(os.path.join(self.project.file_location, 'stats'), filename, stats)
         self.save_thread.finished.connect(self.save_finsihed)
         self.save_thread.start()
         self.popup.exec_()
@@ -429,8 +435,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.unsaved_changes = True#
         # self.statistics_tab.show_webview()
         
-    def save_finsihed(self, filename: str, stats: SimStats):
-        self.project.stats[filename] = stats
+    def save_finsihed(self):
+        # self.project.stats[filename] = stats
         self.unsaved_changes = True
         self.save_thread.quit()
         self.save_thread.deleteLater()

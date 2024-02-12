@@ -1,3 +1,4 @@
+import os
 from typing import Type, Union
 from datetime import datetime
 from functools import partial
@@ -220,6 +221,11 @@ class UiWidgetCreator:
         model.setNameFilterDisables(False)
         return model
     
+    def open_folder(window) -> str:
+        # options = QtWidgets.QFileDialog.Options()
+        folder_path = QtWidgets.QFileDialog.getExistingDirectory(window, "Select Folder")
+        return folder_path, os.path.basename(folder_path)
+    
     def create_file(window) -> str:     
         options = QtWidgets.QFileDialog.Options()
         # options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
@@ -434,7 +440,7 @@ class SaveDialog(QtWidgets.QDialog):
         self.label = QtWidgets.QLabel("Simulation name: ")
         self.line_edit = QtWidgets.QLineEdit(self)
         current_datetime = datetime.now()
-        formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        formatted_datetime = current_datetime.strftime("%Y-%m-%d %H-%M-%S")
         self.line_edit.setText(str(formatted_datetime))
         self.ok_button = QtWidgets.QPushButton("Save", self)
         self.cancel_button = QtWidgets.QPushButton("Cancel", self)

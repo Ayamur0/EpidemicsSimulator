@@ -11,7 +11,7 @@ from PyQt5.QtGui import QDesktopServices
 from src.epidemics_simulator.gui.flowlayout import FlowLayout
 
 
-class GenerateNetwork(QThread):
+class SimulateNetwork(QThread):
     finished = pyqtSignal()
     update_label_signal = pyqtSignal(dict, int)
     update_control_label_signal = pyqtSignal(float)
@@ -58,11 +58,11 @@ class GenerateNetwork(QThread):
         self.update_control_label_signal.emit(self.simulation_speed)
         
     def increase_speed(self):
-        self.simulation_speed *= 2 if self.simulation_speed < GenerateNetwork.max_speed else 1
+        self.simulation_speed *= 2 if self.simulation_speed < SimulateNetwork.max_speed else 1
         self.update_control_label_signal.emit(self.simulation_speed)
         
     def decrease_speed(self):
-        self.simulation_speed /= 2  if self.simulation_speed > GenerateNetwork.min_speed else 1
+        self.simulation_speed /= 2  if self.simulation_speed > SimulateNetwork.min_speed else 1
         self.update_control_label_signal.emit(self.simulation_speed)
         
     def restart_simulation(self):
@@ -120,7 +120,7 @@ class UiTextSimulationTab:
     
     def create_simulation_worker(self, network: Network):
         self.simulation = Simulation(network)
-        self.worker = GenerateNetwork(self.simulation)
+        self.worker = SimulateNetwork(self.simulation)
         self.worker.update_label_signal.connect(self.update_stat_labels)
         self.worker.update_control_label_signal.connect(self.update_control_labels)
         
@@ -263,10 +263,10 @@ class UiTextSimulationTab:
         if not name:
             return
         simulation_stats = self.simulation.stats
-        data = {'filename': name, 'stats': simulation_stats.to_dict()}
+        # data = {'filename': name, 'stats': simulation_stats.to_dict()}
+        self.main_window.stats_update(name, simulation_stats)
         
-        self.main_window.stats_update(data)
-        self.main_window.push_to_dash(data=data, sub_url='update-stats')
+        #self.main_window.push_to_dash(data=data, sub_url='update-stats')
         
     def clear_stats_widgets(self):
         self.stat_labels.clear()
