@@ -233,6 +233,12 @@ class HTMLSimulationView(HTMLNetworkView):
                 error = html.P(msg, className="mb-0")
                 return False, True, error, True
 
+            requests.post(
+                "http://localhost:8050/update-stats",
+                json={},
+                timeout=0.5,
+            )
+
             self.sim.stats.to_csv(self.project.stat_file_location, name)
             return True, False, error, False
 
