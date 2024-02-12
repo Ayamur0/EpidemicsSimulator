@@ -60,7 +60,6 @@ class HTMLStatsView:
         def check_for_update(_):
             if self.needs_build:
                 self.needs_build = False
-                self.file_popup.files = list(self.project.stats.keys())
                 return True, self.file_popup.update_files()
             else:
                 raise exceptions.PreventUpdate()
