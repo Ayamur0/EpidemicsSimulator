@@ -2,14 +2,12 @@ import os
 from typing import Type, Union
 from datetime import datetime
 from functools import partial
-from src.epidemics_simulator.storage import Network, Project
+from src.epidemics_simulator.storage import Network
 from src.epidemics_simulator.gui.templates import templates
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import QObject, QPoint, pyqtSignal, QRect
+from PyQt5 import QtWidgets
 from storage import Network
 import random
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QRegExp, QTimer, QThread, QSize
+from PyQt5.QtCore import Qt, QRegExp, QTimer, QSize, QObject, QRect
 from PyQt5.QtGui import QRegExpValidator, QColor, QMovie, QPainter, QFontMetrics, QTextLayout
 
 
@@ -44,22 +42,26 @@ class UiWidgetCreator:
         action.setObjectName(object_name)
         return action
     
-    def create_qpush_button(content: str, object_name: str, is_checkable: bool=False, is_checked: bool=False, style_sheet: str=None) -> QtWidgets.QPushButton:
+    def create_qpush_button(content: str, object_name: str, is_checkable: bool=False, is_checked: bool=False, style_sheet: str=None, icon=None) -> QtWidgets.QPushButton:
         button = QtWidgets.QPushButton()
         button.setObjectName(object_name)
         button.setText(content)
         button.setCheckable(is_checkable)
-
+        
         if is_checkable:
             button.setChecked(is_checked)
         if style_sheet:
             button.setStyleSheet(style_sheet)
+        if icon:
+            button.setIcon(icon)
         return button
     
-    def create_qlabel(content: str, object_name: str) -> QtWidgets.QLabel:
+    def create_qlabel(content: str, object_name: str, style_sheet: str=None) -> QtWidgets.QLabel:
         label = QtWidgets.QLabel()
         label.setObjectName(object_name)
         label.setText(str(content))
+        if style_sheet:
+            label.setStyleSheet(style_sheet)
         return label
     
     def create_qline_edit(content: str, object_name: str, regex_validator = '.*', style_sheet=None) -> QtWidgets.QLineEdit:
@@ -87,37 +89,21 @@ class UiWidgetCreator:
             color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)
         else:
             color_value_object = UiWidgetCreator.generate_random_color()
-            color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)
-        
-        #widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget('input', QtWidgets.QVBoxLayout)
-        #widget.layout().setContentsMargins(0, 0, 0, 0)
-        # widget.setStyleSheet('background-color: red; border-radius: 0;')
-            
+            color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)          
             
         regex_validator = '^rgb\((0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\)$'
         float_color = UiWidgetCreator.convert_color_to_float_rgb_string(color_value_object)
-        #line_edit = UiWidgetCreator.create_qline_edit(float_color, 'input', regex_validator=regex_validator)
         line_edit = UiWidgetCreator.create_input_line_edit(float_color, regex_validator, line_edit_color)
         color_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'input', style_sheet=f'border-radius: 10px; background-color: {color};')
         color_button.setFixedHeight(20)
         color_button.setMinimumWidth(100)
-        #color_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'color_button', style_sheet=f'background: {color};')
         color_button.clicked.connect(partial(UiWidgetCreator.show_color_dialog, line_edit, color_button))
-        
-        #if content and widget:
-        #    label = UiWidgetCreator.create_qlabel(content, 'color_input_label')
-        #    widget.layout().addRow(label, color_button)
-        
-        #widget.layout().addWidget(color_button)
-        #return line_edit, widget
         return line_edit, color_button
     
     def show_color_dialog(line_edit, color_button) -> None:
         color = QtWidgets.QColorDialog.getColor()
-
         if color.isValid():
             color_string = UiWidgetCreator.convert_color_to_float_rgb_string(color)
-            hex_color = color.name()
             line_edit.setText(color_string)
             rgb_color = UiWidgetCreator.convert_color_to_int_rgb_string(color)
             color_button.setStyleSheet(f'border-radius: 10px; background-color: {rgb_color};')
@@ -160,7 +146,7 @@ class UiWidgetCreator:
         QPushButton:checked {background: rgb(70, 120, 190);}
         QPushButton:default {border: 1; border-style: outset; border-color: rgba(70, 120, 190, 200);}
         """
-    def show_status(widget, content: str, object_name: str, remove_last_message: bool, is_row=True, content_of_last_label:str ='') -> None:
+    def show_message(widget, content: str, object_name: str, remove_last_message: bool, is_row=True, content_of_last_label:str ='') -> None:
         if remove_last_message:
             if  widget.layout():
                 last_item =  widget.layout().itemAt(widget.layout().count() - 1).widget()
@@ -174,7 +160,7 @@ class UiWidgetCreator:
         timer = QTimer()
         timer.singleShot(2000, lambda: UiWidgetCreator.hide_message(label, timer))
     
-    def show_message(content: str, title: str, default_button=1, only_ok=False) -> QtWidgets.QMessageBox:
+    def show_qmessagebox(content: str, title: str, default_button=1, only_ok=False) -> QtWidgets.QMessageBox:
         msg_box = QtWidgets.QMessageBox()
         msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
@@ -214,44 +200,14 @@ class UiWidgetCreator:
         else:  # msg_box.clickedButton() == cancel_button
             return QtWidgets.QMessageBox.Cancel
     
-    def create_file_system_model() -> QtWidgets.QFileSystemModel:
-        model = QtWidgets.QFileSystemModel()
-        model.setRootPath("")
-        model.setNameFilters(["*.json"])
-        model.setNameFilterDisables(False)
-        return model
-    
     def open_folder(window) -> str:
         # options = QtWidgets.QFileDialog.Options()
         folder_path = QtWidgets.QFileDialog.getExistingDirectory(window, "Select Folder")
         return folder_path, os.path.basename(folder_path)
     
-    def create_file(window) -> str:     
-        options = QtWidgets.QFileDialog.Options()
-        # options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
-
-        # Add a filter to allow only JSON files
-        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(window, "Save File", "", "Json Files (*.json);;All Files (*)", options=options)
-        
-        # Check if the selected file has a JSON extension, if not, add it
-        if file_name and not file_name.endswith('.json'):
-            file_name += '.json'
-        
-        return file_name
-
-    def open_file(window) -> str:
-        options = QtWidgets.QFileDialog.Options()
-        # options |= QtWidgets.QFileDialog.DontUseNativeDialog  # Use the Qt dialog instead of the native one on some platforms
-
-        # Add a filter to allow only JSON files
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(window, "Open File", "", "Json Files (*.json);;All Files (*)", options=options)
-        
-        return file_name
-    
-    def create_generate_popup(parent, content: str='Generating...') -> QtWidgets.QDialog:
+    def create_generate_popup(parent, content: str='Building...') -> QtWidgets.QDialog:
         dialog = QtWidgets.QDialog(parent, flags=Qt.FramelessWindowHint)
         dialog.setWindowModality(Qt.ApplicationModal)
-        #dialog.setObjectName('generate_popup')
         dialog.setStyleSheet('background: rgb(70, 70, 70); border-radius: 5px;')
         dialog.setLayout(QtWidgets.QHBoxLayout())
         # Asset source: https://gifer.com/en/ZKZg
@@ -260,85 +216,27 @@ class UiWidgetCreator:
         loading_label = QtWidgets.QLabel()
         loading_label.setMovie(loading)
         loading.start()
-        #loading_label.setFixedSize(50, 50)
         
         text_label = UiWidgetCreator.create_qlabel(content, 'generating_label')
         dialog.layout().addWidget(loading_label)
         dialog.layout().addWidget(text_label)
         
         return dialog
-    
-    
-    def move_grid_widgets_right(grid: QtWidgets.QLayout , starting_pos, row_size,  ) -> None:
-        total_widgets = grid.count()
-        for i in range(total_widgets - 1, -1 + starting_pos, -1):
-            row, col, _, _ = grid.getItemPosition(i)
-            if col == row_size - 1:
-                row += 1
-                col = 0
-            else:
-                col += 1
-            grid.layout().addWidget(grid.layout().itemAt(i).widget(), row, col)
-            
-    def move_grid_widgets_left(grid: QtWidgets.QLayout, starting_pos, row_size) -> None:
-        starting_row = int(starting_pos / row_size)
-        starting_col = starting_pos % row_size
-        
-        print(f'Row: {starting_row}, Col: {starting_col}')
-        
-        for row in range(starting_row, grid.rowCount()):
-        # Iterate through the columns
-            for col in range(starting_col, row_size - 1):
-                current_index = row * row_size + col
-                
-                current_widget = grid.itemAt(current_index)
-                next_widget = grid.itemAt(current_index + 1)
-                
-                
-                
-                if current_widget and next_widget:
-                    grid.addWidget(current_widget.widget(), row, col)
-                    grid.addWidget(next_widget.widget(), row, col + 1)
-        # Clear the last column in the last row
-        last_index = grid.rowCount() * row_size - 1
-        last_widget = grid.itemAt(last_index)
 
-        if last_widget:
-            last_widget.widget().setParent(None)
-                        
-    def pop_grid_widget_at(grid: QtWidgets.QLayout, index) -> None:
-        if index < 0: 
-            return
-        elif index >= grid.count():
-            return
-        item = grid.itemAt(index)
-        if item is None:
-            return
-
-        widget = item.widget()
-        if widget is None:
-            return
-        grid.removeItem(item)
-        widget.setParent(None)
-        widget.deleteLater()
-
-
-
-    def ask_for_regeneration(network: Network, button_for_generating: QtWidgets.QPushButton):
+    def create_regeneration_popup(network: Network, button_for_generating: QtWidgets.QPushButton):
         if len(network.groups) == 0:
             return False
-        msg_box  = UiWidgetCreator.show_message(f'Network has not been generated. Do you want to generate the network', 'Regenerate network', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been generated. Do you want to generate the network', 'Regenerate network', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return False
         button_for_generating.click()
         return True
     
-    def open_save_sim_popup():
-        dialog = SaveDialog()
+    def open_save_sim_popup(parent):
+        dialog = SaveStatDialog(parent=parent)
         result = dialog.exec_()
         if result == QtWidgets.QDialog.Accepted:
-            # User clicked OK, retrieve the text from the line edit
             return dialog.line_edit.text()
         else:
             return None
@@ -432,22 +330,25 @@ class ElidedLabel(QtWidgets.QLabel):
 
       
         
-class SaveDialog(QtWidgets.QDialog):
+class SaveStatDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
-        super(SaveDialog, self).__init__(parent)
-        self.setWindowTitle("Save simulation stats")
+        super(SaveStatDialog, self).__init__(parent)
+        self.parent = parent
 
-        self.label = QtWidgets.QLabel("Simulation name: ")
-        self.line_edit = QtWidgets.QLineEdit(self)
         current_datetime = datetime.now()
         formatted_datetime = current_datetime.strftime("%Y-%m-%d %H-%M-%S")
-        self.line_edit.setText(str(formatted_datetime))
-        self.ok_button = QtWidgets.QPushButton("Save", self)
-        self.cancel_button = QtWidgets.QPushButton("Cancel", self)
+        self.setWindowTitle("Save simulation stats")
+        
+        self.label = UiWidgetCreator.create_qlabel('Simulation name: ', 'saveStats', style_sheet="""background: transparent;""")
+        self.line_edit = UiWidgetCreator.create_input_line_edit(str(formatted_datetime), regex_validator='*', color='rgb(80, 80, 80)')
+        self.line_edit.setMinimumSize(200, 30)
+        
+        self.ok_button = UiWidgetCreator.create_qpush_button('Save', 'ok_button')
+        self.cancel_button = UiWidgetCreator.create_qpush_button('Cancel', 'cancel_button')
 
         # Set up layouts
         label_line_edit_layout = QtWidgets.QHBoxLayout()
-        label_line_edit_layout.addWidget(self.label)
+        label_line_edit_layout.addWidget(self.label, alignment=Qt.AlignLeft | Qt.AlignVCenter)
         label_line_edit_layout.addWidget(self.line_edit)
 
         button_layout = QtWidgets.QHBoxLayout()
@@ -461,5 +362,6 @@ class SaveDialog(QtWidgets.QDialog):
         # Connect buttons to slots
         self.ok_button.clicked.connect(self.accept)
         self.cancel_button.clicked.connect(self.reject)
+        self.label.mousePressEvent = partial(UiWidgetCreator.label_clicked, self.line_edit, False)
     
     

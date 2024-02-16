@@ -1,100 +1,106 @@
 import time
+from urllib.parse import urljoin
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QThread, pyqtSignal, QUrl
+from PyQt5.QtCore import pyqtSignal, QUrl, QObject, QRunnable
 from PyQt5.QtWebEngineWidgets import *
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
-from src.epidemics_simulator.storage import Network, NodeGroup, Node, Project
-from functools import partial
-from PyQt5.QtCore import Qt
+from src.epidemics_simulator.storage import Node, Project
 from PyQt5.QtGui import QDesktopServices
-
-class GenerateNetwork(QThread):
-    finished = pyqtSignal()
-    def __init__(self, network: Network, push_to_dash_method) -> None:
-        super().__init__()
-        self.network = network
-        self.push_to_dash_method = push_to_dash_method
+class WorkerSignals(QObject):
+    generation_finished: pyqtSignal = pyqtSignal()
+    
+class NetworkGenerator(QRunnable):
+    def __init__(self, project: Project, push_to_dash_signal: pyqtSignal, signals: WorkerSignals):
+        super(NetworkGenerator, self).__init__()
+        self.project = project
+        self.push_to_dash_signal = push_to_dash_signal
+        self.signal = signals
         
     def run(self):
-        self.push_to_dash_method()
-        self.network.build()    
-        self.finished.emit()
-
-class UiDisplayGroup:
-    def __init__(self, main_window: QtWidgets.QMainWindow):
+        self.push_to_dash_signal.emit('update-data', self.project.to_dict())
+        self.project.network.build()    
+        self.signal.generation_finished.emit()
+class UiDisplayGroup(QObject):
+    def __init__(self, parent: QObject, main_window: QtWidgets.QMainWindow):
+        super(UiDisplayGroup, self).__init__()
+        self.parent = parent
         self.main_window = main_window
-        self.url = f'{self.main_window.server_url}/view'
+        self.url = urljoin(self.main_window.website_handler.base_url, 'view')
                 
         self.generate_button = self.main_window.generate_button
+        
+        self.push_to_dash_signal = self.main_window.website_handler.push_to_dash
+        self.worker_signals = WorkerSignals()
         
         self.network_graph = self.main_window.network_graph
         self.stat_label: QtWidgets.QLabel = self.main_window.network_stats
         self.open_browser_button = self.main_window.open_in_browser_button
         self.reload_view = self.main_window.reload_view
         
+        self.generated_once = False
+        self.generation_in_progress = False
+        
+        self.thread_pool = self.main_window.thread_pool
+        
+        self.load_webview()
+        self.connect_signals()
+
+        
+    def load_webview(self):
         self.webview = QWebEngineView()
         self.webview.load(QUrl(self.url))
         self.network_graph.layout().addWidget(self.webview)
         
-        
-        
+    def connect_signals(self):
         self.open_browser_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(self.url)))
         self.reload_view.clicked.connect(lambda: self.webview.reload())
-        self.generated_once = False
         
+        self.worker_signals.generation_finished.connect(self.generating_finished)
         
-        
-    def init_ui(self, network: Network):
-        self.network = network
+    def init_ui(self, project: Project):
+        self.project = project
+        self.network = project.network
         self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         try:
             self.generate_button.clicked.disconnect()
         except TypeError:
             pass
-        self.generate_button.clicked.connect(partial(self.start_generating, self.network))
-            
+        self.generate_button.clicked.connect(self.start_generating)
         
-    def start_generating(self, network: Network):
-        total_nodes, _ = self.get_network_info(network)
-        if total_nodes >= 20000:
-            msg_box = UiWidgetCreator.show_message('Generating network with more than 20,000 nodes may take a while.\nDo you want to continue?', 'Generating network')
+        
+    def start_generating(self):
+        if self.generated_once and not self.parent.changes_in_network and not self.main_window.disease_edit_tab.disease_changed:
+            msg_box = UiWidgetCreator.show_qmessagebox('Network did not cahnge.\nDo you want to build again?', 'Building network')
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
-        
-        
+        total_nodes = self.get_node_count()
+        if total_nodes >= 20000:
+            msg_box = UiWidgetCreator.show_qmessagebox('Building a network with more than 20,000 nodes may take a while.\nDo you want to continue?', 'Building network')
+            result = msg_box.exec_()
+            if result != QtWidgets.QMessageBox.AcceptRole:
+                return
+        print('Started building.')
+        self.generation_in_progress = True
+        thread = NetworkGenerator(self.project, self.push_to_dash_signal, self.worker_signals)
         self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
-        # self.main_window.push_to_dash()
-        # self.main_window.server_push.finished.connect(self.generating_finished)
-        
         self.start_time = time.time()
-        #if generate_local:
-        self.generate_thread = GenerateNetwork(network, self.main_window.push_to_dash)
-        self.generate_thread.finished.connect(lambda: self.generating_finished())
-        self.generate_thread.start() 
+        self.thread_pool.start(thread)
         self.popup.exec_()
         
+        
     def generating_finished(self):
+        self.generation_in_progress = False
+        self.main_window.text_simulation_tab.restart_simulation()
         generation_time = time.time() - self.start_time
-        self.refresh_info_label(self.network, generation_time)
-        if self.main_window.server_push:
-            try:
-                self.main_window.server_push.wait()
-            except RuntimeError:
-                pass
-        self.main_window.generated_network = True
+        self.refresh_info_label(generation_time)
         self.generated_once = True
-        print('Finished Generating')
-        
-        self.main_window.show_webviews()
-        self.main_window.reset_button.click()
+        print('Finished building')
+        self.main_window.show_webviews.emit(True)
+        self.parent.changes_in_network = False
+        self.main_window.disease_edit_tab.disease_changed = False
         self.popup.deleteLater()
-        # self.load_webview()
-        
-    def load_webview(self):
-        #self.main_window.show_webviews()
-        self.show_webview()
         
     def hide_webview(self):
         if self.generated_once:
@@ -102,8 +108,6 @@ class UiDisplayGroup:
         self.webview.hide()
         
     def show_webview(self):
-        if not self.main_window.is_server_connected:
-            return
         if not self.generated_once:
             return
         try:
@@ -112,21 +116,30 @@ class UiDisplayGroup:
             pass
         self.webview.loadFinished.connect(lambda: self.webview.show())
         self.webview.reload()
-        # self.webview.show()
         
-    def refresh_info_label(self, network: Network, generation_time: float):
+    def refresh_info_label(self, generation_time: float):
         label_text = f'Graph creating stats\n'
-        total_nodes, total_connections = self.get_network_info(network)
+        total_nodes, total_connections = self.get_network_info()
         label_text += f'Total nodes {total_nodes}\n'
         label_text += f'Total connections {total_connections}\n'
         label_text += f'Generation time {generation_time:.2f}s'
         self.stat_label.setText(label_text)
         
-    def get_network_info(self, network: Network):
+    def get_node_count(self):
+        total_nodes = 0
+        for group in self.network.groups:
+            if not group.active:
+                continue
+            total_nodes += group.size
+        return total_nodes
+        
+        
+        
+    def get_network_info(self):
         total_nodes = 0
         total_connections = 0
         visited_groups: list[str] = []
-        for group in network.groups:
+        for group in self.network.groups:
             if not group.active:
                 visited_groups.append(group.id)
                 continue
@@ -143,16 +156,8 @@ class UiDisplayGroup:
         for group in already_visited_groups:
             to_remove += node.get_ext_conn_amount(to_group=group)
         return to_remove
-        
-    def unload_woker(self):
-        try:
-            self.worker.quit()
-            self.worker.deleteLater()
-        except AttributeError:
-            pass
-        except RuntimeError:
-            pass
-        
+    
+    
     def unload(self):
         try:
             self.popup.deleteLater()
@@ -160,7 +165,9 @@ class UiDisplayGroup:
             pass
         except RuntimeError:
             pass
-        self.unload_woker()
+        self.generated_once = False
+        self.generation_in_progress = False
+        
         self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         

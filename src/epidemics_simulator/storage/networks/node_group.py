@@ -145,6 +145,7 @@ class NodeGroup:
         self.name = name
         if member_count != self.size:
             self.members.clear()
+            self.node_id_counter = 0
             self.create_members(member_count)
         self.age = age
         self.vaccination_rate = vaccination_rate

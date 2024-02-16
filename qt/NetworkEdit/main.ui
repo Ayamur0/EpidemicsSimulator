@@ -128,7 +128,7 @@ Generation time 0s</string>
                        <string notr="true"/>
                       </property>
                       <property name="text">
-                       <string>Generate</string>
+                       <string>Build</string>
                       </property>
                       <property name="autoDefault">
                        <bool>false</bool>
@@ -384,11 +384,17 @@ margin-right: 9;</string>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="layoutDirection">
+                 <enum>Qt::RightToLeft</enum>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"/>
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                 </property>
                 <widget class="QWidget" name="group_list_content">
                  <property name="geometry">
@@ -711,8 +717,8 @@ margin-right: 9;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1537</width>
-                <height>885</height>
+                <width>98</width>
+                <height>28</height>
                </rect>
               </property>
              </widget>
@@ -839,8 +845,8 @@ margin-right: 9;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1537</width>
-                <height>756</height>
+                <width>98</width>
+                <height>28</height>
                </rect>
               </property>
              </widget>
