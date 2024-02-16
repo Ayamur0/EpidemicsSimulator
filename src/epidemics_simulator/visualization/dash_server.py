@@ -77,6 +77,7 @@ class DashServer:
         @app.server.route("/update-stats", methods=["POST"])
         def update_stats():
             stats_view.reset()
+            stats_view.needs_build = True
             return make_response(jsonify({"status": "OK"}), 200)
 
         app.run(debug=True, use_reloader=True)
