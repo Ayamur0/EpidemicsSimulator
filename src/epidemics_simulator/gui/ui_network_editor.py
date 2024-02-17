@@ -8,7 +8,6 @@ from src.epidemics_simulator.storage import Network, Project
 from PyQt5.QtGui import QIcon
 from src.epidemics_simulator.gui.templates import templates
 from PyQt5 import QtWidgets, uic
-from storage import Network
 from src.epidemics_simulator.gui.network_edit.ui_network_edit_tab import UiNetworkEditTab
 from src.epidemics_simulator.gui.disease_edit.ui_disease_edit_tab import UiDiseaseEditTab
 from src.epidemics_simulator.gui.text_simulation.ui_text_simulation import UiTextSimulationTab
@@ -272,6 +271,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if self.unsaved_changes and self.ask_to_save():
             event.ignore()
             return
+        for thread in self.thread_pool.aliveThreads():
+            thread.terminate()
         self.website_handler.kill.emit()
         event.accept()
 

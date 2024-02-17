@@ -5,7 +5,6 @@ from functools import partial
 from src.epidemics_simulator.storage import Network
 from src.epidemics_simulator.gui.templates import templates
 from PyQt5 import QtWidgets
-from storage import Network
 import random
 from PyQt5.QtCore import Qt, QRegExp, QTimer, QSize, QObject, QRect
 from PyQt5.QtGui import QRegExpValidator, QColor, QMovie, QPainter, QFontMetrics, QTextLayout
