@@ -14,7 +14,7 @@ class UiStartup(QtWidgets.QDialog):
         self.setWindowTitle('Network tool')
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.setStyleSheet(parent.styleSheet())
-        self.resize(200, 400)
+        self.resize(250, 400)
         self.setLayout(QtWidgets.QVBoxLayout())
         self.default_alignment = self.layout().alignment()
         # Icon Sourced: https://www.flaticon.com/
@@ -52,7 +52,7 @@ class UiStartup(QtWidgets.QDialog):
     @pyqtSlot()
     def new_from_template(self):
         self.parent.unload_items_from_layout(self.layout())
-        self.layout().setAlignment(Qt.AlignTop)
+        # self.layout().setAlignment(Qt.AlignTop)
         for i in range(0, len(templates)):
             template = templates[i]
             template = UiWidgetCreator.create_qpush_button(template.name, 'new_network')

@@ -6,6 +6,8 @@ import psutil
 import requests
 import os
 import sys
+
+import urllib3
 class WorkerSignals(QObject):
     server_startet: pyqtSignal = pyqtSignal(subprocess.Popen)
     server_connected: pyqtSignal = pyqtSignal()
@@ -26,7 +28,7 @@ class StartServer(QRunnable):
                 self.signal.server_connected.emit()
                 print('Server already running.')
                 return
-        except requests.ConnectionError or requests.exceptions.ReadTimeout:
+        except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
             pass
         try:
             activate_script = os.path.join('venv', 'Scripts' if sys.platform == 'win32' else 'bin', 'activate')
@@ -54,7 +56,7 @@ class CheckConnection(QRunnable):
                 # Check if the response status code is in the 2xx range (success)
                 if response.status_code // 100 == 2:
                     connected = True
-            except requests.ConnectionError or requests.exceptions.ReadTimeout:
+            except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:# or urllib3.exceptions.ReadTimeoutError:
                 print('Error Connecting')
                 time.sleep(1)
         self.signal.server_connected.emit()
