@@ -1,7 +1,7 @@
 from functools import partial
 import os
 import shutil
-from PyQt5.QtCore import QThreadPool, QDir, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QThreadPool, QDir, pyqtSignal, pyqtSlot, QSize
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.gui.ui_startup import UiStartup
 from src.epidemics_simulator.storage import Network, Project
@@ -26,6 +26,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.load_window()
         self.init_icons()
         self.connect_signals()
+        
+        self.setWindowIcon(self.window_icon)
         
         self.thread_pool  = QThreadPool()
         
@@ -67,7 +69,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             self.menuNew_from_template.addAction(action)
         
     def init_icons(self):
-        # Icon Sourced: https://www.flaticon.com/
+        # Icon Sources: https://www.flaticon.com/
         self.add_icon = QIcon('assets/add.png')
         self.save_icon = QIcon('assets/save.png')
         self.duplicate_icon = QIcon('assets/duplicate.png')
@@ -79,6 +81,19 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
         self.start_icon = QIcon('assets/play.png')
         self.stop_icon = QIcon('assets/pause.png')
+        
+        self.new_icon = QIcon('assets/new_network.png')
+        self.template_icon = QIcon('assets/template.png')
+        self.open_icon = QIcon('assets/open.png')
+        self.back_icon = QIcon('assets/back.png')
+        
+        self.window_icon = QIcon()
+        self.window_icon.addFile('assets/window/16x16.png', QSize(16,16))
+        self.window_icon.addFile('assets/window/24x24.png', QSize(24,24))
+        self.window_icon.addFile('assets/window/32x32.png', QSize(32,32))
+        self.window_icon.addFile('assets/window/48x48.png', QSize(48,48))
+        self.window_icon.addFile('assets/window/256x256.png', QSize(256,256))
+        # self.window_icon.addFile('assets/window/512x512.png', QSize(256,256))
         
     def set_font_size(self, font_size: int):
         label = QtWidgets.QLabel('change_font', self)
@@ -137,7 +152,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         else:
             network = Network()
         if self.does_network_exist(folder_path):
-            msg_box  = UiWidgetCreator.show_qmessagebox('A network file already exists in the directory. Do you want to override it?',  'Network already exists', default_button=0)
+            msg_box  = UiWidgetCreator.show_qmessagebox('A network file already exists in the directory.\nDo you want to override it?',  'Network already exists', default_button=0)
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
@@ -249,7 +264,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def ask_for_regeneration(self):
         if len(self.project.network.groups) == 0:
             return False
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build jet. Do you want to build the network?', 'Build the network', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build jet.\nDo you want to build the network?', 'Build the network', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return False

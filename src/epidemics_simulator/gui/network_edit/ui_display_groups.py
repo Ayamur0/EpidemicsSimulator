@@ -60,7 +60,7 @@ class UiDisplayGroup(QObject):
     def init_ui(self, project: Project):
         self.project = project
         self.network = project.network
-        self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
+        self.stat_label.setText('Graph building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         try:
             self.generate_button.clicked.disconnect()
@@ -118,7 +118,7 @@ class UiDisplayGroup(QObject):
         self.webview.reload()
         
     def refresh_info_label(self, generation_time: float):
-        label_text = f'Graph creating stats\n'
+        label_text = f'Graph building stats\n'
         total_nodes, total_connections = self.get_network_info()
         label_text += f'Total nodes {total_nodes}\n'
         label_text += f'Total connections {total_connections}\n'
@@ -168,6 +168,6 @@ class UiDisplayGroup(QObject):
         self.generated_once = False
         self.generation_in_progress = False
         
-        self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
+        self.stat_label.setText('Graph building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         

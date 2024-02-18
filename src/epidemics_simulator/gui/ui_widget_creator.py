@@ -233,7 +233,7 @@ class UiWidgetCreator:
     def create_regeneration_popup(network: Network, button_for_generating: QtWidgets.QPushButton):
         if len(network.groups) == 0:
             return False
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been generated. Do you want to generate the network', 'Regenerate network', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build.\nDo you want to build the network?', 'Rebuild network', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return False

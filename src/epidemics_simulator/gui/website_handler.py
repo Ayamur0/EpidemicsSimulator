@@ -23,11 +23,8 @@ class StartServer(QRunnable):
         self.server_url = url
         self.signal = signal
         
-        self.exe_path = os.path.join(os.getcwd(), 'webview', 'launch_webview.exe')
-        print(self.exe_path)
+        self.exe_path = os.path.join(os.getcwd(), 'webview', 'launch_webview.exe')     
         
-        
-
     def run(self):
         try:
             response = requests.head(self.server_url, timeout=1)
