@@ -29,6 +29,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
         self.thread_pool  = QThreadPool()
         
+        self.threads = []
+        
         self.website_handler = WebsiteHandler(self, 'http://127.0.0.1:8050')
         self.startup = UiStartup(self)
         self.network_edit_tab = UiNetworkEditTab(self)
@@ -191,19 +193,26 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             return False
         elif answer == QtWidgets.QMessageBox.Cancel:
             return True
-    @pyqtSlot()
-    def reset(self):
-        self.enable_webviews(False)
+        
+    def unload(self):
         self.network_edit_tab.unload()
         self.disease_edit_tab.unload()
         self.text_simulation_tab.unload()
         
-        self.push_to_dash()
-        
-        self.enable_webviews(True)
+    def init_uis(self):
         self.network_edit_tab.init_ui(self.project)
         self.disease_edit_tab.init_ui(self.project.network)
         self.text_simulation_tab.init_ui(self.project.network)  
+        
+    @pyqtSlot()
+    def reset(self):
+        self.enable_webviews(False)
+        self.unload()
+        
+        self.push_to_dash()
+        
+        self.enable_webviews(True)
+        self.init_uis()
         self.tabWidget.setCurrentIndex(0)
 
     
@@ -267,13 +276,18 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             sub_rul = 'update-data'
         self.website_handler.push_to_dash.emit(sub_rul, data)
         
+    def remove_sender_from_threads(self, sender):
+        if sender in self.threads:
+            self.threads.remove(sender)
+        
     def closeEvent(self, event):
         if self.unsaved_changes and self.ask_to_save():
             event.ignore()
             return
-        for thread in self.thread_pool.aliveThreads():
-            thread.terminate()
+        for thread in self.threads:
+            thread.stop()
         self.website_handler.kill.emit()
+        self.unload()
         event.accept()
 
     def content_changed(self):

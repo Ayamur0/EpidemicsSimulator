@@ -110,8 +110,8 @@ class NodeGroup:
             "name": self.name,
             "color": self.color,
             "member count": self.size,
-            "average internal connections": self.avrg_int_con,
-            "internal connection delta": self.delta_int_con,
+            "average intra group edges": self.avrg_int_con,
+            "delta intra group edges": self.delta_int_con,
             "age": self.age,
             "vaccination rate": self.vaccination_rate,
             "max vaccination rate": self.max_vaccination_rate,
@@ -121,8 +121,8 @@ class NodeGroup:
         name = str(value_dict.get("name"))
         color = str(value_dict.get("color"))
         member_count = int(value_dict.get("member count"))
-        aic = int(value_dict.get("average internal connections"))
-        dic = int(value_dict.get("internal connection delta"))
+        aic = int(value_dict.get("average intra group edges"))
+        dic = int(value_dict.get("delta intra group edges"))
         age = int(value_dict.get("age"))
         vaccination_rate = float(value_dict.get("vaccination rate"))
         max_vaccination_rate = float(value_dict.get("max vaccination rate"))

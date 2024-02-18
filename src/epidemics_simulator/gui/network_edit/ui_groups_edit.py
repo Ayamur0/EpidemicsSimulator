@@ -160,7 +160,7 @@ class UiGroupEdit(QObject):
         return line_edits
     def save_group_properties(self, group: Union[NodeGroup, None], line_edits: dict):
         update_dict = {key: line_edits[key].text() for key in line_edits.keys()}
-        if update_dict['average internal connections'] < update_dict['internal connection delta']:
+        if update_dict['average intra group edges'] < update_dict['delta intra group edges']:
             UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", 'error_message', True, is_row=False)
         if any(value == '' for value in update_dict.values()):
             UiWidgetCreator.show_message(self.save_status, "Please fill out every input.", 'error_message', True, is_row=False)
@@ -192,8 +192,8 @@ class UiGroupEdit(QObject):
             "name": 'NodeGroup',
             "color": '',
             "member count": 100,
-            "average internal connections": 4,
-            "internal connection delta": 2,
+            "average intra group edges": 4,
+            "delta intra group edges": 2,
             "age": 25,
             "vaccination rate": 0.5,
             "max vaccination rate": 0.7

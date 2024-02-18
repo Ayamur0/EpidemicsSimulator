@@ -22,6 +22,11 @@ class StartServer(QRunnable):
         super(StartServer, self).__init__()
         self.server_url = url
         self.signal = signal
+        
+        self.exe_path = os.path.join(os.getcwd(), 'webview', 'launch_webview.exe')
+        print(self.exe_path)
+        
+        
 
     def run(self):
         try:
@@ -34,15 +39,20 @@ class StartServer(QRunnable):
         except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
             pass
         try:
-            activate_script = os.path.join(
-                "venv", "Scripts" if sys.platform == "win32" else "bin", "activate"
-            )
-            activate_command = [activate_script, "&&", "python", "launch_webview.py"]
-
             creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+            
+            if os.path.exists(self.exe_path):
+                print('Starting server from .exe')
+                execution_command = self.exe_path
+            else:
+                print('Starting server from .py')
+                activate_script = os.path.join(
+                "venv", "Scripts" if sys.platform == "win32" else "bin", "activate"
+                )
+                execution_command = [activate_script, "&&", "python", "launch_webview.py"]
 
             process = subprocess.Popen(
-                activate_command,
+                execution_command,
                 stdout=subprocess.PIPE,
                 shell=True,
                 executable=os.environ.get("SHELL"),
@@ -60,10 +70,13 @@ class CheckConnection(QRunnable):
         super(CheckConnection, self).__init__()
         self.url = url
         self.signal = signal
+        self.stopped = False
 
     def run(self):
         connected = False
         while not connected:
+            if self.stopped:
+                return
             try:
                 response = requests.head(self.url, timeout=5)
                 # Check if the response status code is in the 2xx range (success)
@@ -74,8 +87,11 @@ class CheckConnection(QRunnable):
             ):  # or urllib3.exceptions.ReadTimeoutError:
                 print("Error Connecting")
                 time.sleep(1)
+        
         self.signal.server_connected.emit()
-
+        
+    def stop(self):
+        self.stopped = True
 
 class PushToDash(QRunnable):
     def __init__(self, data: dict, url: str, signal):
@@ -148,7 +164,7 @@ class WebsiteHandler(QObject):
     @pyqtSlot(subprocess.Popen)
     def set_process(self, process: subprocess.Popen):
         self.server_process = process
-        print(f"Server started successfully: {self.server_process.pid}.")
+        print(f"Server process started: {self.server_process.pid}.")
 
     @pyqtSlot()
     def check_server_connection_thread(self):
@@ -163,6 +179,7 @@ class WebsiteHandler(QObject):
         self.is_connected = False
         thread = CheckConnection(self.base_url, self.worker_signals)
         self.thread_pool.start(thread)
+        self.parent.threads.append(thread)
 
     @pyqtSlot()
     def connection_established(self):
@@ -171,6 +188,7 @@ class WebsiteHandler(QObject):
         self.is_connected = True
         self.parent.push_to_dash()
         self.parent.show_webviews.emit(True)
+        self.parent.remove_sender_from_threads(self.sender())
 
     @pyqtSlot(str, dict)
     def update_server_data_thread(self, sub_url: str, data: dict):

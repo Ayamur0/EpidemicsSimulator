@@ -80,4 +80,4 @@ class DashServer:
             stats_view.needs_build = True
             return make_response(jsonify({"status": "OK"}), 200)
 
-        app.run(debug=True, use_reloader=True)
+        app.run(debug=False, use_reloader=True) # Changed from debug=True to be able to start the server from an .exe

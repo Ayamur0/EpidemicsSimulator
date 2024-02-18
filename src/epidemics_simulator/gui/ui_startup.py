@@ -11,10 +11,11 @@ class UiStartup(QtWidgets.QDialog):
     def __init__(self, parent):
         super(UiStartup, self).__init__()
         self.parent = parent
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.setWindowTitle('Network tool')
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.setStyleSheet(parent.styleSheet())
-        self.resize(250, 400)
+        self.setFixedSize(250, 400)
         self.setLayout(QtWidgets.QVBoxLayout())
         self.default_alignment = self.layout().alignment()
         # Icon Sourced: https://www.flaticon.com/
@@ -71,5 +72,6 @@ class UiStartup(QtWidgets.QDialog):
 
     def closeEvent(self, event):
         if not self.continue_to_main_window:
-            self.parent.website_handler.kill.emit()
+            self.parent.closeEvent(event)
+            # self.parent.website_handler.kill.emit()
         event.accept()

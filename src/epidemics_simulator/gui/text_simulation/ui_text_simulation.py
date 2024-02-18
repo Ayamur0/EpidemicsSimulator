@@ -264,6 +264,7 @@ class UiTextSimulationTab:
             pass
         except RuntimeError:
             pass
+        
     def clear_stats_widgets(self):
         self.stat_labels.clear()
         self.parent.unload_items_from_layout(self.stats_content.layout())

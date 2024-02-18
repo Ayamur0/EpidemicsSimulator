@@ -161,6 +161,7 @@ class UiWidgetCreator:
     
     def show_qmessagebox(content: str, title: str, default_button=1, only_ok=False) -> QtWidgets.QMessageBox:
         msg_box = QtWidgets.QMessageBox()
+        msg_box.setWindowFlags(msg_box.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
         msg_box.setWindowTitle(title)
@@ -168,10 +169,13 @@ class UiWidgetCreator:
         
         if only_ok:
             ok_button = msg_box.addButton('Ok', QtWidgets.QMessageBox.AcceptRole)
+            ok_button.setMinimumSize(100, 30)
             return msg_box
         
         yes_button = msg_box.addButton('Yes', QtWidgets.QMessageBox.AcceptRole)
+        yes_button.setMinimumSize(100, 30)
         cancel_button = msg_box.addButton('Cancel', QtWidgets.QMessageBox.RejectRole)
+        cancel_button.setMinimumSize(100, 30)
         
         if default_button == 0:
             msg_box.setDefaultButton(yes_button)
@@ -181,15 +185,19 @@ class UiWidgetCreator:
         return msg_box
     def save_popup(content: str):
         msg_box = QtWidgets.QMessageBox()
+        msg_box.setWindowFlags(msg_box.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
         msg_box.setWindowTitle('Unsaved Changes Detected')
         msg_box.setText('Do you want to save your changes before closing?')
 
         save_button = msg_box.addButton('Save',QtWidgets.QMessageBox.AcceptRole)
+        save_button.setMinimumSize(100, 30)
         no_button = msg_box.addButton('No',QtWidgets.QMessageBox.RejectRole)
+        no_button.setMinimumSize(100, 30)
         cancel_button = msg_box.addButton('Cancel',QtWidgets.QMessageBox.RejectRole)
-
+        cancel_button.setMinimumSize(100, 30)
+        
         msg_box.exec_()
 
         if msg_box.clickedButton() == save_button:
@@ -333,7 +341,7 @@ class SaveStatDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(SaveStatDialog, self).__init__(parent)
         self.parent = parent
-
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         current_datetime = datetime.now()
         formatted_datetime = current_datetime.strftime("%Y-%m-%d %H-%M-%S")
         self.setWindowTitle("Save simulation stats")

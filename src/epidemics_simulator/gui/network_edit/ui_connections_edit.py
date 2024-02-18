@@ -66,8 +66,8 @@ class UiConnectionEdit(QObject):
         self.save_connection_prop_button.show()
         self.main_window.deselect_other_buttons(group_to.id, self.connection_buttons)
 
-        properties = {'connection average': group_from.avrg_ext_con.get(group_to.id, 0),
-                      "connection delta": group_from.delta_ext_con.get(group_to.id, 0)}
+        properties = {'average edge amount': group_from.avrg_ext_con.get(group_to.id, 0),
+                      "delta edge amount": group_from.delta_ext_con.get(group_to.id, 0)}
         
         line_edits = self.load_properties_input(properties)
         
@@ -84,10 +84,10 @@ class UiConnectionEdit(QObject):
     def save_connection_properties(self, group_from: NodeGroup, group_to: NodeGroup, line_edits: dict):
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         try:
-            if updated_dict.get('connection average') == '' or updated_dict.get('connection delta') == '':
+            if updated_dict.get('average edge amount') == '' or updated_dict.get('delta edge amount') == '':
                 raise TypeError
-            con_avrg = int(updated_dict.get('connection average'))
-            con_dc = int(updated_dict.get('connection delta'))
+            con_avrg = int(updated_dict.get('average edge amount'))
+            con_dc = int(updated_dict.get('delta edge amount'))
             if con_dc > con_avrg:
                 raise ValueError
         except TypeError:
