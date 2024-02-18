@@ -240,7 +240,13 @@ in section \ref{sub:exp_network}.
 
 Two diseases are used for this simulation:
 \begin{itemize}
-    \item %TODO
+    \item (vaccinated) fatality rate: 0
+    \item (re-, vaccinated) infection rate: 0.06 for Disease 1 / 0.04 for Disease 2
+    \item infection period $t_I$: 5
+    \item initial infections: 50
+    \item cure chance: 1
+    \item immunity period: 0
+    \item infectiousness factor: 1
 \end{itemize}
 
 First the experiment is run with the two diseases separately to show that they never die out
@@ -275,7 +281,7 @@ decrease in infections with $d_2$ is shown in figure \ref{fig:exp_multiple_disea
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{images/exp_subgroups.png}
+    \includegraphics[width=0.5\linewidth]{images/exp_multiple_diseases_both.png}
     \caption{Infections per disease with $p = 0.06$ and $p = 0.04$, disease 2 dies out after 40 steps even though it did not die out when the two diseases were simulated in isolation}
     \label{fig:exp_multiple_diseases}
 \end{figure}
