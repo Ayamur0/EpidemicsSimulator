@@ -170,11 +170,11 @@ class UiDiseaseEditTab(QObject):
     def save_disease(self, disease: Disease, line_edits: dict, save_widget):
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         if any(value == '' for value in updated_dict.values()):
-            UiWidgetCreator.show_message(save_widget, "Please fill out every input", 'error_message', True, is_row=False)
+            UiWidgetCreator.show_message(save_widget, "Please fill out every input.", 'error_message', True, is_row=False)
             return
         if disease:
             disease.set_from_dict(updated_dict)
-            UiWidgetCreator.show_message(save_widget, "Successfully saved", 'success_message', True, is_row=False)
+            UiWidgetCreator.show_message(save_widget, "Successfully saved.", 'success_message', True, is_row=False)
             self.disease_change_singal.emit()
             return
         else:
@@ -202,7 +202,7 @@ class UiDiseaseEditTab(QObject):
             self.is_creating_disease = False
             self.add_disease_button.setDisabled(False)
             return
-        message = UiWidgetCreator.show_qmessagebox(f'Are you sure you want to delete disease {disease.name}?', 'Disease deletion')
+        message = UiWidgetCreator.show_qmessagebox(f'Are you sure you want to delete disease {disease.name}?', 'Delete Disease')
         result = message.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return

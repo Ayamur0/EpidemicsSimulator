@@ -158,7 +158,7 @@ QDialog QPushButton{
     color: white;
     background: rgb(60, 60, 60);
     border-radius: 10px;
-    min-width: 50px;
+    min-width: 100px;
     min-height: 30px;
 }
 QDialog QPushButton:hover {

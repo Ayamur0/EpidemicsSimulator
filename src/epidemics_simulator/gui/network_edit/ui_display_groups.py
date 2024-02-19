@@ -60,7 +60,7 @@ class UiDisplayGroup(QObject):
     def init_ui(self, project: Project):
         self.project = project
         self.network = project.network
-        self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
+        self.stat_label.setText('Graph building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         try:
             self.generate_button.clicked.disconnect()
@@ -71,18 +71,20 @@ class UiDisplayGroup(QObject):
         
     def start_generating(self):
         if self.generated_once and not self.parent.changes_in_network and not self.main_window.disease_edit_tab.disease_changed:
-            msg_box = UiWidgetCreator.show_qmessagebox('Network did not cahnge.\nDo you want to build again?', 'Building network')
+            msg_box = UiWidgetCreator.show_qmessagebox('Network did not change.\nDo you want to build again?', 'Building Betwork')
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
         total_nodes = self.get_node_count()
         if total_nodes >= 20000:
-            msg_box = UiWidgetCreator.show_qmessagebox('Building a network with more than 20,000 nodes may take a while.\nDo you want to continue?', 'Building network')
+            msg_box = UiWidgetCreator.show_qmessagebox('Building a network with more than 20,000 nodes may take a while.\nDo you want to continue?', 'Building Network')
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
         print('Started building.')
         self.generation_in_progress = True
+        self.main_window.enable_webviews(False, also_statistic=False) # TODO If the building process takes longer on the website, so the window wont be empty an seem like its not working.
+        # So the webviews get disabled and only show up if the building process was finished.
         thread = NetworkGenerator(self.project, self.push_to_dash_signal, self.worker_signals)
         self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
         self.start_time = time.time()
@@ -118,7 +120,7 @@ class UiDisplayGroup(QObject):
         self.webview.reload()
         
     def refresh_info_label(self, generation_time: float):
-        label_text = f'Graph creating stats\n'
+        label_text = f'Graph building stats\n'
         total_nodes, total_connections = self.get_network_info()
         label_text += f'Total nodes {total_nodes}\n'
         label_text += f'Total connections {total_connections}\n'
@@ -168,6 +170,6 @@ class UiDisplayGroup(QObject):
         self.generated_once = False
         self.generation_in_progress = False
         
-        self.stat_label.setText('Graph creating stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
+        self.stat_label.setText('Graph building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s')
         self.webview.hide()
         

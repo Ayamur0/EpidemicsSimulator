@@ -1,7 +1,7 @@
 from functools import partial
 import os
 import shutil
-from PyQt5.QtCore import QThreadPool, QDir, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QThreadPool, QDir, pyqtSignal, pyqtSlot, QSize
 from src.epidemics_simulator.gui.ui_widget_creator import UiWidgetCreator
 from src.epidemics_simulator.gui.ui_startup import UiStartup
 from src.epidemics_simulator.storage import Network, Project
@@ -23,11 +23,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         super(UiNetworkEditor, self).__init__()
         QDir.addSearchPath('assets', 'assets/')
         self.set_font_size(12)
-        self.load_window()
         self.init_icons()
+        self.load_window()
         self.connect_signals()
         
         self.thread_pool  = QThreadPool()
+        
+        self.threads = []
         
         self.website_handler = WebsiteHandler(self, 'http://127.0.0.1:8050')
         self.startup = UiStartup(self)
@@ -65,7 +67,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             self.menuNew_from_template.addAction(action)
         
     def init_icons(self):
-        # Icon Sourced: https://www.flaticon.com/
+        # Icon Sources: https://www.flaticon.com/
         self.add_icon = QIcon('assets/add.png')
         self.save_icon = QIcon('assets/save.png')
         self.duplicate_icon = QIcon('assets/duplicate.png')
@@ -78,6 +80,19 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.start_icon = QIcon('assets/play.png')
         self.stop_icon = QIcon('assets/pause.png')
         
+        self.new_icon = QIcon('assets/new_network.png')
+        self.template_icon = QIcon('assets/template.png')
+        self.open_icon = QIcon('assets/open.png')
+        self.back_icon = QIcon('assets/back.png')
+        
+        self.window_icon = QIcon()
+        self.window_icon.addFile('assets/window/16x16.png', QSize(16,16))
+        self.window_icon.addFile('assets/window/24x24.png', QSize(24,24))
+        self.window_icon.addFile('assets/window/32x32.png', QSize(32,32))
+        self.window_icon.addFile('assets/window/48x48.png', QSize(48,48))
+        self.window_icon.addFile('assets/window/256x256.png', QSize(256,256))
+        # self.window_icon.addFile('assets/window/512x512.png', QSize(256,256))
+        
     def set_font_size(self, font_size: int):
         label = QtWidgets.QLabel('change_font', self)
         label.hide()
@@ -87,11 +102,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         label.deleteLater()
         
     def load_window(self):
-        self.setWindowTitle('Network tool')
+        self.setWindowTitle('Epidemic Simulator')
+        self.setWindowIcon(self.window_icon)
         uic.loadUi("qt/NetworkEdit/main.ui", self)
-        with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
+        with open("qt/NetworkEdit/style_sheet.qss", mode="r", encoding="utf-8") as fp:
             self.stylesheet = fp.read()
         self.setStyleSheet(self.stylesheet)
+        
    
     
     def unload_items_from_layout(self, layout):
@@ -120,22 +137,22 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if os.path.exists(does_file_exist) and os.path.isfile(does_file_exist):
             return True
         return False
-                
+    
     @pyqtSlot(int)
     def new_network(self, template_id=None):
         print(f'New Network {template_id}')
         
         if self.unsaved_changes and self.ask_to_save():
             return
-        folder_path, folder_name = UiWidgetCreator.open_folder(self)
+        folder_path, folder_name = UiWidgetCreator.open_folder(self, 'Select New Project Folder')
         if not folder_path:
             return False
-        if template_id:
+        if template_id is not None:
             network = templates[template_id]
         else:
             network = Network()
         if self.does_network_exist(folder_path):
-            msg_box  = UiWidgetCreator.show_qmessagebox('A network file already exists in the directory. Do you want to override it?',  'Network already exists', default_button=0)
+            msg_box  = UiWidgetCreator.show_qmessagebox('A network file already exists in the directory.\nDo you want to override it?',  'Network Already Exists', default_button=0)
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
@@ -158,11 +175,11 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def open_network(self):       
         if self.unsaved_changes and self.ask_to_save():
             return
-        folder_path, _ = UiWidgetCreator.open_folder(self)
+        folder_path, _ = UiWidgetCreator.open_folder(self, 'Select Project Folder')
         if not folder_path:
             return False
         if not self.does_network_exist(folder_path):
-            msg_box  = UiWidgetCreator.show_qmessagebox('No network found in the directory.',  'No network found', only_ok=True)
+            msg_box  = UiWidgetCreator.show_qmessagebox('No network found in the directory.',  'No Network Found', only_ok=True)
             _ = msg_box.exec_()
             return
         
@@ -191,32 +208,41 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             return False
         elif answer == QtWidgets.QMessageBox.Cancel:
             return True
-    @pyqtSlot()
-    def reset(self):
-        self.enable_webviews(False)
+        
+    def unload(self):
         self.network_edit_tab.unload()
         self.disease_edit_tab.unload()
         self.text_simulation_tab.unload()
         
-        self.push_to_dash()
-        
-        self.enable_webviews(True)
+    def init_uis(self):
         self.network_edit_tab.init_ui(self.project)
         self.disease_edit_tab.init_ui(self.project.network)
         self.text_simulation_tab.init_ui(self.project.network)  
+        
+    @pyqtSlot()
+    def reset(self):
+        self.enable_webviews(False)
+        self.unload()
+        
+        self.push_to_dash()
+        
+        self.enable_webviews(True)
+        self.init_uis()
         self.tabWidget.setCurrentIndex(0)
 
     
     @pyqtSlot(bool)
-    def enable_webviews(self, status: bool):
+    def enable_webviews(self, status: bool, also_statistic:bool = True):
         if not status or not self.website_handler.is_connected:
             self.network_edit_tab.hide_webview()
             self.simulation_tab.hide_webview()
-            self.statistics_tab.hide_webview()
+            if also_statistic:
+                self.statistics_tab.hide_webview()
         else:
             self.network_edit_tab.show_webview()
             self.simulation_tab.show_webview()
-            self.statistics_tab.show_webview()
+            if also_statistic:
+                self.statistics_tab.show_webview()
     @pyqtSlot(int)
     def on_tab_change(self, index):
         network_change = self.network_edit_tab.changes_in_network
@@ -240,7 +266,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def ask_for_regeneration(self):
         if len(self.project.network.groups) == 0:
             return False
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build jet. Do you want to build the network?', 'Build the network', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build yet.\nDo you want to build the network?', 'Build the Network', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return False
@@ -250,7 +276,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def ask_for_reset(self):
         if len(self.project.network.groups) == 0:
             return
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Diseases chagned do you want to restart the simulation?', 'Restart simulation', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Diseases chagned do you want to restart the simulation?', 'Restart Simulation', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return 
@@ -267,13 +293,18 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
             sub_rul = 'update-data'
         self.website_handler.push_to_dash.emit(sub_rul, data)
         
+    def remove_sender_from_threads(self, sender):
+        if sender in self.threads:
+            self.threads.remove(sender)
+        
     def closeEvent(self, event):
         if self.unsaved_changes and self.ask_to_save():
             event.ignore()
             return
-        for thread in self.thread_pool.aliveThreads():
-            thread.terminate()
+        for thread in self.threads:
+            thread.stop()
         self.website_handler.kill.emit()
+        self.unload()
         event.accept()
 
     def content_changed(self):

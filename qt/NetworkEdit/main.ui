@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Epidemic Simulator</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -156,6 +156,12 @@ Generation time 0s</string>
                        <iconset>
                         <normaloff>../../assets/web.png</normaloff>../../assets/web.png</iconset>
                       </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>24</width>
+                        <height>24</height>
+                       </size>
+                      </property>
                      </widget>
                     </item>
                     <item>
@@ -172,6 +178,12 @@ Generation time 0s</string>
                       <property name="icon">
                        <iconset>
                         <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>20</width>
+                        <height>20</height>
+                       </size>
                       </property>
                      </widget>
                     </item>
@@ -717,8 +729,8 @@ margin-right: 9;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>28</height>
+                <width>1537</width>
+                <height>885</height>
                </rect>
               </property>
              </widget>
@@ -767,6 +779,12 @@ margin-right: 9;</string>
                  <iconset>
                   <normaloff>../../assets/web.png</normaloff>../../assets/web.png</iconset>
                 </property>
+                <property name="iconSize">
+                 <size>
+                  <width>24</width>
+                  <height>24</height>
+                 </size>
+                </property>
                </widget>
               </item>
               <item>
@@ -789,6 +807,12 @@ margin-right: 9;</string>
                 <property name="icon">
                  <iconset>
                   <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -845,8 +869,8 @@ margin-right: 9;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>28</height>
+                <width>1537</width>
+                <height>756</height>
                </rect>
               </property>
              </widget>
@@ -904,8 +928,8 @@ margin-right: 9;</string>
                       </property>
                       <property name="iconSize">
                        <size>
-                        <width>16</width>
-                        <height>16</height>
+                        <width>20</width>
+                        <height>20</height>
                        </size>
                       </property>
                      </widget>
@@ -932,6 +956,12 @@ margin-right: 9;</string>
                         <normalon>../../assets/rewind.png</normalon>
                        </iconset>
                       </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>20</width>
+                        <height>20</height>
+                       </size>
+                      </property>
                      </widget>
                     </item>
                     <item>
@@ -955,6 +985,12 @@ margin-right: 9;</string>
                        <iconset>
                         <normalon>../../assets/play.png</normalon>
                        </iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>20</width>
+                        <height>20</height>
+                       </size>
                       </property>
                      </widget>
                     </item>
@@ -980,6 +1016,12 @@ margin-right: 9;</string>
                         <normalon>../../assets/forward.png</normalon>
                        </iconset>
                       </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>20</width>
+                        <height>20</height>
+                       </size>
+                      </property>
                      </widget>
                     </item>
                     <item>
@@ -1003,6 +1045,12 @@ margin-right: 9;</string>
                        <iconset>
                         <normalon>../../assets/save.png</normalon>
                        </iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>20</width>
+                        <height>20</height>
+                       </size>
                       </property>
                      </widget>
                     </item>
@@ -1097,6 +1145,12 @@ margin-right: 9;</string>
                  <iconset>
                   <normaloff>../../assets/web.png</normaloff>../../assets/web.png</iconset>
                 </property>
+                <property name="iconSize">
+                 <size>
+                  <width>24</width>
+                  <height>24</height>
+                 </size>
+                </property>
                </widget>
               </item>
               <item>
@@ -1119,6 +1173,12 @@ margin-right: 9;</string>
                 <property name="icon">
                  <iconset>
                   <normaloff>../../assets/reload.png</normaloff>../../assets/reload.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
                 </property>
                </widget>
               </item>

@@ -161,6 +161,7 @@ class UiWidgetCreator:
     
     def show_qmessagebox(content: str, title: str, default_button=1, only_ok=False) -> QtWidgets.QMessageBox:
         msg_box = QtWidgets.QMessageBox()
+        msg_box.setWindowFlags(msg_box.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
         msg_box.setWindowTitle(title)
@@ -168,10 +169,13 @@ class UiWidgetCreator:
         
         if only_ok:
             ok_button = msg_box.addButton('Ok', QtWidgets.QMessageBox.AcceptRole)
+            ok_button.setMinimumSize(100, 30)
             return msg_box
         
         yes_button = msg_box.addButton('Yes', QtWidgets.QMessageBox.AcceptRole)
+        yes_button.setMinimumSize(100, 30)
         cancel_button = msg_box.addButton('Cancel', QtWidgets.QMessageBox.RejectRole)
+        cancel_button.setMinimumSize(100, 30)
         
         if default_button == 0:
             msg_box.setDefaultButton(yes_button)
@@ -181,15 +185,19 @@ class UiWidgetCreator:
         return msg_box
     def save_popup(content: str):
         msg_box = QtWidgets.QMessageBox()
+        msg_box.setWindowFlags(msg_box.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
         msg_box.setWindowTitle('Unsaved Changes Detected')
         msg_box.setText('Do you want to save your changes before closing?')
 
         save_button = msg_box.addButton('Save',QtWidgets.QMessageBox.AcceptRole)
+        save_button.setMinimumSize(100, 30)
         no_button = msg_box.addButton('No',QtWidgets.QMessageBox.RejectRole)
+        no_button.setMinimumSize(100, 30)
         cancel_button = msg_box.addButton('Cancel',QtWidgets.QMessageBox.RejectRole)
-
+        cancel_button.setMinimumSize(100, 30)
+        
         msg_box.exec_()
 
         if msg_box.clickedButton() == save_button:
@@ -199,9 +207,10 @@ class UiWidgetCreator:
         else:  # msg_box.clickedButton() == cancel_button
             return QtWidgets.QMessageBox.Cancel
     
-    def open_folder(window) -> str:
-        # options = QtWidgets.QFileDialog.Options()
-        folder_path = QtWidgets.QFileDialog.getExistingDirectory(window, "Select Folder")
+    def open_folder(window, title_string: str) -> str:
+        options = QtWidgets.QFileDialog.Options()
+        home_directory = os.path.expanduser("~")
+        folder_path = QtWidgets.QFileDialog.getExistingDirectory(window, title_string, home_directory, options=options)
         return folder_path, os.path.basename(folder_path)
     
     def create_generate_popup(parent, content: str='Building...') -> QtWidgets.QDialog:
@@ -225,7 +234,7 @@ class UiWidgetCreator:
     def create_regeneration_popup(network: Network, button_for_generating: QtWidgets.QPushButton):
         if len(network.groups) == 0:
             return False
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been generated. Do you want to generate the network', 'Regenerate network', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build.\nDo you want to build the network?', 'Rebuild network', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return False
@@ -333,10 +342,10 @@ class SaveStatDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(SaveStatDialog, self).__init__(parent)
         self.parent = parent
-
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         current_datetime = datetime.now()
         formatted_datetime = current_datetime.strftime("%Y-%m-%d %H-%M-%S")
-        self.setWindowTitle("Save simulation stats")
+        self.setWindowTitle("Save Simulation Stats")
         
         self.label = UiWidgetCreator.create_qlabel('Simulation name: ', 'saveStats', style_sheet="""background: transparent;""")
         self.line_edit = UiWidgetCreator.create_input_line_edit(str(formatted_datetime), regex_validator='*', color='rgb(80, 80, 80)')
