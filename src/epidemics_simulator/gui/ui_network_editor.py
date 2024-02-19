@@ -23,11 +23,9 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         super(UiNetworkEditor, self).__init__()
         QDir.addSearchPath('assets', 'assets/')
         self.set_font_size(12)
-        self.load_window()
         self.init_icons()
+        self.load_window()
         self.connect_signals()
-        
-        self.setWindowIcon(self.window_icon)
         
         self.thread_pool  = QThreadPool()
         
@@ -104,11 +102,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         label.deleteLater()
         
     def load_window(self):
-        self.setWindowTitle('Network tool')
+        self.setWindowTitle('Epidemic Simulator')
+        self.setWindowIcon(self.window_icon)
         uic.loadUi("qt/NetworkEdit/main.ui", self)
-        with open("qt\\NetworkEdit\\style_sheet.qss", mode="r", encoding="utf-8") as fp:
+        with open("qt/NetworkEdit/style_sheet.qss", mode="r", encoding="utf-8") as fp:
             self.stylesheet = fp.read()
         self.setStyleSheet(self.stylesheet)
+        
    
     
     def unload_items_from_layout(self, layout):

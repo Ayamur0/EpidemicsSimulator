@@ -1,10 +1,10 @@
 # EpidemicsSimulator
 
-## Setup
+## Running from source
 
 ### Requirements
 
-- Python 3.x
+- Python 3.9+
 - Python3-venv
 - pip
 
@@ -30,13 +30,7 @@ pip install -r ./requirements.txt
 
 ## Usage
 
-After activating the virtual environment, start the python script ```TODO```
-??? TODO wtf geht halt net lul No Module named src 
-```bash
-python3 TODO
-```
-
-After that, the GUI of the application should start. 
+The GUI has five different tabs, each with a different functionality for creating/simulating/analyzing an epidemic.
 
 - **Network Editor:** In this tab you can create your network and see it in a 3D space.
 
