@@ -43,7 +43,7 @@ class StartServer(QRunnable):
                 execution_command = self.exe_path
             elif os.path.exists(self.bin_path): # TODO check if it works with binary.
                 print('Starting server from binary')
-                execution_command = self.exe_path
+                execution_command = self.bin_path
             else:
                 print('Starting server from .py')
                 activate_script = os.path.join(
