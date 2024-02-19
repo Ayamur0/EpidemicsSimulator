@@ -1,48 +1,48 @@
 \section{Motivation}
 An epidemic outbreak can have a major impact on the world. Past epidemics have shown that
-if we do not know how to counteract an epidemic outbreak and are not prepared for 
-such cases, a new disease can cause the death of major parts of the world. The black
+if we do not know how to respond to an epidemic outbreak and are not prepared for 
+such cases, a new disease can wipe out large parts of the world. The black
 death caused the death of about 30\% to 60\% of all Europeans (75-200 million)
 during the 1300s \cite{blackDeath}.
-To better understand such scenarios simulations play an important role since studying real
-cases of epidemic outbreaks is difficult as there are only so many in the history of humans.
-Also it is important in case an outbreak happens to be able to simulate the next few days/weeks
-to accurately predict how the epidemic will evolve.
+To better understand such scenarios, simulations play an important role, as the study of real
+cases of epidemic outbreaks is difficult since there are only so many in the history of humans.
+Also, in the event of an outbreak, it is important to be able to simulate the next few days/weeks
+in order to accurately predict how the epidemic will evolve.
 
 For this reason this work will discuss an approach to simulate such epidemics by modeling
-networks of persons and then simulating the spreading of diseases with different properties
+networks of people and then simulating the spreading of diseases with different characteristics
 in these networks.
 
 \section{Problem definition}
-A model of the social network the disease is spreading in is curcial to the simulation.
-Depending on the transmission method of the disease this network can be highly connected in 
+A model of the social network in which the disease is spreading in is crucial to the simulation.
+Depending on the transmission method of the disease, this network may be highly connected in 
 the case of a disease with airborne transmission or have only few connections for diseases
-that are for example sexually transmitted. In addition to that different diseases can spread
-completely different in the same social network even if the have the same transmission method
+that are sexually transmitted. In addition, different diseases can spread
+completely different in the same social network even if they have the same transmission method
 because the characteristics of the disease also play an important role in how it spreads. 
 As suggested by Easley and Kleinberg \cite{networks}
-the transmission of computer viruses works in a similar way an thus is also able to be modeled
-by using networks.
+the transmission of computer viruses works in a similar way can therefore also be modeled
+using networks.
 
 The networks that can be created using the app must be able to model different social
-networks. The important part for the epidemics simulation is the modeling of the amount
-of contacts with other humans each human has. Since each group can contain a significant amount
-of members an efficient method for creation networks with large amounts of nodes is required, which
+networks. The most important part for the epidemics simulation is the modeling of the amount
+of contacts with other people each person has. Since each group can have a significant number
+of members an efficient method for creating networks with large amounts of nodes is required that
 still allows to model most social networks.
 
-A method to visually display these networks in a clear way is required. The visual 
-representation must still be usable with large amounts of nodes (eg. over 100,000 nodes).
-To make the visualization of the network more usable some settings need to be provided
-to alter the displayed network, like hiding certain connections or nodes. It also needs
+A method to visualize these networks in a clear way is needed. The visual 
+representation must still be usable with large amounts of nodes (e.g. over 100,000 nodes).
+To make the visualization of the network more usable, some settings must be provided
+to modify the displayed network, such as hiding certain connections or nodes. It also needs
 ways to represent the current state of the network in respect to the spread of the diseases.
 
-The app also needs to allow for creation of multiple diseases with different properties.
-To simulate various epidemic scenarios properties like the infectiousness, duration of illnes
+The app also needs to allow for creation of multiple diseases with different characteristics.
+To simulate various epidemic scenarios properties like the infectiousness, duration of illness
 or fatality need to be editable. 
 
 The app should be able to simulate multiple diseases at the same time. The simulation needs
 to take into account which humans have contact with each other and then simulate the spreading
-of the diseases according to the properties of each disease and group of humans.
+of the diseases according to the characteristics of each disease and group of people.
 
-During the simulation the app will collect statistics to allow a review of key information
-after a simulation, like the amount of new infections over time.
+During the simulation the app will collect statistics that allow a review of key information
+after the simulation, such as the number of new infections over time.

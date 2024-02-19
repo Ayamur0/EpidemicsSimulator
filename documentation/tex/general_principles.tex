@@ -1,17 +1,17 @@
-The models the app developed in this work uses are based on chapters 19-21 of the book
-"Networks Crowds and Markets" Easley and Kleinberg \cite{networks}.
+The models used by the the app developed in this work are based on chapters 19-21 of the book
+"Networks Crowds and Markets" by Easley and Kleinberg \cite{networks}.
 
 \section{Simplest model}
 The first model proposed by Easley and Kleinberg \cite{networks} uses a very simplistic
-representation of networks. The network is represented as a tree with each layer representing
-the nodes who come into contact with infected nodes form the previous cycle. The root
+representation of networks. The network is represented as a tree, with each layer representing
+the nodes that come into contact with infected nodes from the previous cycle. The root
 of the tree is the first person to contract the disease in the social network. During the
-first cycle the $k$ nodes at a depth of 1 may or may not get infected with the disease based
-on the infectiousness of the disease. During the second cycle each of these $k$ nodes
+first cycle the $k$ nodes at a depth of 1 may or may not get infected with the disease, depending
+on the infectiousness of the disease. During the second cycle, each of these $k$ nodes
 now comes into contact with $k$ other nodes at a depth of 2. This means during the second
-cycle $k \cdot k = k^2$ people are potentially at risk of infection. During each cycle the
-amount of people that come into contact with the disease increases by a factor of $k$ for
-a total of $k^{cycle}$ that potentially come into contact with the disease during each cycle.
+cycle, $k \cdot k = k^2$ people are potentially at risk of infection. During each cycle, the
+number of people who come into contact with the disease increases by a factor of $k$, for
+a total of $k^{cycle}$ people potentially exposed to the disease during each cycle.
 Figure \ref{fig:tree_network} shows a possible network structure.
 
 \begin{figure}
@@ -23,22 +23,21 @@ Figure \ref{fig:tree_network} shows a possible network structure.
 
 The book \cite{networks} also explains the concept of the reproductive number $R_0$ in
 relation to this network. $R_0$ is the expected number of new cases of the disease
-caused by a single infected individual. In the case of the tree network this means 
-$R_0 = pk$ with $p$ being the infectiousness of the disease. If $R_0 > 1$ the amount
+caused by a single infected individual. In the case of the tree network, this means 
+$R_0 = pk$, where $p$ is the infectiousness of the disease. If $R_0 > 1$, the number
 of cases will increase over time because each person infects more than one other person
-on average. Thus there is a possibility that the disease will never
-die out. If $R_0 < 1$ the amount of cases is decreasing on average each person infects less
-than one other person which leads to the disease dying out in a finite number of cycles.
-With this knowledge the importance of $R_0$ in fighting an epidemic is clear. To prevent
-or stop a epidemic the $R_0$ factor of a disease has to be below 0.
+on average. Thus, there is a possibility that the disease will never
+die out. If $R_0 < 1$, the number of cases will decrease because on average each person will infect less
+than one other person, resulting in the disease dying out in a finite number of cycles.
+With this knowledge, the importance of $R_0$ in controlling an epidemic is clear. To prevent
+or stop an epidemic, the $R_0$ factor of a disease has to be less than 1.
 
 \subsection{Limitations}
-This model has several limitations. It assumes each person has contact to the same amount of
-people which is never the case in real social networks. There are always people who come into
-contact with more people than others. Also each person can only infect others during the
-first cycle after they got infected. It does not allow for a person to infect others during
-multiple cycles for longer lasting diseases. Further it is not possible for a person
-to get infected a second time as there are no loops withing the tree.
+This model has several limitations. It assumes each person has contact with the same number of
+people, which is never the case in real social networks. There are always people who come into
+contact with more people than others. Also, each person can only infect others during the
+first cycle after being infected. It is not possible for a person to infect others during multiple cycles for longer lasting diseases. Further, it is not possible for a person
+to become infected a second time because there are no loops within the tree.
 
 \section{SIR Model}
 The SIR Model is a more advanced model that allows modeling of most social network structures
@@ -50,7 +49,7 @@ stages each node can have:
     \item \textbf{R}emoved: The node went through the full infection period and is removed from consideration for future cycles
 \end{itemize}
 The SIR Model uses a directed graph do indicate which nodes are neighbors and thus susceptible 
-to infecting each other. The resulting graph does not have to be anti symmetric it may also contain
+to infecting each other. The resulting graph does not have to be anti-symmetric it may also contain
 undirected edges. 
 
 In addition to the network the SIR Model uses two additional quantities to control the 
@@ -75,20 +74,20 @@ in which even highly contagious diseases will die out.
     \label{fig:narrow_network}
 \end{figure}
 
-Let $d$ be a disease with a high contagiousness of $p=0.8$ and infection period $t_I=1$. 
-Using the assumptions made for calculating $R_0$ in the tree network this would result 
-in $R_0 = 2 \cdot 0.8 = 1.6$ which indicates that the disease is relatively likely 
-to never die out. Due to the structure of the network however, the disease is going to 
-die out relatively quickly. The chance of the disease not spreading during a cycle is
-$0.2^4=0.0016$ thus the disease will on average die out after $\frac{1}{0.0016}=625$ cycles.
-This shows that in more complex networks the structure of the network also plays a big role
-in the progression of the epidemic. It is not possible to calculate $R_0$ using just the
-characteristics of the disease, the network structure also needs to be taken into account.
-Knowing this it is impossible to accuarately calculate $R_0$ in a highly complex network.
-It is however possible to observe the $R_0$ value during the epidemic for previous cycles.
-Let $R_0^k$ be the $R_0$ value for cycle $k$ and $I_k$ the amount of infected nodes in cycle $k$.
+Let $d$ be a disease with a high contagiousness of $p=0.8$ and an infection period of $t_I=1$. 
+Using the assumptions made for calculating $R_0$ in the tree network, this would result 
+in $R_0 = 2 \cdot 0.8 = 1.6$, indicating that the disease is relatively likely 
+never to die out. However, due to the structure of the network, the disease is going to 
+die out relatively quickly. The probability of the disease not spreading during a cycle is
+$0.2^4=0.0016$, so on average the diseases will die out after $\frac{1}{0.0016}=625$ cycles.
+This shows that in more complex networks, the structure of the network also plays a big role
+in the progression of the epidemic. It is not possible to calculate $R_0$ from the
+characteristics of the disease alone, the network structure must also be taken into account.
+Knowing this, it is impossible to accurately calculate $R_0$ in a highly complex network.
+It is however possible to observe the value of $R_0$ during the epidemic for previous cycles.
+Let $R_0^k$ be the $R_0$ value for cycle $k$ and $I_k$ the number of infected nodes in cycle $k$.
 Then $R_0^k = \frac{I_k}{I_{k-1}}$, with this the evolution of the $R_0$ value can be 
-observed making it possible to estimate $R_0$ for future cycles and helping to understand
+observed, making it possible to estimate $R_0$ for future cycles and helping to understand
 whether the disease is currently dying out ($R_0<0$) or not ($R_0>1$). A simulation can also
 help to understand how the $R_0$ value of diseases will behave for a disease with certain 
 quantities in a complex network.
@@ -96,41 +95,38 @@ quantities in a complex network.
 \subsection{Limitations}
 There are still some limitations to the SIR Model. Each person can only catch the disease at
 most once and the model does not allow for simulating multiple diseases at the same time.
-However the model allows most social networks to be represented, making it realtively easy
-to extend this network to include more complex diseases with different levels of contagiousness
-depending on the time a node has been infected or a non constant infection period.
+However, the model allows most social networks to be represented, making it relatively easy
+to extend this network to include more complex diseases, e.g. with different levels of contagiousness
+depending on the time a node has been infected or a non-constant infection period.
 
 \section{SIS Model}
-The SIS Model is an extension to the SIR Model which also allows nodes to be reinfected multiple
+The SIS Model is an extension to the SIR Model that also allows nodes to be reinfected multiple
 times. The \textbf{R}emoved state is exchanged with the \textbf{S}usceptible state, so nodes
 that are removed from the \textbf{I}nfected state are placed back in the \textbf{S}usceptible state.
-With this change it is possible for diseases to last an inifinite time in a SIS Model in contrast
-to an SIR Model where every simulation will end after a finite amount of steps after the 
-disease burned through all nodes. The only way for the simulation in a SIS Model to end is
+With this change, it is possible for diseases to survive an infinite amount of time in an SIS Model, as opposed to an SIR Model, where each simulation ends after a finite number of steps after the 
+disease has burned through all nodes. The only way for the simulation in a SIS Model to end is
 if all infected nodes fail to transmit the disease to any of their neighbors $t_I$ times.
 
 \section{Custom Model}
 \label{sec:custom_model}
 \subsection{Parameters}
-The model used by the developed app is a further extension to the SIR and SIS Models. It 
-combines the SIR and SIS Model by having nodes that finish the infection period move either
+The model used by the developed app is a further extension of the SIR and SIS Models. It 
+combines the SIR and SIS Models by moving nodes that finish the infection period either
 into the \textbf{R}emoved or \textbf{S}usceptible state depending on a quantity $f$. Each
-disease has a fatality rate $f$ which determines whether a node is moved into the 
-\textbf{R}emoved state and considered deceased or moved back into the \textbf{S}usceptible
-state if it survived the infection. The \textbf{S}usceptible state will be split into two
-substates: nodes that never were infected before nad nodes that were put back into it after
-being infected at least once. This allows for different infectiousness values $p_I$ for the
+disease has a mortality rate $f$ that determines whether a node is moved into the 
+\textbf{R}emoved state and considered dead or moved back into the \textbf{S}usceptible
+state if it survived the infection. The \textbf{S}usceptible state is split into two
+substates: nodes that have never been infected before and nodes that have been put back into it after being infected at least once. This allows for different infectiousness values $p_I$ for the
 first infection of a node and $p_r$ for reinfections. 
 
-The $t_I$ parameter will be split into two new parameters $t_{min}$ the minimum time an infection takes
-before the node can be cured and $t_\rho$ the probability a node is cured from its infection
+The $t_I$ parameter will be split into two new parameters: $t_{min}$ the minimum time an infection lasts before the node can be cured and $t_\rho$ the probability a node is cured from its infection
 after the minimum time $t_{min}$ has elapsed. This results in four states so far:
 
 \begin{itemize}
     \item Healthy: Susceptible nodes that were never infected before. They are at risk of being
     infected by their neighbors with a probability of $p_I$
     \item Infected: Nodes that are currently infected. The infection duration is least $t_{min}$ cycles and
-    the exact duration is determiend by the probability $t_\rho$. After the infection ended the
+    the exact duration is determined by the probability $t_\rho$. After the infection ended the
     node is moved into the cured state with probability $1-f$ or into the deceased state with
     probability $f$.
     \item Cured: Nodes that were infected but survived. They are at risk of being
@@ -139,18 +135,16 @@ after the minimum time $t_{min}$ has elapsed. This results in four states so far
     and can not infect others anymore.
 \end{itemize}
 
-The infectiousness of a disease usually changes over the duration of the infections. In most
-cases an infected person is most likely to infect other during the first few days of contracting
-a disease. This should also be represented in the custom model. Thus the $p_I$ and $p_r$ values
-need to change with the time a node has been infected $t_c$. These time dependant probabilities
+The infectiousness of a disease usually changes over the course of the infection. In most
+cases, an infected person is most likely to infect others during the first few days of contracting
+the disease. This should also be represented in the custom model. Thus, the values of $p_I$ and $p_r$ need to change with the time $t_c$ for which a node has been infected. These time-dependent probabilities
 will be called $p_I^t$ and $p_r^t$. A healthy node now has a probability of $p_I^t$ to
-be infected by another node that is infected since $t$ cycles. Analogue a cured node 
+be infected by another node that has been infected since $t$ cycles. Analogously, a cured node 
 now has a probability of $p_r^t$.
 
-Another part of epidemics that is not represented in the SIR or SIS Model is vaccines.
-During the course of an epidemic vaccines may be used which decrease the fatality rate
-for infected persons and decrease the likelyhood for vaccinated person to be infected with
-the disease. To incorporate this in the custom model two new states for nodes are added:
+Another part of epidemics that is not represented in the SIR or SIS Model are vaccines.
+During the course of an epidemic, vaccines can be used to reduce the fatality rate
+for infected persons and reduce the likelihood that vaccinated persons will contract the disease. To accommodate this in the custom model, two new node states are added:
 \begin{itemize}
     \item Vaccinated: Nodes that are vaccinated and now have a probability of getting infected
     of $p_v^t$ and a fatality rate of $f_v$.
@@ -170,18 +164,17 @@ in both directions.
 
 The network model used in this custom model organizes the nodes of one social circle in groups
 to more clearly organize the network for more visual clarity. Each group can be 
-considered a small-world %TODO ref
-contact network were the nodes in each group are a localized part
+considered a small-world contact network were the nodes in each group are a localized part
 of the network that is highly connected with fewer connections to other groups.
 
 \section{Characteristics of epidemics}
 \subsection{Oscillating diseases}
-As explained by Easley and Kleinberg \cite{networks} diseases with certain characteristics
-can cause an oscillating amount of infection. Consider a network with multiple highly
-connected groups that have only have a few connections between the groups. If a disease
+As Easley and Kleinberg \cite{networks} explain, diseases with certain characteristics
+can cause an oscillating number of infections. Consider a network with several highly
+connected groups that have have few connections between the groups. If a disease
 with a very high infection probability $p\geq0.9$, a period of immunity $i > 0$ and a
-fatality rate close to zero breaks out in such a network, the infection amount will osciallate.
-An example how the number of infections could evolve over time can be seen in figure 
+fatality rate close to zero breaks out in such a network, the umber of infections will oscillate.
+An example of how the number of infections might evolve over time can be seen in figure 
 \ref{fig:oscillation}.
 \begin{figure}
     \centering
@@ -191,21 +184,19 @@ An example how the number of infections could evolve over time can be seen in fi
     \label{fig:oscillation}
 \end{figure}
 
-This happens because due to the high infectiousness of the disease almost all nodes of 
-a group that has at least one infected node will be infected within a few cycles. Because
-almost all nodes are infected after only a few cycles there are only a few new infections 
-in the next cycles because of the sparse set of available healthy nodes. If the initial
-wave started at cycle $c$ then at cycle $c' = c + t_i + i$ the nodes of the first wave 
-are susceptible to infection again. Thus the amount of possible targets for new infections
-increases drastically which causes the new infections to also rise again. This results in 
-the oscillation of the amount of new infections.
+This happens because due to the high infectiousness of the disease, almost all nodes in 
+a group that has at least one infected node will be infected within a few cycles. Since
+almost all nodes are infected after only a few cycles, there are only a few new infections 
+in the next cycles due to the sparse set of available healthy nodes. If the initial
+wave started at cycle $c$, then at cycle $c' = c + t_i + i$ the nodes of the first wave 
+are susceptible to infection again. This drastically increases the number of possible targets for new infections, which in turn increases the number of new infections again. This results in 
+the oscillation of the number of new infections.
 
-Such a scenario can be modeled with the created tool. The network consists of 5 groups of 2,000 nodes
-each having a lot of inner group connections (5 per node) and only a small amount of connections to the
+Such a scenario can be modeled with the created tool. The network consists of 5 groups with 2,000 nodes each. The groups have a lot of intra-group connections (5 per node) and only a small number of connections to the
 other groups. Each group is connected to two other groups with 1 edge per node and it is ensured that
-all groups have a connection to all other groups.
+all groups have a path to all other groups.
 
-The disease that will be simulated in this network has a infection rate of 0.2, a fatality
+The disease that will be simulated in this network has an infection rate of 0.2, a fatality
 rate of 0, a infection duration of 5 cycles and a immunity period of 3 cycles. For simplicity
 the reinfection rate is the same as the initial infection rate and no vaccinations are used.
 
@@ -248,18 +239,17 @@ the reinfection rate is the same as the initial infection rate and no vaccinatio
     \label{fig:osc_network}
 \end{figure*}
 
-Initially 2 random nodes will be infected with the disease. Figure \ref{osc_network}
+Initially, 2 random nodes are infected with the disease. Figure \ref{osc_network}
 shows the state of the network after 0, 12, 18 and 24 cycles.
-The amount of infections over time can be seen in figure \ref{fig:oscillation_p02}
-which clearly shows the oscillating nature of this disease. Over time the amplitude of the
-waves decreases, as the amount of people infected at the same time and thus getting cured
-at the same time decreases so the infections are no longer synced and each cycle the same
-amount of new nodes that can be infected becomes available. This happens because the
+The number of infections over time can be seen in figure \ref{fig:oscillation_p02}
+which clearly shows the oscillatory nature of this disease. Over time, the amplitude of the
+waves decreases, as the number of people infected at the same time and thus getting cured
+at the same time decreases, so the infections are no longer synchronized and each cycle has the same number of new nodes available to be infected. This happens because the
 infection rate was too low. The disease was not able to explosively infect all new nodes
-as soon as they became available which is why some nodes stayed uninfected for 2-3 cycles
-thus shifting their cure time and breaking the oscillation. Increasing the infection rate
-to $p = 0.3$ prevents this as now the disease spreads fast enough to instantly infect each
-available node. The result of this is shown in figure \ref{fig:oscillation_p03}.
+as soon as they became available, so some nodes remained uninfected for 2-3 cycles,
+shifting their cure time and breaking the oscillation. Increasing the infection rate
+to $p = 0.3$ prevents this, as the disease now spreads fast enough to infect every
+available node immediately. The result of this is shown in figure \ref{fig:oscillation_p03}.
 
 \begin{figure}
     \centering
@@ -275,10 +265,10 @@ available node. The result of this is shown in figure \ref{fig:oscillation_p03}.
     \label{fig:oscillation_p03}
 \end{figure}
 
-Now the same network is used but the infection rate of the disease is decrease to 0.1.
-Because the desease is now not spreading as explosively as before it always has enough targets
+Now the same network is used but the infection rate of the disease is decreased to 0.1.
+Because the disease is now not spreading as explosively as before it always has enough targets
 to infect until the previously infected nodes become cured again. Thus the amount of new 
-infections is more consistent as seen in figure \ref{fig:no_oscillation}.
+infections is more consistent and does not oscillate as seen in figure \ref{fig:no_oscillation}.
 
 \begin{figure}
     \centering
@@ -289,7 +279,7 @@ infections is more consistent as seen in figure \ref{fig:no_oscillation}.
 
 Another way to break the oscillation is to keep $p=0.3$ but decrease the duration of the infection to 2 cycles 
 and remove the immunity period. Now the infected nodes become cured so fast that there are
-enough new nodes to infect for every cycle thus again resulting in a relatively consistent
+enough new nodes to infect for every cycle, again resulting in a relatively consistent
 amount of new infections as indicated in figure \ref{fig:no_oscillation2}
 
 \begin{figure}
@@ -301,35 +291,32 @@ amount of new infections as indicated in figure \ref{fig:no_oscillation2}
 
 \subsection{Epidemics without diseases}
 Diseases are not the only thing that is capable of spreading through social networks. As
-previously mentioned computer viruses spread in a similar pattern. However there are other
+previously mentioned computer viruses spread in a similar pattern. However, there are other
 completely different things that can spread in social networks in a similar way.
-Information for example can be modeled using a very similar approach to the one proposed
-for diseases. Information can be passed from person to person whenever they talk to each other
-be that over a long distance through things like text messages or by meeting in person.
+Information, for example, can be modeled using a very similar approach to the one proposed
+for diseases. Information can be passed from person to person whenever they talk to each other,
+be it over a long distance through things like text messages or by meeting in person.
 
 Other things that can spread through social networks include traditions or certain habits.
-Looking at the world people within each country come into contact with other people from the
-same country much more frequently than with people from other countries. This means each
+Looking at the world, people within each country are much more likely to interact with other people from the same country than with people from other countries. This means each
 country can be modeled as a highly connected group of people with few connections to other
 countries. This model can be used to explain how each country has its own traditions that
 differ from other countries the further away they are. Traditions spread easily within 
-a country but the further away a country is the less likely the tradition is to spread to it.
-As there are only few connections to other countries foreign traditions which only spread there
-rarely are drowned out by the explosively spreading regional traditions of the country.
+a country, but the further away a country is, the less likely the tradition is to spread to that country.
+Because there are few connections to other countries, foreign traditions rarely spread to other countries and if they do, they are drowned out by the explosively spreading regional traditions of the other country.
 
-These models can also be used to model genetical inheritance. As suggested by
+These models can also be used to model genetic inheritance. As suggested by
 Easley and Kleinberg \cite{networks} this can be done by connecting parents to their offspring.
-Then simulations can be run to show the spreading of different genetical factors throughout
-the ancestry trees. This type simulation itself offers a lot of areas that can be expanded
-on to create various simulations relevant to understanding human history and origin. 
-It can also be used to indicate and visualize the existance of common ancestors and 
-can give an idea of how many generations it takes to reach those. One such model that deals
+Simulations can then be run to show the spreading of various genetic factors through
+the ancestry trees. This type of simulation itself offers many areas that can be expanded
+to create various simulations relevant to understanding human history and origins. 
+It can also be used to indicate and visualize the existence of common ancestors and 
+can give an idea of how many generations it takes to reach them. One such model that deals
 with genetics and common ancestors is the Wright-Fisher Model. Haller and Messer \cite{genetics}
-go into more detail how this model and the genetic simulation works. Genetic simulations 
-and the Wright-Fisher Model are a big research area themselfes there are various other
-works that talk about those topics, explaining the mathematics behind those models, 
+go into more detail on how this model and the genetic simulation work. Genetic simulation 
+and the Wright-Fisher Model are a large research area in themselves, there are several other
+works that discuss these topics, explain the mathematics behind those models, 
 possible uses etc. \cite{genetics2} \cite{genetics3} \cite{genetics4}.
 
 
-This shows how the use of epidemics and social networks goes way beyond just diseases and
-can help us understand complex relations in various different areas of research.
+These different applications shows how the use of epidemics and social networks goes way beyond modeling diseases and can help understand complex relations in various different areas of research.
