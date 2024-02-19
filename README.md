@@ -28,7 +28,8 @@ source ./venv/bin/activate
 pip install -r ./requirements.txt
 ```
 
-##ä Running the file
+### Running the file
+After activating the virtual environment, start the python script ```App.py```
 ```bash
 python App.py
 ```
