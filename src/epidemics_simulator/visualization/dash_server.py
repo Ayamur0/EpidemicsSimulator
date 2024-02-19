@@ -56,15 +56,18 @@ class DashServer:
         def update():
             try:
                 json_data = request.get_json()
-                project = Project.from_dict(json_data)
-                project.network.build()
-                graph.update_network(project.network)
+                generate = json_data.generate
+                project = Project.from_dict(json_data.data)
+                if generate:
+                    project.network.build()
+                    graph.update_network(project.network)
                 html_view.reset()
                 sim_view.project = project
                 sim_view.reset()
                 stats_view.project = project
                 stats_view.reset()
-                graph.build()
+                if generate:
+                    graph.build()
                 html_view.needs_build = True
                 sim_view.needs_build = True
                 stats_view.needs_build = True
@@ -80,4 +83,6 @@ class DashServer:
             stats_view.needs_build = True
             return make_response(jsonify({"status": "OK"}), 200)
 
-        app.run(debug=False, use_reloader=True) # Changed from debug=True to be able to start the server from an .exe
+        app.run(
+            debug=False, use_reloader=True
+        )  # Changed from debug=True to be able to start the server from an .exe
