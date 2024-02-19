@@ -28,6 +28,11 @@ source ./venv/bin/activate
 pip install -r ./requirements.txt
 ```
 
+##ä Running the file
+```bash
+python App.py
+```
+
 ## Usage
 
 The GUI has five different tabs, each with a different functionality for creating/simulating/analyzing an epidemic.
