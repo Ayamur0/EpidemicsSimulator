@@ -97,7 +97,7 @@ class UiGroupEdit(QObject):
         self.group_buttons[new_group.id].click()
         
     def remove_group(self, group: NodeGroup):
-        message = UiWidgetCreator.show_qmessagebox(f'Are you sure you want to delete group {group.name}?', 'Group deletion')
+        message = UiWidgetCreator.show_qmessagebox(f'Are you sure you want to delete group {group.name}?', 'Delete Group')
         result = message.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return
@@ -169,7 +169,7 @@ class UiGroupEdit(QObject):
             group = self.parent.change_network(self.network, ADD_ACTION, group, update_dict)
             if not group:
                 return # Should not happen
-            success_message = "Successfully added."
+            success_message = "Successfully created."
         else:
             group = self.parent.change_network(self.network, UPDATE_ACTION, group, update_dict)
             success_message = "Successfully saved."

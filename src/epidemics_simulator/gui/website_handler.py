@@ -7,8 +7,6 @@ import requests
 import os
 import sys
 
-import urllib3
-
 
 class WorkerSignals(QObject):
     server_startet: pyqtSignal = pyqtSignal(subprocess.Popen)
@@ -23,7 +21,8 @@ class StartServer(QRunnable):
         self.server_url = url
         self.signal = signal
         
-        self.exe_path = os.path.join(os.getcwd(), 'webview', 'launch_webview.exe')     
+        self.exe_path = os.path.join(os.getcwd(), 'webview', 'launch_webview.exe')    
+        self.bin_path = os.path.join(os.getcwd(), 'webview', 'launch_webview')   
         
     def run(self):
         try:
@@ -33,13 +32,17 @@ class StartServer(QRunnable):
                 self.signal.server_connected.emit()
                 print("Server already running.")
                 return
-        except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
+        except requests.exceptions.ConnectionError:
+            pass
+        except requests.exceptions.ReadTimeout:
             pass
         try:
             creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
-            
             if os.path.exists(self.exe_path):
                 print('Starting server from .exe')
+                execution_command = self.exe_path
+            elif os.path.exists(self.bin_path): # TODO check if it works with binary.
+                print('Starting server from binary')
                 execution_command = self.exe_path
             else:
                 print('Starting server from .py')
@@ -183,8 +186,8 @@ class WebsiteHandler(QObject):
         print("Connection established.")
         self.is_checking_connection = False
         self.is_connected = True
-        self.parent.push_to_dash()
-        self.parent.show_webviews.emit(True)
+        self.parent.enable_webviews(True)
+        # self.parent.push_to_dash() TODO or should i push the data directly to the server? # If so it could leed to errors because the server is still processing the inital push and if a second push comes it delays the building of the netowkr?
         self.parent.remove_sender_from_threads(self.sender())
 
     @pyqtSlot(str, dict)

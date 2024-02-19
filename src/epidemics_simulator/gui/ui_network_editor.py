@@ -137,22 +137,22 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if os.path.exists(does_file_exist) and os.path.isfile(does_file_exist):
             return True
         return False
-                
+    
     @pyqtSlot(int)
     def new_network(self, template_id=None):
         print(f'New Network {template_id}')
         
         if self.unsaved_changes and self.ask_to_save():
             return
-        folder_path, folder_name = UiWidgetCreator.open_folder(self)
+        folder_path, folder_name = UiWidgetCreator.open_folder(self, 'Select New Project Folder')
         if not folder_path:
             return False
-        if template_id:
+        if template_id is not None:
             network = templates[template_id]
         else:
             network = Network()
         if self.does_network_exist(folder_path):
-            msg_box  = UiWidgetCreator.show_qmessagebox('A network file already exists in the directory.\nDo you want to override it?',  'Network already exists', default_button=0)
+            msg_box  = UiWidgetCreator.show_qmessagebox('A network file already exists in the directory.\nDo you want to override it?',  'Network Already Exists', default_button=0)
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
@@ -175,11 +175,11 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def open_network(self):       
         if self.unsaved_changes and self.ask_to_save():
             return
-        folder_path, _ = UiWidgetCreator.open_folder(self)
+        folder_path, _ = UiWidgetCreator.open_folder(self, 'Select Project Folder')
         if not folder_path:
             return False
         if not self.does_network_exist(folder_path):
-            msg_box  = UiWidgetCreator.show_qmessagebox('No network found in the directory.',  'No network found', only_ok=True)
+            msg_box  = UiWidgetCreator.show_qmessagebox('No network found in the directory.',  'No Network Found', only_ok=True)
             _ = msg_box.exec_()
             return
         
@@ -232,15 +232,17 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
 
     
     @pyqtSlot(bool)
-    def enable_webviews(self, status: bool):
+    def enable_webviews(self, status: bool, also_statistic:bool = True):
         if not status or not self.website_handler.is_connected:
             self.network_edit_tab.hide_webview()
             self.simulation_tab.hide_webview()
-            self.statistics_tab.hide_webview()
+            if also_statistic:
+                self.statistics_tab.hide_webview()
         else:
             self.network_edit_tab.show_webview()
             self.simulation_tab.show_webview()
-            self.statistics_tab.show_webview()
+            if also_statistic:
+                self.statistics_tab.show_webview()
     @pyqtSlot(int)
     def on_tab_change(self, index):
         network_change = self.network_edit_tab.changes_in_network
@@ -264,7 +266,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def ask_for_regeneration(self):
         if len(self.project.network.groups) == 0:
             return False
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build jet.\nDo you want to build the network?', 'Build the network', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build yet.\nDo you want to build the network?', 'Build the Network', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return False
@@ -274,7 +276,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def ask_for_reset(self):
         if len(self.project.network.groups) == 0:
             return
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Diseases chagned do you want to restart the simulation?', 'Restart simulation', default_button=0)
+        msg_box  = UiWidgetCreator.show_qmessagebox(f'Diseases chagned do you want to restart the simulation?', 'Restart Simulation', default_button=0)
         result = msg_box.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return 

@@ -207,9 +207,10 @@ class UiWidgetCreator:
         else:  # msg_box.clickedButton() == cancel_button
             return QtWidgets.QMessageBox.Cancel
     
-    def open_folder(window) -> str:
-        # options = QtWidgets.QFileDialog.Options()
-        folder_path = QtWidgets.QFileDialog.getExistingDirectory(window, "Select Folder")
+    def open_folder(window, title_string: str) -> str:
+        options = QtWidgets.QFileDialog.Options()
+        home_directory = os.path.expanduser("~")
+        folder_path = QtWidgets.QFileDialog.getExistingDirectory(window, title_string, home_directory, options=options)
         return folder_path, os.path.basename(folder_path)
     
     def create_generate_popup(parent, content: str='Building...') -> QtWidgets.QDialog:
@@ -344,7 +345,7 @@ class SaveStatDialog(QtWidgets.QDialog):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         current_datetime = datetime.now()
         formatted_datetime = current_datetime.strftime("%Y-%m-%d %H-%M-%S")
-        self.setWindowTitle("Save simulation stats")
+        self.setWindowTitle("Save Simulation Stats")
         
         self.label = UiWidgetCreator.create_qlabel('Simulation name: ', 'saveStats', style_sheet="""background: transparent;""")
         self.line_edit = UiWidgetCreator.create_input_line_edit(str(formatted_datetime), regex_validator='*', color='rgb(80, 80, 80)')

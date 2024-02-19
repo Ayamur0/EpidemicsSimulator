@@ -173,7 +173,7 @@ class UiTextSimulationTab:
         self.worker_signals.update_speed.emit(STOP_SIMULATION)
         
     def no_network_group(self):
-        message = UiWidgetCreator.show_qmessagebox(f'Network currently has no groups.', 'No groups in network', only_ok=True)
+        message = UiWidgetCreator.show_qmessagebox(f'Network currently has no groups.', 'No Network Groups', only_ok=True)
         _ = message.exec_()
         return
     def simulation_was_run(self):
@@ -237,7 +237,7 @@ class UiTextSimulationTab:
             return
         is_valid, reason = SimStats.is_valid_file_name(name)
         if not is_valid:
-            msg_box = UiWidgetCreator.show_qmessagebox(reason, 'Invalid filename', only_ok=True)
+            msg_box = UiWidgetCreator.show_qmessagebox(reason, 'Invalid Filename', only_ok=True)
             msg_box.exec_()
             return
             
