@@ -28,6 +28,12 @@ source ./venv/bin/activate
 pip install -r ./requirements.txt
 ```
 
+### Running the file
+After activating the virtual environment, start the python script ```App.py```
+```bash
+python App.py
+```
+
 ## Usage
 
 The GUI has five different tabs, each with a different functionality for creating/simulating/analyzing an epidemic.
