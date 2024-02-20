@@ -60,7 +60,7 @@ class UiDisplayGroup(QObject):
     def init_ui(self, project: Project):
         self.project = project
         self.network = project.network
-        self.stat_label.setText("Graph building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s")
+        self.stat_label.setText("Graph-building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s")
         self.webview.hide()
         try:
             self.generate_button.clicked.disconnect()
@@ -71,7 +71,7 @@ class UiDisplayGroup(QObject):
         
     def start_generating(self):
         if self.generated_once and not self.parent.changes_in_network and not self.main_window.disease_edit_tab.disease_changed:
-            msg_box = UiWidgetCreator.show_qmessagebox("Network did not change.\nDo you want to build again?", "Building Betwork")
+            msg_box = UiWidgetCreator.show_qmessagebox("The network did not change.\nDo you want to build again??", "Building Betwork")
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
@@ -118,7 +118,7 @@ class UiDisplayGroup(QObject):
         self.webview.reload()
         
     def refresh_info_label(self, generation_time: float):
-        label_text = f"Graph building stats\n"
+        label_text = f"Graph-building stats\n"
         total_nodes, total_connections = self.get_network_info()
         label_text += f"Total nodes {total_nodes}\n"
         label_text += f"Total connections {total_connections}\n"
@@ -157,6 +157,6 @@ class UiDisplayGroup(QObject):
         self.generated_once = False
         self.generation_in_progress = False
         
-        self.stat_label.setText("Graph building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s")
+        self.stat_label.setText("Graph-building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s")
         self.webview.hide()
         
