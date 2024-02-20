@@ -56,8 +56,8 @@ class DashServer:
         def update():
             try:
                 json_data = request.get_json()
-                generate = json_data.generate
-                project = Project.from_dict(json_data.data)
+                generate = json_data['generate']
+                project = Project.from_dict(json_data['data'])
                 if generate:
                     project.network.build()
                     graph.update_network(project.network)

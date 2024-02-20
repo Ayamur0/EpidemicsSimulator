@@ -12,7 +12,7 @@ class UiStartup(QtWidgets.QDialog):
         super(UiStartup, self).__init__()
         self.parent = parent
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
-        self.setWindowTitle('Epidemic Simulator')
+        self.setWindowTitle("Epidemic Simulator")
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.setStyleSheet(parent.styleSheet())
         self.setFixedSize(250, 400)
@@ -35,7 +35,7 @@ class UiStartup(QtWidgets.QDialog):
         
         self.setWindowIcon(self.window_icon)
         
-        self.button_style = 'border-radius: 0px;text-align: left;padding-left: 10px;'
+        self.button_style = "border-radius: 0px;text-align: left;padding-left: 10px;"
         
         self.button_size_policy = (QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding) 
         
@@ -56,9 +56,9 @@ class UiStartup(QtWidgets.QDialog):
     def main_buttons(self):
         self.parent.unload_items_from_layout(self.layout())
         self.layout().setAlignment(self.default_alignment)
-        new_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(' New', 'new_network_button', style_sheet=self.button_style, icon=self.new_icon)
-        new_from_template_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(' New from template', 'new_template_button', style_sheet=self.button_style, icon=self.template_icon)
-        open_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(' Open', 'open_network_button', style_sheet=self.button_style, icon=self.open_icon)
+        new_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(" New", "new_network_button", style_sheet=self.button_style, icon=self.new_icon)
+        new_from_template_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(" New from template", "new_template_button", style_sheet=self.button_style, icon=self.template_icon)
+        open_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(" Open", "open_network_button", style_sheet=self.button_style, icon=self.open_icon)
         
         new_button.setIconSize(self.icon_size)
         new_from_template_button.setIconSize(self.icon_size)
@@ -84,7 +84,7 @@ class UiStartup(QtWidgets.QDialog):
     def new_from_template(self):
         self.parent.unload_items_from_layout(self.layout())
         # self.layout().setAlignment(Qt.AlignTop)
-        back = UiWidgetCreator.create_qpush_button(None, 'back_button', style_sheet=self.button_style, icon=self.back_icon)
+        back = UiWidgetCreator.create_qpush_button(None, "back_button", style_sheet=self.button_style, icon=self.back_icon)
         back.setFont(self.font)
         back.setIconSize(QSize(32, 32))
         back.setSizePolicy(*self.button_size_policy) 
@@ -92,7 +92,7 @@ class UiStartup(QtWidgets.QDialog):
         self.layout().addWidget(back)
         for i in range(0, len(templates)):
             template = templates[i]
-            template = UiWidgetCreator.create_qpush_button(template.name, 'new_network', style_sheet=self.button_style)
+            template = UiWidgetCreator.create_qpush_button(template.name, "new_network", style_sheet=self.button_style)
             template.setFont(self.font)
             template.setSizePolicy(*self.button_size_policy) 
             template.clicked.connect(partial(self.parent.new_project.emit, i))

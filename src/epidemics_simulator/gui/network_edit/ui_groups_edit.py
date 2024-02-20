@@ -18,7 +18,6 @@ class UiGroupEdit(QObject):
         self.save_group_prop_button = self.main_window.save_properties_btn
         
         self.group_list = self.main_window.group_list_content
-        self.group_prop = self.main_window.group_properties_content
 
         self.save_status = self.main_window.save_status
         self.porp_label = self.main_window.prop_label
@@ -56,19 +55,19 @@ class UiGroupEdit(QObject):
         self.load_groups()
         
     def load_groups(self):
-        self.group_buttons['-1'] = self.new_group_button
+        self.group_buttons["-1"] = self.new_group_button
         for group in self.network.groups:
             self.load_group_button(group)
             
     def load_group_button(self, group: NodeGroup):
-        layout_widget = UiWidgetCreator.create_qwidget('group_select', QtWidgets.QHBoxLayout)
+        layout_widget = UiWidgetCreator.create_qwidget("group_select", QtWidgets.QHBoxLayout)
         layout_widget.layout().setAlignment(Qt.AlignCenter)
         
-        checkbox = UiWidgetCreator.create_qcheckbox('activity_checkbox', group.active)
-        duplicate_button = UiWidgetCreator.create_qpush_button(None, 'duplicate_button', icon=self.main_window.duplicate_icon)
-        remove_button = UiWidgetCreator.create_qpush_button(None, 'delete_button', icon=self.main_window.remove_icon)
-        group_button = UiWidgetCreator.create_qpush_button(None, 'select_button', is_checkable=True, icon=self.main_window.edit_icon)
-        group_label = UiWidgetCreator.create_qlabel(group.name, 'group')
+        checkbox = UiWidgetCreator.create_qcheckbox("activity_checkbox", group.active)
+        duplicate_button = UiWidgetCreator.create_qpush_button(None, "duplicate_button", icon=self.main_window.duplicate_icon)
+        remove_button = UiWidgetCreator.create_qpush_button(None, "delete_button", icon=self.main_window.remove_icon)
+        group_button = UiWidgetCreator.create_qpush_button(None, "select_button", is_checkable=True, icon=self.main_window.edit_icon)
+        group_label = UiWidgetCreator.create_qlabel(group.name, "group")
         
         checkbox.stateChanged.connect(partial(self.set_group_activity, checkbox, group))
         duplicate_button.clicked.connect(partial(self.dupliacte_group, group))
@@ -97,7 +96,7 @@ class UiGroupEdit(QObject):
         self.group_buttons[new_group.id].click()
         
     def remove_group(self, group: NodeGroup):
-        message = UiWidgetCreator.show_qmessagebox(f'Are you sure you want to delete group {group.name}?', 'Delete Group')
+        message = UiWidgetCreator.show_qmessagebox(f"Are you sure you want to delete group {group.name}?", "Delete Group")
         result = message.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return
@@ -115,7 +114,7 @@ class UiGroupEdit(QObject):
             self.main_window.deselect_other_buttons(group.id, self.group_buttons)
             properties = group.get_properties_dict()
         else:
-            self.main_window.deselect_other_buttons('-1', self.group_buttons)
+            self.main_window.deselect_other_buttons("-1", self.group_buttons)
             properties = default_properties
         self.save_group_prop_button.show()
         line_edits = self.load_properties_input(properties)
@@ -138,10 +137,10 @@ class UiGroupEdit(QObject):
             
             widget: QtWidgets.QWidget = UiWidgetCreator.create_input_field_widget(color)
             self.porp_label.layout().addWidget(label)
-            regex_validator = '.*'
-            if key == 'vaccination rate' or key == 'max vaccination rate':
-                regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
-            elif key == 'color':
+            regex_validator = ".*"
+            if key == "vaccination rate" or key == "max vaccination rate":
+                regex_validator = "^0(\.\d+)?$|^1(\.0+)?$"
+            elif key == "color":
                 line_edit, color_button = UiWidgetCreator.create_qcolor_button(color, value)
                 label.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
                 widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
@@ -149,8 +148,8 @@ class UiGroupEdit(QObject):
                 widget.layout().addWidget(color_button)
                 self.prop_input.layout().addWidget(widget)
                 continue
-            elif key != 'name':
-                regex_validator = '^(?!10000001$)[0-9]{1,8}$'# Only allows numbers that are below 10 Million
+            elif key != "name":
+                regex_validator = "^(?!10000001$)[0-9]{1,8}$"# Only allows numbers that are below 10 Million
             line_edit: QtWidgets.QLineEdit = UiWidgetCreator.create_input_line_edit(value, regex_validator, color)
             widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
             label.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
@@ -160,10 +159,10 @@ class UiGroupEdit(QObject):
         return line_edits
     def save_group_properties(self, group: Union[NodeGroup, None], line_edits: dict):
         update_dict = {key: line_edits[key].text() for key in line_edits.keys()}
-        if update_dict['average intra group edges'] < update_dict['delta intra group edges']:
-            UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", 'error_message', True, is_row=False)
-        if any(value == '' for value in update_dict.values()):
-            UiWidgetCreator.show_message(self.save_status, "Please fill out every input.", 'error_message', True, is_row=False)
+        if update_dict["average intra group edges"] < update_dict["delta intra group edges"]:
+            UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", "error_message", True, is_row=False)
+        if any(value == "" for value in update_dict.values()):
+            UiWidgetCreator.show_message(self.save_status, "Please fill out every input.", "error_message", True, is_row=False)
             return
         if not group:
             group = self.parent.change_network(self.network, ADD_ACTION, group, update_dict)
@@ -178,19 +177,19 @@ class UiGroupEdit(QObject):
         self.load_groups()
         self.parent.network_changed.emit()
         self.group_buttons[group.id].click()
-        UiWidgetCreator.show_message(self.save_status, success_message, "success_message", True, is_row=False, content_of_last_label='color')
+        UiWidgetCreator.show_message(self.save_status, success_message, "success_message", True, is_row=False, content_of_last_label="color")
         
         
     def create_new_group(self):
-        self.main_window.deselect_other_buttons('-1', self.group_buttons)
+        self.main_window.deselect_other_buttons("-1", self.group_buttons)
         if self.is_creating_group:
             return
         self.unload_group_properties()
         self.is_creating_group = True
         
         default_dict = {
-            "name": 'NodeGroup',
-            "color": '',
+            "name": "NodeGroup",
+            "color": "",
             "member count": 100,
             "average intra group edges": 4,
             "delta intra group edges": 2,
@@ -217,6 +216,6 @@ class UiGroupEdit(QObject):
             
     def unload(self):
         self.is_creating_group = False
-        self.main_window.deselect_other_buttons('None', self.group_buttons)
+        self.main_window.deselect_other_buttons("None", self.group_buttons)
         self.unload_group_list()
         self.unload_group_properties()

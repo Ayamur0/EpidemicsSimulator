@@ -41,7 +41,7 @@ class StartServer(QRunnable):
             if os.path.exists(self.exe_path):
                 print('Starting server from .exe')
                 execution_command = self.exe_path
-            elif os.path.exists(self.bin_path): # TODO check if it works with binary.
+            elif os.path.exists(self.bin_path):
                 print('Starting server from binary')
                 execution_command = self.bin_path
             else:
@@ -105,15 +105,12 @@ class PushToDash(QRunnable):
             response = requests.post(self.url, json=self.data)
 
             # Check the response
-            if response.status_code == 200:
-                print("POST request successful")
-            else:
+            if response.status_code != 200:
                 print(f"POST request failed with status code {response.status_code}")
                 print(response.json())
                 print(self.data)
         except requests.ConnectionError:
             self.signal.server_not_responding.emit()
-            pass
         except Exception as e:
             print(f"An error occurred: {e}")
         self.signal.server_updated.emit()
@@ -187,7 +184,7 @@ class WebsiteHandler(QObject):
         self.is_checking_connection = False
         self.is_connected = True
         self.parent.enable_webviews(True)
-        # self.parent.push_to_dash() TODO or should i push the data directly to the server? # If so it could leed to errors because the server is still processing the inital push and if a second push comes it delays the building of the netowkr?
+        self.parent.push_to_dash(build=False) 
         self.parent.remove_sender_from_threads(self.sender())
 
     @pyqtSlot(str, dict)
@@ -195,13 +192,16 @@ class WebsiteHandler(QObject):
         if not self.is_connected:
             return
         url = urljoin(self.base_url, sub_url)
-        print("Starting to push data to dash.")
+        if 'generate' in data.keys() and data['generate']:
+            print("Building on dash.")
+        else:
+            print("Updating dash data.")
         thread = PushToDash(data, url, self.worker_signals)
         self.thread_pool.start(thread)
 
     @pyqtSlot()
     def data_updated(self):
-        print("Data pushed to dash.")
+        print("Finshed pushing to dash.")
 
     @pyqtSlot()
     def kill_server(self):

@@ -18,7 +18,6 @@ class UiDiseaseEditTab(QObject):
         self.disease_layout_list = []
         self.min_frame_size = (380, 550)
                 
-        self.tab_widget = self.parent.disease_edit
         self.is_creating_disease = False
         self.disease_changed = False
         
@@ -37,7 +36,7 @@ class UiDiseaseEditTab(QObject):
         self.load_inputs()
         
     def load_inputs(self):
-        self.line_edits: dict = {'healty': self.network.healthy_color, 'cured': self.network.cured_color, 'vaccinated': self.network.vaccinated_color, 'deceased': self.network.deceased_color}
+        self.line_edits: dict = {"healty": self.network.healthy_color, "cured": self.network.cured_color, "vaccinated": self.network.vaccinated_color, "deceased": self.network.deceased_color}
         self.load_add_disease_input()
         for disease in self.network.diseases:
             self.load_disease(disease)
@@ -48,7 +47,7 @@ class UiDiseaseEditTab(QObject):
         for typ, line_edit in self.line_edits.items():
             color = self.parent.create_alternate_line_color(i)
             i += 1
-            label = UiWidgetCreator.create_input_label(f'{typ} color', color)
+            label = UiWidgetCreator.create_input_label(f"{typ} color", color)
             widget = UiWidgetCreator.create_input_field_widget(color)
             line_edit, color_button = UiWidgetCreator.create_qcolor_button(color, line_edit)
             self.line_edits[typ] = line_edit
@@ -60,7 +59,7 @@ class UiDiseaseEditTab(QObject):
             line_edit.textChanged.connect(lambda: self.update_type_colors())
             line_edit.textChanged.connect(lambda: self.disease_change_singal.emit())
             
-        self.add_disease_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'add_button', icon=self.parent.add_icon)
+        self.add_disease_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, "add_button", icon=self.parent.add_icon)
         self.add_disease_button.clicked.connect(lambda: self.add_disease())
         button_widget.layout().addWidget(self.add_disease_button)
         base_widget.setFixedSize(*self.min_frame_size)
@@ -86,21 +85,21 @@ class UiDiseaseEditTab(QObject):
         button_widget = self.create_input_buttons(line_edits, disease, save_widget)
         base_widget.layout().addWidget(button_widget, alignment=Qt.AlignBottom)
         if default_properties:
-            line_edits['name'].setFocus()
+            line_edits["name"].setFocus()
         else:
             base_widget.setFocus()
     
     def create_input_buttons(self, line_edits, disease, form_widget):
-        layout_widget = UiWidgetCreator.create_qwidget('handle_input_layout', QtWidgets.QHBoxLayout)
-        save_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'add_button', icon=self.parent.save_icon)
+        layout_widget = UiWidgetCreator.create_qwidget("handle_input_layout", QtWidgets.QHBoxLayout)
+        save_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, "add_button", icon=self.parent.save_icon)
         save_button.clicked.connect(partial(self.save_disease, disease, line_edits, form_widget))
         
-        delete_button = UiWidgetCreator.create_qpush_button(None, 'delete_button', icon=self.parent.remove_icon)
+        delete_button = UiWidgetCreator.create_qpush_button(None, "delete_button", icon=self.parent.remove_icon)
         delete_button.clicked.connect(partial(self.delete_disease, disease))
         
         layout_widget.layout().addWidget(delete_button)
         if disease:
-            duplicate_button = UiWidgetCreator.create_qpush_button(None, 'duplicate_button', icon=self.parent.duplicate_icon)
+            duplicate_button = UiWidgetCreator.create_qpush_button(None, "duplicate_button", icon=self.parent.duplicate_icon)
             duplicate_button.clicked.connect(partial(self.duplicate_disease, disease))
 
             layout_widget.layout().addWidget(duplicate_button)
@@ -116,10 +115,10 @@ class UiDiseaseEditTab(QObject):
             label = UiWidgetCreator.create_input_label(key, color)
             label_widget.layout().addWidget(label)
             widget = UiWidgetCreator.create_input_field_widget(color)
-            regex_validator = '^0(\.\d+)?$|^1(\.0+)?$'
-            if key == 'name':
-                regex_validator = '.*'
-            elif key == 'color':
+            regex_validator = "^0(\.\d+)?$|^1(\.0+)?$"
+            if key == "name":
+                regex_validator = ".*"
+            elif key == "color":
                 line_edit, color_button = UiWidgetCreator.create_qcolor_button(color, value)
                 line_edits[key] = line_edit
                 widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, color_button, True)
@@ -127,8 +126,8 @@ class UiDiseaseEditTab(QObject):
                 widget.layout().addWidget(color_button)
                 input_widget.layout().addWidget(widget)
                 continue
-            elif key == 'initial infection count' or key == 'duration' or key == 'immunity period':
-                regex_validator = '^(?!10000001$)[0-9]{1,8}$ '# Only allows numbers that are below 10 Million (amount of nodes cant exceed 10 Mil)
+            elif key == "initial infection count" or key == "duration" or key == "immunity period":
+                regex_validator = "^(?!10000001$)[0-9]{1,8}$ "# Only allows numbers that are below 10 Million (amount of nodes cant exceed 10 Mil)
             line_edit = UiWidgetCreator.create_input_line_edit(value, regex_validator, color)
             line_edits[key] = line_edit
             widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
@@ -137,14 +136,14 @@ class UiDiseaseEditTab(QObject):
             
             input_widget.layout().addWidget(widget)
         if is_success_save:
-            UiWidgetCreator.show_message(save_widget, "Successfully created.", 'success_message', True, is_row=False)
+            UiWidgetCreator.show_message(save_widget, "Successfully created.", "success_message", True, is_row=False)
         return line_edits
     
     def update_type_colors(self):
-        self.network.set_healthy_color(self.line_edits['healty'].text())
-        self.network.set_cured_color(self.line_edits['cured'].text())
-        self.network.set_vaccinated_color(self.line_edits['vaccinated'].text())
-        self.network.set_deceased_color(self.line_edits['deceased'].text())
+        self.network.set_healthy_color(self.line_edits["healty"].text())
+        self.network.set_cured_color(self.line_edits["cured"].text())
+        self.network.set_vaccinated_color(self.line_edits["vaccinated"].text())
+        self.network.set_deceased_color(self.line_edits["deceased"].text())
         
     def add_disease(self):
         if self.is_creating_disease:
@@ -152,8 +151,8 @@ class UiDiseaseEditTab(QObject):
         self.add_disease_button.setDisabled(True)
         self.is_creating_disease = True
         default_dict = {
-            "name": 'Disease',
-            "color": '',
+            "name": "Disease",
+            "color": "",
             "fatality rate": 0.2,
             "vaccinated fatality rate": 0.05,
             "infection rate": 0.2,
@@ -169,22 +168,18 @@ class UiDiseaseEditTab(QObject):
         
     def save_disease(self, disease: Disease, line_edits: dict, save_widget):
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
-        if any(value == '' for value in updated_dict.values()):
-            UiWidgetCreator.show_message(save_widget, "Please fill out every input.", 'error_message', True, is_row=False)
+        if any(value == "" for value in updated_dict.values()):
+            UiWidgetCreator.show_message(save_widget, "Please fill out every input.", "error_message", True, is_row=False)
             return
         if disease:
             disease.set_from_dict(updated_dict)
-            UiWidgetCreator.show_message(save_widget, "Successfully saved.", 'success_message', True, is_row=False)
+            UiWidgetCreator.show_message(save_widget, "Successfully saved.", "success_message", True, is_row=False)
             self.disease_change_singal.emit()
             return
         else:
             disease = Disease.init_from_dict(updated_dict)
             self.network.add_disease(disease)
         self.delete_disease_from_layout_at(1)
-        #if len(self.disease_layout_list) == 1:
-        #    self.disease_layout_list.append(disease.id)
-        #else:
-        #    self.disease_layout_list[1] = disease.id
         self.is_creating_disease = False
         self.add_disease_button.setDisabled(False)
         self.load_disease(disease, is_success_save=True)
@@ -202,14 +197,14 @@ class UiDiseaseEditTab(QObject):
             self.is_creating_disease = False
             self.add_disease_button.setDisabled(False)
             return
-        message = UiWidgetCreator.show_qmessagebox(f'Are you sure you want to delete disease {disease.name}?', 'Delete Disease')
+        message = UiWidgetCreator.show_qmessagebox(f"Are you sure you want to delete disease {disease.name}?", "Delete Disease")
         result = message.exec_()
         if result != QtWidgets.QMessageBox.AcceptRole:
             return
         self.network.remove_disease(disease.id)
         index = self.get_disease_widget_position(disease.id)
         if not index:
-            print('Error occured that should not happen')
+            print("Error occured that should not happen.")
         self.delete_disease_from_layout_at(index)
         self.disease_change_singal.emit()
         

@@ -2,12 +2,11 @@ import os
 from typing import Type, Union
 from datetime import datetime
 from functools import partial
-from src.epidemics_simulator.storage import Network
 from src.epidemics_simulator.gui.templates import templates
 from PyQt5 import QtWidgets
 import random
 from PyQt5.QtCore import Qt, QRegExp, QTimer, QSize, QObject, QRect
-from PyQt5.QtGui import QRegExpValidator, QColor, QMovie, QPainter, QFontMetrics, QTextLayout
+from PyQt5.QtGui import QRegExpValidator, QColor, QMovie, QPainter, QFontMetrics
 
 
 class UiWidgetCreator:
@@ -63,7 +62,7 @@ class UiWidgetCreator:
             label.setStyleSheet(style_sheet)
         return label
     
-    def create_qline_edit(content: str, object_name: str, regex_validator = '.*', style_sheet=None) -> QtWidgets.QLineEdit:
+    def create_qline_edit(content: str, object_name: str, regex_validator = ".*", style_sheet=None) -> QtWidgets.QLineEdit:
         line_edit = QtWidgets.QLineEdit()
         line_edit.setObjectName(object_name)
         reg_ex = QRegExp(regex_validator)
@@ -90,10 +89,10 @@ class UiWidgetCreator:
             color_value_object = UiWidgetCreator.generate_random_color()
             color = UiWidgetCreator.convert_color_to_int_rgb_string(color_value_object)          
             
-        regex_validator = '^rgb\((0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\)$'
+        regex_validator = "^rgb\((0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\s*,\s*(0(\.\d+)?|1(\.0+)?|0\.\d+|0)\)$"
         float_color = UiWidgetCreator.convert_color_to_float_rgb_string(color_value_object)
         line_edit = UiWidgetCreator.create_input_line_edit(float_color, regex_validator, line_edit_color)
-        color_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, 'input', style_sheet=f'border-radius: 10px; background-color: {color};')
+        color_button: QtWidgets.QPushButton = UiWidgetCreator.create_qpush_button(None, "input", style_sheet=f"border-radius: 10px; background-color: {color};")
         color_button.setFixedHeight(20)
         color_button.setMinimumWidth(100)
         color_button.clicked.connect(partial(UiWidgetCreator.show_color_dialog, line_edit, color_button))
@@ -105,7 +104,7 @@ class UiWidgetCreator:
             color_string = UiWidgetCreator.convert_color_to_float_rgb_string(color)
             line_edit.setText(color_string)
             rgb_color = UiWidgetCreator.convert_color_to_int_rgb_string(color)
-            color_button.setStyleSheet(f'border-radius: 10px; background-color: {rgb_color};')
+            color_button.setStyleSheet(f"border-radius: 10px; background-color: {rgb_color};")
             
     def generate_random_color() -> QColor:
         red = random.randint(0, 255)
@@ -119,16 +118,16 @@ class UiWidgetCreator:
         green = min(color.green() / 255.0, 0.999)
         blue = min(color.blue() / 255.0, 0.999)
         
-        return f'rgb({red:.3f}, {green:.3f}, {blue:.3f})'
+        return f"rgb({red:.3f}, {green:.3f}, {blue:.3f})"
     
     def convert_color_to_int_rgb_string(color: QColor) -> str:
         red = color.red()
         green = color.green()
         blue = color.blue()
-        return f'rgb({red}, {green}, {blue})'
+        return f"rgb({red}, {green}, {blue})"
     
     def rgb_string_to_qcolor(rgb_string) -> QColor:
-        rgb_values = [float(value) for value in rgb_string[4:-1].split(',')]
+        rgb_values = [float(value) for value in rgb_string[4:-1].split(",")]
         rgb_int_values = [int(value * 255) for value in rgb_values]
         color = QColor(*rgb_int_values)
         return color
@@ -145,7 +144,7 @@ class UiWidgetCreator:
         QPushButton:checked {background: rgb(70, 120, 190);}
         QPushButton:default {border: 1; border-style: outset; border-color: rgba(70, 120, 190, 200);}
         """
-    def show_message(widget, content: str, object_name: str, remove_last_message: bool, is_row=True, content_of_last_label:str ='') -> None:
+    def show_message(widget, content: str, object_name: str, remove_last_message: bool, is_row=True, content_of_last_label:str ="") -> None:
         if remove_last_message:
             if  widget.layout():
                 last_item =  widget.layout().itemAt(widget.layout().count() - 1).widget()
@@ -168,15 +167,14 @@ class UiWidgetCreator:
         msg_box.setText(content)
         
         if only_ok:
-            ok_button = msg_box.addButton('Ok', QtWidgets.QMessageBox.AcceptRole)
+            ok_button = msg_box.addButton("Ok", QtWidgets.QMessageBox.AcceptRole)
             ok_button.setMinimumSize(100, 30)
             return msg_box
-        
-        yes_button = msg_box.addButton('Yes', QtWidgets.QMessageBox.AcceptRole)
+        yes_button = msg_box.addButton("Yes", QtWidgets.QMessageBox.AcceptRole)
         yes_button.setMinimumSize(100, 30)
-        cancel_button = msg_box.addButton('Cancel', QtWidgets.QMessageBox.RejectRole)
+        cancel_button = msg_box.addButton("No", QtWidgets.QMessageBox.RejectRole)
         cancel_button.setMinimumSize(100, 30)
-        
+
         if default_button == 0:
             msg_box.setDefaultButton(yes_button)
         elif default_button == 1:
@@ -188,16 +186,16 @@ class UiWidgetCreator:
         msg_box.setWindowFlags(msg_box.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         msg_box.setStyleSheet(UiWidgetCreator.message_box_qss)
         msg_box.setIcon(QtWidgets.QMessageBox.Question)
-        msg_box.setWindowTitle('Unsaved Changes Detected')
-        msg_box.setText('Do you want to save your changes before closing?')
-
-        save_button = msg_box.addButton('Save',QtWidgets.QMessageBox.AcceptRole)
-        save_button.setMinimumSize(100, 30)
-        no_button = msg_box.addButton('No',QtWidgets.QMessageBox.RejectRole)
-        no_button.setMinimumSize(100, 30)
-        cancel_button = msg_box.addButton('Cancel',QtWidgets.QMessageBox.RejectRole)
-        cancel_button.setMinimumSize(100, 30)
+        msg_box.setWindowTitle("Unsaved Changes Detected")
+        msg_box.setText("Do you want to save your changes before closing?")
         
+        save_button = msg_box.addButton("Save",QtWidgets.QMessageBox.AcceptRole)
+        save_button.setMinimumSize(100, 30)
+        no_button = msg_box.addButton("No",QtWidgets.QMessageBox.RejectRole)
+        no_button.setMinimumSize(100, 30)
+        cancel_button = msg_box.addButton("Cancel",QtWidgets.QMessageBox.RejectRole)
+        cancel_button.setMinimumSize(100, 30)
+
         msg_box.exec_()
 
         if msg_box.clickedButton() == save_button:
@@ -213,33 +211,23 @@ class UiWidgetCreator:
         folder_path = QtWidgets.QFileDialog.getExistingDirectory(window, title_string, home_directory, options=options)
         return folder_path, os.path.basename(folder_path)
     
-    def create_generate_popup(parent, content: str='Building...') -> QtWidgets.QDialog:
+    def create_generate_popup(parent, content: str="Building...") -> QtWidgets.QDialog:
         dialog = QtWidgets.QDialog(parent, flags=Qt.FramelessWindowHint)
         dialog.setWindowModality(Qt.ApplicationModal)
-        dialog.setStyleSheet('background: rgb(70, 70, 70); border-radius: 5px;')
+        dialog.setStyleSheet("background: rgb(70, 70, 70); border-radius: 5px;")
         dialog.setLayout(QtWidgets.QHBoxLayout())
         # Asset source: https://gifer.com/en/ZKZg
-        loading = QMovie('assets/loading.gif')
+        loading = QMovie("assets/loading.gif")
         loading.setScaledSize(QSize(35, 35))
         loading_label = QtWidgets.QLabel()
         loading_label.setMovie(loading)
         loading.start()
         
-        text_label = UiWidgetCreator.create_qlabel(content, 'generating_label')
+        text_label = UiWidgetCreator.create_qlabel(content, "generating_label")
         dialog.layout().addWidget(loading_label)
         dialog.layout().addWidget(text_label)
         
         return dialog
-
-    def create_regeneration_popup(network: Network, button_for_generating: QtWidgets.QPushButton):
-        if len(network.groups) == 0:
-            return False
-        msg_box  = UiWidgetCreator.show_qmessagebox(f'Network has not been build.\nDo you want to build the network?', 'Rebuild network', default_button=0)
-        result = msg_box.exec_()
-        if result != QtWidgets.QMessageBox.AcceptRole:
-            return False
-        button_for_generating.click()
-        return True
     
     def open_save_sim_popup(parent):
         dialog = SaveStatDialog(parent=parent)
@@ -249,17 +237,17 @@ class UiWidgetCreator:
         else:
             return None
         
-    def create_input_field_widget(color: str, object_name: str = 'input'):
+    def create_input_field_widget(color: str, object_name: str = "input"):
         widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
         widget.layout().setContentsMargins(0, 0, 0, 0)
         widget.setMinimumSize(100, 35)
         widget.layout().setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         widget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
-        widget.setStyleSheet(f'border-radius: none;background: {color};')
+        widget.setStyleSheet(f"border-radius: none;background: {color};")
             
         return widget    
     
-    def create_input_label(content: str, color: str, object_name: str = 'input'):
+    def create_input_label(content: str, color: str, object_name: str = "input"):
         # label: QtWidgets.QLabel = UiWidgetCreator.create_qlabel(content, object_name)
         label: ElidedLabel = ElidedLabel(content)
         label.setObjectName(object_name)
@@ -270,7 +258,7 @@ class UiWidgetCreator:
         label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
         label.setMinimumSize(100, 35)
-        label.setStyleSheet(f'border-radius: none;background: {color};padding-left: 15px;padding-right: 15px;')
+        label.setStyleSheet(f"border-radius: none;background: {color};padding-left: 15px;padding-right: 15px;")
         
         return label
     
@@ -282,15 +270,15 @@ class UiWidgetCreator:
             input.setFocus()
         
     
-    def create_input_line_edit(content: str, regex_validator: str, color: str, object_name: str = 'input'):
+    def create_input_line_edit(content: str, regex_validator: str, color: str, object_name: str = "input"):
         line_edit: QtWidgets.QLineEdit = UiWidgetCreator.create_qline_edit(content, object_name, regex_validator=regex_validator)
         line_edit.setMinimumSize(10, 20)
-        line_edit.setStyleSheet(f'border-radius: 5px;background: {color};')
+        line_edit.setStyleSheet(f"border-radius: 5px;background: {color};")
         line_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed) 
         line_edit.setMaximumSize(100, 35)
         return line_edit
     
-    def create_input_layout_widgets(object_name: str = 'input'):
+    def create_input_layout_widgets(object_name: str = "input"):
         base_widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
         save_widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
         frame: QtWidgets.QFrame = UiWidgetCreator.create_qframe(object_name, QtWidgets.QHBoxLayout)
@@ -347,12 +335,12 @@ class SaveStatDialog(QtWidgets.QDialog):
         formatted_datetime = current_datetime.strftime("%Y-%m-%d %H-%M-%S")
         self.setWindowTitle("Save Simulation Stats")
         
-        self.label = UiWidgetCreator.create_qlabel('Simulation name: ', 'saveStats', style_sheet="""background: transparent;""")
-        self.line_edit = UiWidgetCreator.create_input_line_edit(str(formatted_datetime), regex_validator='*', color='rgb(80, 80, 80)')
+        self.label = UiWidgetCreator.create_qlabel("Simulation name: ", "saveStats", style_sheet="""background: transparent;""")
+        self.line_edit = UiWidgetCreator.create_input_line_edit(str(formatted_datetime), regex_validator="*", color="rgb(80, 80, 80)")
         self.line_edit.setMinimumSize(200, 30)
         
-        self.ok_button = UiWidgetCreator.create_qpush_button('Save', 'ok_button')
-        self.cancel_button = UiWidgetCreator.create_qpush_button('Cancel', 'cancel_button')
+        self.ok_button = UiWidgetCreator.create_qpush_button("Save", "ok_button")
+        self.cancel_button = UiWidgetCreator.create_qpush_button("Cancel", "cancel_button")
 
         # Set up layouts
         label_line_edit_layout = QtWidgets.QHBoxLayout()

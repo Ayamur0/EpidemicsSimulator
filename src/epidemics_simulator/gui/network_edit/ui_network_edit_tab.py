@@ -64,7 +64,6 @@ class UiNetworkEditTab(QObject):
         self.group_edit = UiGroupEdit(self, self.parent)
         self.connection_edit = UiConnectionEdit(self, self.parent)
         self.group_display = UiDisplayGroup(self, self.parent)
-        self.tab_widget = self.parent.network_edit
         
         self.signals = WorkerSignals()
         
@@ -87,15 +86,15 @@ class UiNetworkEditTab(QObject):
         self.group_display.init_ui(project)
         
     def change_network(self, network: Network, action: int, group: NodeGroup, update_group: Union[dict, None]=None):
-        popup_string = ''
+        popup_string = ""
         if action == ADD_ACTION:
-            popup_string = 'Adding group...'
+            popup_string = "Adding group..."
         elif action == UPDATE_ACTION:
-            popup_string = 'Changing group...'
+            popup_string = "Changing group..."
         elif action == DUPLICATE_ACTION:
-            popup_string = 'Copying group...'
+            popup_string = "Copying group..."
         elif action == DELETE_ACTION:
-            popup_string = 'Deleting group...'
+            popup_string = "Deleting group..."
         self.popup = UiWidgetCreator.create_generate_popup(self.parent, content=popup_string)
         thread = ChangeNetwork(network, action, group, update_group, self.signals)
         self.parent.thread_pool.start(thread)
