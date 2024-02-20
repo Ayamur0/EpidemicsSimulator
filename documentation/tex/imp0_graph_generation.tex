@@ -1,13 +1,12 @@
-%TODO add UI stuff
-The created tool provides a UI for generating networks to simulate epidemics. To create these networks different groups of people can be defined. Each group consists of $n$ nodes, the members, each having a certain number of edges to other nodes of the same group. The amount of edges per node is specified using an average value $\mu$ and a delta $\delta$. Each node will then have an edge amount between $\mu - \delta$ and $\mu + \delta$.
+The developed tool provides a user interface for generating networks to simulate epidemics. To create these networks, different groups of people can be defined. Each group consists of $n$ nodes, the members, each of which has a certain number of edges to other nodes of the same group. The number of edges per node is determined by a mean $\mu$ and a delta $\delta$. Each node will then have an edge count between $\mu - \delta$ and $\mu + \delta$.
 
-Let $g1$ and $g2$ be two different groups. Then in addition to the above mentioned edges inside a group, it is also possible to specify the number of edges between the nodes of the two groups with an average and delta value, in the same way as described above.
+Let $g1$ and $g2$ be two different groups. Then in addition to the above mentioned edges within a group, it is also possible to specify the number of edges between the nodes of the two groups with an average and delta value, in the same way as described above.
 
 To create a network graph that meets all of these requirements multiple algorithms are needed.
 
 \section{Creating edges within a group}
 \label{sec:creating_edges_in_group}
-Let $g$ be a group of $n$ nodes which each needs between $\mu - \delta$ and $\mu + \delta$ edges. Then the first step is to generate a sequence of $n$ integer numbers inside this range. This sequence represents the degree each node should have at the end.
+Let $g$ be a group of $n$ nodes, each of which needs between $\mu - \delta$ and $\mu + \delta$ edges. Then the first step is to generate a sequence of $n$ integer numbers within this range. This sequence represents the degree each node should have at the end.
 
 \subsection{Randomly adding new edges}
 \begin{algorithm}
@@ -31,9 +30,9 @@ Let $g$ be a group of $n$ nodes which each needs between $\mu - \delta$ and $\mu
 This algorithm was the first iteration for creating the networks, it has two issues. 
 \newline
 
-Firstly not every sequence of degrees is graphic, e.g. not every sequence of degrees has a corresponding simple graph. A simple graph is a graph consisting only of undirected edges and no loops.
+First, not every sequence of degrees is graphic, e.g. not every sequence of degrees has a corresponding simple graph. A simple graph is a graph consisting only of undirected edges and no loops.
 
-Let for example $s$ be a sequence of random integers with sum $m$. If $m$ is not even $s$ is definitely not graphic because in a simple graph without loops each edge increases the total degree of all nodes by two. Thus it is impossible to have a total degree of all nodes that is not even. This is not checked in the above algorithm \ref{alg:random_edges} which would cause the $nodes$ list to only have one node at the end making it impossible to select two unconnected nodes from it.
+For example, let $s$ be a sequence of random integers with sum $m$. If $m$ is not even, $s$ is definitely not graphic, because in a simple graph without loops, every edge increases the total degree of all nodes by two. Thus it is impossible to have a total degree of all nodes that is not even. This is not checked in the above algorithm \ref{alg:random_edges}, which would cause the $nodes$ list to contain only one node at the end, making it impossible to select two unconnected nodes from it.
 \newline
 
 The second issue is that by adding edges randomly it is possible to end up in a situation, where all remaining edges are already connected but have still not reached the required degree.
@@ -51,18 +50,18 @@ Figure \ref{fig:impossible_graph} shows one such situation. In this graph each n
 The second iteration of the algorithm uses a more methodical approach to adding the edges to solve the above issues.
 
 \subsection{Erdos-Gallai Theorem}
-To solve the first issue of degree sequences that are not graphic, the Erdos-Gallai Theorem is used. It provides one of two known approaches to solving the graph realization problem, i.e. it gives a necessary and sufficient condition for a finite sequence of natural numbers to be the degree sequence of a simple graph.
+To solve the first problem of degree sequences that are not graphic, the Erdos-Gallai Theorem is used. It provides one of the two known approaches to solving the graph realization problem, i.e. it gives a necessary and sufficient condition for a finite sequence of natural numbers to be the degree sequence of a simple graph.
 
 \begin{equation}
 \sum_{i=1}^{k} d_i \leq k(k-1) + \sum_{i=k+1}^{n} \min(k, d_i)
 \end{equation}
 for all integers \(k\) with \(1 \leq k \leq n\), where \(d_1 \geq d_2 \geq \ldots \geq d_n\) are non-negative integers.
 
-A sequence of degrees is graphic if and only if \(d_1 + d_2 + \ldots + d_n\) is even and the above equation holds for every $k$. The inequlity ensures that the sum of the first $k$ terms of the degree sequence does not exceed the theoretical maximum number of edges $(k(k-1))$ plus the sum of the remaining edges $\sum_{i=k+1}^{n} \min(k, d_i)$ for the remaining vertices.
+A sequence of degrees is graphic if and only if \(d_1 + d_2 + \ldots + d_n\) is even and the above equation holds for every $k$. The inequality ensures that the sum of the first $k$ terms of the degree sequence does not exceed the theoretical maximum number of edges $(k(k-1))$ plus the sum of the remaining edges $\sum_{i=k+1}^{n} \min(k, d_i)$ for the remaining vertices.
 
-For this tool every degree sequence needs to be graphic because it should always be possible to create a graph for the inputs the user made. This means if the Erdos-Gallai Theorem shows that a sequence is not graphic, it needs to be changed until it is. Achieving this is done by simply decrementing a random number of the degree sequence by one.
+For this tool, every degree sequence needs to be graphic, because it should always be possible to generate a graph for the user's input. This means that if the Erdos-Gallai Theorem shows that a sequence is not graphic, it must be changed until it is. This is done by simply decrementing a random number of the degree sequence by one.
 
-If the Erdos-Gallai Theorem failed because the sum was not even, the sum will be even after decrementing once. By decrementing random numbers of the sequence only the left side of the inequality is getting smaller, because $k$ is never changed. This means after decrementing enough times the Theorem will always be fulfilled. Thus every sequence of degrees can be changed to be graphic.
+If the Erdos-Gallai Theorem failed because the sum was not even, the sum will be even after decrementing once. By decrementing random numbers of the sequence, only the left side of the inequality gets smaller, because $k$ never changes. This means after decrementing enough times, the theorem will always be fulfilled. Thus, any sequence of degrees can be changed to be graphic.
 
 The python implementation of this algorithm can be seen in \ref{lst:erdos_gallai}.
 
@@ -99,12 +98,12 @@ After creating a graphic degree sequence using the Erdos-Gallai Theorem, with al
 \end{algorithmic}
 \end{algorithm}
 
-Using the Havel-Hakimi algorithm \ref{alg:havel_hakimi} a simple graph can be constructed for every graphic sequence of degrees. This algorithm always finds a correct solution %TODO add ref to proof
+Using the Havel-Hakimi algorithm \ref{alg:havel_hakimi} a simple graph can be constructed for every graphic sequence of degrees. This algorithm always finds a correct solution as proven by Erdős et al. \cite{havelHakimi}.
 
 \subsubsection{Python implementation}
-The Havel-Hakimi algorithm is implemented inside the HavelHakimi class. This class has properties for the sequence of degrees \texttt{deg\_seq}, list of node ids \texttt{node\_id\_seq} and a dictionary which nodes are connected \texttt{edges} (each key node id has an undirected edge to all its value node ids).
+The Havel-Hakimi algorithm is implemented in the class HavelHakimi. This class has properties for the sequence of degrees \texttt{deg\_seq}, list of node ids \texttt{node\_id\_seq} and a dictionary which nodes are connected \texttt{edges} (each key node id has an undirected edge to all its value node ids).
 
-First the \texttt{node\_id\_seq} is sorted to be non increasing and the \texttt{node\_id\_seq} is shuffled to assign random degrees to each node. Then the Havel-Hakimi algorithm is used:
+First the \texttt{node\_id\_seq} is sorted to be non-increasing and the \texttt{node\_id\_seq} is shuffled to assign random degrees to each node. Then the Havel-Hakimi algorithm is used:
 
 \begin{lstlisting}[language=python, caption={Havel Hakimi Algorithm in Python}, label={lst:havel_hakimi}]
 def _connect_nodes(self):
@@ -118,7 +117,7 @@ def _connect_nodes(self):
         self._sort_sequence()
 \end{lstlisting}
 
-The function in listing \ref{lst:havel_hakimi} implements the above algorithm \ref{alg:havel_hakimi}. After each iteration the degree sequence is sorted so it is nonincreasing again. When sorting the \texttt{deg\_seq} it is important that the \texttt{node\_id\_seq} is altered in the same way so each node id still corresponds to the same degree, this function is shown in \ref{lst:sorting}.
+The function in listing \ref{lst:havel_hakimi} implements the above algorithm \ref{alg:havel_hakimi}. After each iteration, the degree sequence is sorted so it is non-increasing again. When sorting the \texttt{deg\_seq} it is important that the \texttt{node\_id\_seq} is altered in the same way so each node id still corresponds to the same degree, this function is shown in \ref{lst:sorting}.
 
 \begin{lstlisting}[language=python, caption={Sorting degrees and node ids}, label={lst:sorting}]
 def _sort_sequence(self):
@@ -127,18 +126,18 @@ def _sort_sequence(self):
 \end{lstlisting}
 
 \section{Creating edges between groups}
-Creating the edges between two groups randomly results in similar problems as described in section \ref{sec:creating_edges_in_group}. So a modified version of the Havel-Hakimi algorithm and Erdos-Gallai Theorem is used.
+Randomly creating edges between two groups leads to similar problems as described in section \ref{sec:creating_edges_in_group}. Therefore, a modified version of the Havel-Hakimi algorithm and the Erdos-Gallai theorem is used.
 
 \subsection{Creating the degree sequence}
-Let $g1$ and $g2$ be two disjunct groups of sizes $n$ and $m$. If $n \neq m$ it might not be possible that each node has a degree between $\mu - \delta$ and $\mu + \delta$. Let $n = 5$ and $m = 10$ with $\mu = 5$, $\delta = 0$. If every node in $g2$ has a degree of $5$ all nodes in $g1$ would have a degree of $10$. If every node in $g1$ has a degree of $5$ the average degree of the nodes in $g2$ would only be $2.5$.
+Let $g1$ and $g2$ be two disjoint groups of size $n$ and $m$. If $n \neq m$, it may not be possible for every node to have a degree between $\mu - \delta$ and $\mu + \delta$. Let $n = 5$ and $m = 10$ with $\mu = 5$, $\delta = 0$. If every node in $g2$ has a degree of $5$, all nodes in $g1$ would have a degree of $10$. If every node in $g1$ has a degree of $5$, the average degree of the nodes in $g2$ would be only $2.5$.
 
-Thus if $n \neq m$ one group might have lower degrees than the minimum or higher degrees than the maximum for certain $\mu$ and $\delta$. In this work the solution where the bigger group might have a lower degree will be used.
+So if $n \neq m$ one group may have lower degrees than the minimum or higher degrees than the maximum for certain $\mu$ and $\delta$. In this work the solution where the bigger group may have a lower degree will be used.
 \newline
 
-First the degree sequence for the smaller group $g1$ will be created. The sequence consists of $n$ integer numbers between $\mu - \delta$ and $\mu + \delta$. The degree sequence of the $g2$ must have the same sum as the sequence of $g1$ or else the sequences are not graphic because each added edge decreases the sum of the degree sequences of $g1$ and $g2$ by one and the Havel-Hakimi algorithm finishes only when both sequences reach $0$.
+First, the degree sequence for the smaller group $g1$ is created. The sequence consists of $n$ integer numbers between $\mu - \delta$ and $\mu + \delta$. The degree sequence of the $g2$ must have the same sum as the sequence of $g1$, otherwise the sequences are not graphic because each added edge decreases the sum of the degree sequences of $g1$ and $g2$ by one and the Havel-Hakimi algorithm finishes only when both sequences reach $0$.
 \newline
 
-Let $s1$ be the sum of the degree sequence for $g1$. An algorithm is needed to create a sequence of $m$ integer numbers with sum $s1$ while the numbers should be as close to or inside the desired range $\mu - \delta$ to $\mu + \delta$ as possible.
+Let $s1$ be the sum of the degree sequence for $g1$. An algorithm is needed to generate a sequence of $m$ integer numbers with sum $s1$, where the numbers should be as close to or inside the desired range $\mu - \delta$ to $\mu + \delta$ as possible.
 
 \begin{algorithm}
 \caption{Sequence generation}
@@ -179,7 +178,7 @@ Let $s1$ be the sum of the degree sequence for $g1$. An algorithm is needed to c
 \end{algorithmic}
 \end{algorithm}
 
-The algorithm \ref{alg:seq_with_sum} first creates a random sequence of integers within the $\mu - \delta$ to $\mu + \delta$ range. If the sum of this sequence is too big it decrements random entries until all degrees are equal to $\mu - \delta$. If this is still too big random entries are decremented further until the required sum is reached. If the initial sum of the sequence is too small random entries are incremented until the required sum is reached. It is always possible to each the sum without a single element of the sequence being bigger than $\mu + \delta$ because the length of this sequence will always be smaller than or equal to the sequence of the first group. Thus the maximum sum of the $g1_seq$ is $n \cdot (\mu + \delta)$ and the maximum sum of $g2_seq$ is $m \cdot (\mu + \delta)$. Because $n \leq m$ the following always holds: $n \cdot (\mu + \delta) \leq m \cdot (\mu + \delta)$. So the sequence of length $m$ that is generated using the algorithm \ref{alg:seq_with_sum} will never be bigger than the maximum of degrees within the $\mu - \delta$ to $\mu + \delta$ range.
+The algorithm \ref{alg:seq_with_sum} first generates a random sequence of integers in the range $\mu - \delta$ to $\mu + \delta$. If the sum of this sequence is too big, it decrements random entries until all degrees are equal to $\mu - \delta$. If this is still too large, random entries are decremented further until the required sum is reached. If the initial sum of the sequence is too small, random entries are incremented until the required sum is reached. It is always possible to reach the sum without any element of the sequence being greater than $\mu + \delta$, because the length of this sequence will always be smaller than or equal to the sequence of the first group. Thus, the maximum sum of the $g1_seq$ is $n \cdot (\mu + \delta)$ and the maximum sum of $g2_seq$ is $m \cdot (\mu + \delta)$. Since $n \leq m$ the following always holds: $n \cdot (\mu + \delta) \leq m \cdot (\mu + \delta)$. So the sequence of length $m$ generated by the algorithm \ref{alg:seq_with_sum} will never be bigger than the maximum of degrees within the range $\mu - \delta$ to $\mu + \delta$.
 
 The python implementation of this algorithm is shown in listing \ref{lst:seq_with_sum}.
 
@@ -196,7 +195,7 @@ def _create_sequence_with_sum(self, size: int, _sum: int):
     return seq
 \end{lstlisting}
 
-Because the second degree sequence is always constructed so that the two sequences together are graphic, the Erdos-Gallai Theorem is theoretically no needed here. It is still used to check the result in case there are any implementation errors that produce a non graphic sequence, though it should always return true if the implementation has no issues. The modified implementation of the Erdos-Gallai Theorem can be seen in listing \ref{lst:modified_erdos_gallai}. This implementation tests the inequality for two sets of values: $n$, the size of $g1$, with $g2_deg_seq$ and $m$ the size of $g2$ with $g1_deg_seq$. This combination of values is used because the nodes of $g2$ have to be connected to the $n$ nodes of $g1$ and the other way around. If the second degree sequence is constructed using the above algorithm \ref{alg:seq_with_sum} this function will always return true.
+Since the second degree sequence is always constructed so that the two sequences together are graphic, the Erdos-Gallai Theorem is theoretically not needed here. It is still used to check the result in case there are any implementation errors that produce a non-graphic sequence, though it should always return true if the implementation has no problems. The modified implementation of the Erdos-Gallai Theorem can be seen in listing \ref{lst:modified_erdos_gallai}. This implementation tests the inequality for two sets of values: $n$, the size of $g1$, with $g2_deg_seq$ and $m$, the size of $g2$ with $g1_deg_seq$. This combination of values is used because the nodes of $g2$ have to be connected to the $n$ nodes of $g1$ and vice versa. If the second degree sequence is constructed using the above algorithm \ref{alg:seq_with_sum}, this function will always return true.
 
 \begin{lstlisting}[language=python, caption={Modified Erdos-Gallai Theorem for connecting to disjunct groups}, label={lst:modified_erdos_gallai}]
 def _erdos_gallai(self) -> bool:
@@ -210,7 +209,7 @@ def _erdos_gallai(self) -> bool:
 
 
 \subsection{Modified Havel-Hakimi algorithm}
-The Havel-Hakimi algorithm from section \ref{sub:havel_hakimi} is modified to use two disjunct groups of nodes it connects. The implementation of the modified algorithm can be seen in listing \ref{lst:modified_havel_hakimi}. Before this algorithm is used the two degree sequence are constructed and sorted to be non increasing. The two node id sequence are also created and shuffled.
+The Havel-Hakimi algorithm from section \ref{sub:havel_hakimi} is modified to use two disjoint groups of nodes that it connects. The implementation of the modified algorithm can be seen in listing \ref{lst:modified_havel_hakimi}. Before this algorithm is used, the two degree sequences are constructed and sorted to be non-increasing. The two node id sequences are also created and shuffled.
 
 \begin{lstlisting}[language=python, caption={Modified Havel-Hakimi algorithm}, label={lst:modified_havel_hakimi}]
 def _connect_nodes(self):
@@ -231,4 +230,4 @@ def _connect_nodes(self):
         self._sort_sequence()
 \end{lstlisting}
 
-The algorithm creates the edges starting from the smaller group. Let $d$ be the highest degree from the smaller group. Then a node from the smaller group with degree $d$ is selected for \texttt{node}. After that the $d$ nodes with the highest degree are selected from the list of nodes of the \textbf{other} (bigger) group. This is the main difference to the original Havel-Hakimi algorithm which selects the nodes from the same group. Then the \texttt{node} from the smaller group is connected to each selected node from the bigger group and the degrees for all nodes \texttt{node} connects to are decremented.
+The algorithm creates the edges starting from the smaller group. Let $d$ be the highest degree of the smaller group. Then a node from the smaller group with degree $d$ is selected for \texttt{node}. After that $d$ nodes with the highest degrees are selected from the list of nodes of the \textbf{other} (bigger) group. This is the main difference from the original Havel-Hakimi algorithm, which selects the nodes from the same group. Then the \texttt{node} from the smaller group is connected to each selected node from the larger group and the degrees for all nodes \texttt{node} is connected to are decremented.

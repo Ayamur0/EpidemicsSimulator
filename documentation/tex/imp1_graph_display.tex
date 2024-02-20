@@ -1,18 +1,18 @@
-Originally it was intended to display the networks in 2D with a 3D representation only being considered a nice to have feature. Upon testing we found that a 2D representation does not offer a clear view of the network. Even for relatively small networks (\~200 nodes) the 2D representation was very confusing. For this reason the 2D representation was scrapped and only the 3D one was implemented. In 3D even networks with thousands of nodes offer a clear view of the different groups and nodes.
+Originally, it was intended to display the networks in 2D, with a 3D representation being considered a nice to have feature. During testing we found that a 2D representation does not provide a clear view of the network. Even for relatively small networks (\~200 nodes) the 2D representation was very confusing. For this reason, the 2D representation was scrapped and only the 3D one was implemented. In 3D, even networks with thousands of nodes provide a clear view of the different groups and nodes.
 %TODO add picture ref
 \newline
 
-The python package plotly \cite{plotly} is used to display the networks in 3D. \texttt{plotly.graph\_objs} offers the \texttt{Scatter3d} function which is used to draw both the nodes and edges. For the nodes the function takes in three lists of coordinates, one for each axis x, y and z. For the edges it also requires these three lists but here the first coordinate is the start point for a edge and the second the end point, after that a None entry must follow and then the next edge coordinates. Currently the only information that is generated for graphs is the amount of nodes in each group and lists of which node ids must be connected with edges. This information must be translated into coordinates for plotly to be able to display the network.
+The Python package plotly \cite{plotly} is used to display the networks in 3D. \texttt{plotly.graph\_objs} provides the \texttt{Scatter3d} function, which is used to draw both the nodes and edges. For the nodes the function takes in three lists of coordinates, one for each axis x, y and z. For the edges it also requires these three lists, but here the first coordinate is the start point for an edge, the second the end point, followed by a None entry and then the next edge coordinates. Currently, the only information that is generated for graphs is the number of nodes in each group and lists of which node ids must be connected with edges. This information must be translated into coordinates for plotly to be able to display the network.
 
 \section{Displaying the nodes}
 \label{sub:displayNodes}
-All nodes that belong to the same group should be arranged in a sphere. Each sphere thus represents one group and the spheres must have enough space between them so it is easy to differentiate the groups as seen in figure %TODO ref .
+All nodes belonging to the same group should be arranged in a sphere. Each sphere thus represents one group and the spheres must have enough space between them so that the groups can be easily distinguished, as shown in Figure %TODO ref .
 %  TODO insert example image
 
-To spread out the spheres in the coordinate system it is first divided into cubes. Let $n_{max}$ be the amount of nodes in the biggest group. Then to determine the side-length $s$ of the cubes it is necessary to know the radius $r$ of the smallest sphere that can fit $n_{max}$ nodes.
+To distribute the spheres in the coordinate system, it is first divided into cubes. Let $n_{max}$ be the number of nodes in the biggest group. To determine the side length $s$ of the cubes, it is necessary to know the radius $r$ of the smallest sphere that can fit $n_{max}$ nodes.
 
 \subsection{Creating a sphere}
-The nodes are only placed at coordinates $x,y,z \in \mathbb{N}$. To create a sphere that can fit $n_{max}$ nodes the radius needs to be known before calculating the exact coordinates. The problem with this is the only way to get the exact radius for a sphere that can fit $n_{max}$ nodes that all are at at coordinates $x,y,z \in \mathbb{N}$ is using the algorithm depicted in \ref{alg:exact_radius}.
+The nodes are placed only at coordinates $x,y,z \in \mathbb{N}$. To create a sphere that can fit $n_{max}$ nodes, the radius needs to be known before the exact coordinates are calculated. The problem with this is that the only way to get the exact radius for a sphere that can fit $n_{max}$ nodes that are all at coordinates $x,y,z \in \mathbb{N}$ is to use the algorithm depicted in \ref{alg:exact_radius}.
 \begin{algorithm}
 \caption{Calculating exact radius}
 \label{alg:exact_radius}
@@ -28,12 +28,12 @@ The nodes are only placed at coordinates $x,y,z \in \mathbb{N}$. To create a sph
 \EndWhile
 \end{algorithmic}
 \end{algorithm}
-This algorithm is inefficient as it calculates all spheres until $r$ is big enough. This can be improved by estimating the amount of nodes in a sphere with radius $r$ instead of calculating the exact amount. The amount of nodes is estimated using formula \ref{eq:sphere_lattice}.
+This algorithm is inefficient because it computes all spheres until $r$ is big enough. This can be improved by estimating the number of nodes in a sphere of radius $r$ instead of computing the exact number. The number of nodes is estimated using the formula \ref{eq:sphere_lattice}.
 \begin{equation}
 \label{eq:sphere_lattice}
     \dfrac{4 \cdot \pi \cdot r^3}{3}
 \end{equation}
-This estimation incurs an error. \ref{eq:gauss_error} shows best currently known formula for calculating this error which discovered and proven by Zheng \cite{gaussSphereProblem}.
+This estimation incurs an error. \ref{eq:gauss_error} shows the best currently known formula for calculating this error which was discovered and proven by Zheng \cite{gaussSphereProblem}.
 \begin{equation}
 \label{eq:gauss_error}
     \sum_{\substack{x \in z^3 \\ |x| \leq r}}{P(x)} = O_{\epsilon, P}(r^{v + 84 / 63 + \epsilon})
@@ -44,7 +44,7 @@ The true error bound is suspected to be $O_\epsilon(R^{1 + \epsilon})$ but this 
     O_{\epsilon}(r^{21/16 + \epsilon})
 \end{equation}
 
-Let $r_e$ be the resulting radius required for $n_{max}$ nodes using the estimation. If $n_{max}$ is close to the boundary between two radii then the incurred error might make the resulting radius too big or too small. For this reason the resulting radius will be decremented by one and the exact calculation is then used to find the correct required radius as shown in algorithm \ref{alg:exact_radius_improved}. This will always find the smallest radius for s sphere containing at least $n_{max}$ points.
+Let $r_e$ be the resulting radius required for $n_{max}$ nodes using the estimation. If $n_{max}$ is close to the boundary between two radii, then the resulting radius may be too large or too small due to the introduced error. For this reason, the resulting radius is decremented by one and the exact calculation is then used to find the correct required radius, as shown in algorithm \ref{alg:exact_radius_improved}. This will always find the smallest radius for a sphere containing at least $n_{max}$ points.
 
 \begin{algorithm}
 \caption{Calculating exact radius}
@@ -65,13 +65,13 @@ Let $r_e$ be the resulting radius required for $n_{max}$ nodes using the estimat
 \end{algorithmic}
 \end{algorithm}
 
-Formula \ref{eq:sphere_inequality} represents the inequality for points within or on the surface of a sphere centered at the origin in three-dimensional space as proven by Gui and Moradifam \cite{sphereInequality}. A point is inside the sphere if this inequality is fulfilled.
+The formula \ref{eq:sphere_inequality} represents the inequality for points inside or on the surface of a sphere centered at the origin in three-dimensional space, as proven by Gui and Moradifam \cite{sphereInequality}. A point is inside the sphere if this inequality is satisfied.
 \begin{equation}
 \label{eq:sphere_inequality}
     x^2 + y^2 + z^2 \leq r^2
 \end{equation}
-This means the bigger one of the values $x,y,z$ gets the smaller the other need to be to fulfill the inequality. Using this knowledge it is possible to construct an algorithm (shown in \ref{alg:calc_sphere_points}) that efficiently calculates all triples of $x,y,z$ values that fulfill the inequality. The order of $z,x,y$ in the algorithm is important, so half full sphere create points that fill the sphere from the bottom to the top.
-Starting with $z$ and $y=0$ transforming the formula to $x$ results in $|x| \leq \sqrt{(r^2 - z^2)}$ which corresponds to all possible values for $x$ in respect to $z$ and $r$. This range corresponds to $-a,a$ in the algorithm. Solving by $y$ then results in $|y| \leq \sqrt{(r^2 - z^2 - x^2)}$ which yields all possible values for in in respect to $x,z,r$. This coincides with $-b,b$ in the algorithm.
+This means the bigger one of the values $x,y,z$ becomes, the smaller the other must be to satisfy the inequality. Using this knowledge, it is possible to construct an algorithm (shown in \ref{alg:calc_sphere_points}) that efficiently computes all triples of $x,y,z$ values that satisfy the inequality. The order of $z,x,y$ in the algorithm is important, so a half full sphere creates points that fill the sphere from the bottom to the top.
+Starting with $z$ and $y=0$, transforming the formula to $x$ results in $|x| \leq \sqrt{(r^2 - z^2)}$, which corresponds to all possible values of $x$ with respect to $z$ and $r$. This range corresponds to $-a,a$ in the algorithm. Solving for $y$ then results in $|y| \leq \sqrt{(r^2 - z^2 - x^2)}$, which yields all possible values for $y$ with respect to $x,z,r$. This coincides with $-b,b$ in the algorithm.
 
 \begin{algorithm}
 \caption{Calculating lattice points}
@@ -92,14 +92,14 @@ Starting with $z$ and $y=0$ transforming the formula to $x$ results in $|x| \leq
 \end{algorithmic}
 \end{algorithm}
 
-The python implementation for this function takes in an amount of points $n$ and returns a list of triples with length $n$ containing the resulting coordinates and the radius $r$ of the sphere.
+The Python implementation of this function takes in an amount of points $n$ and returns a list of triples of length $n$ containing the resulting coordinates and the radius $r$ of the sphere.
 
 \section{Arranging the spheres}
-After calculating the coordinates and radii for each sphere (one for each group) the biggest radius $r_{max}$ is known. Using this the side-length of the cubes can be calculated. To create some space between the sphere this side-length $s$ is calculated by $s = 2 * r_{max} * 1.25$ to add a free space of 12.5\% of the sphere diameter on each side.
+After calculating the coordinates and radii for each sphere (one for each group), the biggest radius $r_{max}$ is known. Using this, the side length of the cubes can be calculated. To create some space between the spheres, this side length $s$ is calculated as $s = 2 * r_{max} * 1.25$ to add an empty space of 12.5\% of the sphere diameter on each side.
 
-The cubes are always created as a larger cube, eg. the amount of cubes is $c = x^3$. x is the side-length of the bigger cube in cubes (eg. each a side-length of 3 cubes results in $c=27$ smaller cubes). To not spread out the spheres unnecessarily the smallest amount of cubes need to be created. The required amount of cubes is the number of sphere/groups. To get the next bigger value for $c$, $x$ can be calculated by $x =\lceil\sqrt[3]{num\_groups}\rceil$.
+The cubes are always created within a larger cube, e.g. the number of cubes is $c = x^3$. $x$ is the side length of the bigger cube in cubes (e.g. a side length of $x=3$ cubes results in $c=27$ smaller cubes). In order not to spread out the spheres unnecessarily, the smallest number of cubes should be created. The minimum required number of cubes is the number of spheres/groups. To get the next higher value for $c$, $x$ can be calculated by $x =\lceil\sqrt[3]{num\_groups}\rceil$.
 
-Using this the algorithm \ref{alg:cube_offsets} calculates the bottom left corner of each cube.
+Using this the algorithm \ref{alg:cube_offsets} computes the coordinates of bottom left corner of each cube.
 
 \begin{algorithm}
 \caption{Calculating cube offsets}
@@ -116,11 +116,11 @@ Using this the algorithm \ref{alg:cube_offsets} calculates the bottom left corne
 \end{algorithmic}
 \end{algorithm}
 
-For each sphere a random cube is selected and its offsets are added to all coordinates, resulting in the final coordinates for all nodes in the network.
+For each sphere a random cube is selected and its offsets are added to the coordinates of all points within the sphere, resulting in the final coordinates for all nodes in the network.
 
 \section{Creating the scatter graph}
 \label{sub:scatter_graph}
-In the final graph it needs to be possible to toggle the visibility of each group. To achieve this the coordinates for each group are stored separately and only the active ones are added to the coordinate lists for the \texttt{Scatter3d} call.
+In the final graph it must be possible to toggle the visibility of each group. To achieve this, the coordinates for each group are stored separately and only the active ones are added to the coordinate lists for the \texttt{Scatter3d} call.
 
 \begin{lstlisting}[language=python, caption={Creation of the node trace}, label={lst:node_trace}]
 for group in self.network.groups:
@@ -147,12 +147,12 @@ trace1 = go.Scatter3d(
 )
 \end{lstlisting}
 
-Using the code in \ref{lst:node_trace} the trace that displays all the active nodes is created. Whenever the visibility of a group is toggled this needs to be rebuilt. It is important to note, that the coordinates for the nodes in the x,y,z arrays contain the nodes in ascending order by their id. This means nodes of group 0 come first starting with node 0, then group 1 etc. This is important for creating color sequences based on the node statuses which is discussed in chapter %TODO ref
+The code in \ref{lst:node_trace} creates the trace that displays all active nodes. Whenever the visibility of a group is toggled, this trace must be rebuilt. It is important to note that the coordinates for the nodes in the x,y,z arrays contain the nodes in ascending order by their id. This means that nodes of group 0 come first starting with node 0, then group 1, and so on. This is important for creating color sequences based on the node states, which is discussed in section \ref{sec:color_sequence}.
 
 \section{Displaying the edges}
-The edges are displayed using a second \texttt{Scatter3d} with the \texttt{lines} mode. For this the x,y and z arrays need the format of [xStart, xEnd, None] for each line. Meaning a coordinate array for 100 lines would have length 300.
+The edges are displayed using a second \texttt{Scatter3d} with the \texttt{lines} mode. For this the x,y and z arrays need the format of [xStart, xEnd, None] for each line. This means that a coordinate array for 100 lines would have a length of 300.
 
-The current format in which the edges are represented contains only the node ids which need to be connected. This representation was created in section \ref{sub:havel_hakimi}. To translate these node ids to the coordinates of the nodes that were calculated in section \ref{sub:displayNodes} a map is created when the coordinates for each node are calculated. This map stores the node id as a key and the index of its coordinates as value. Using that map for the start and end coordinates for all edges of visible groups can be calculated. The python code that realizes this can be seen in listing \ref{lst:edge_creation}.
+The current format in which the edges are represented contains only the node ids that are connected by edges. This representation was created in section \ref{sub:havel_hakimi}. To translate these node ids to the coordinates of the nodes calculated in section \ref{sub:displayNodes}, a map is created when the coordinates are calculated for each node. This map stores the node id as a key and the index of its coordinates, in the coordinate array, as value. This map can be used to calculate the start and end coordinates for all edges of visible groups, which is done by looking up the coordinates of the start and end nodes by using their ids and the map. The python code that realizes this can be seen in listing \ref{lst:edge_creation}.
 \begin{lstlisting}[language=python, caption={Creation of the edge coordinate arrays}, label={lst:edge_creation}]
  for edge in edges:
     _from, to = edge[0], edge[1]
