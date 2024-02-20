@@ -41,6 +41,7 @@ After activating the virtual environment, start the Python script ```App.py```.
 ```bash
 python App.py
 ```
+> **Note:** Under Linux, make sure the ```venv``` directory has the right access permissions to allow the ```App.py``` to start a new Python process with the binary ```venv/bin/python```.
 ## Usage
 
 The GUI has five different tabs, each with a different functionality for creating/simulating/analyzing an epidemic.
