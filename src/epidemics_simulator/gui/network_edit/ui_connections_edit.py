@@ -42,16 +42,16 @@ class UiConnectionEdit(QObject):
     @pyqtSlot(NodeGroup)
     def load_connections(self, group_from: NodeGroup):
         self.unload()
-        self.con_label.setText(f'{group_from.name} Connections')
+        self.con_label.setText(f"{group_from.name} Connections")
         other_groups = [g for g in self.network.groups if g.id != group_from.id]
         for group in other_groups:
             self.load_connection_button(group_from, group)
             
             
     def load_connection_button(self, group_from: NodeGroup, group_to: NodeGroup):
-        layout_widget = UiWidgetCreator.create_qwidget('connection_select', QtWidgets.QHBoxLayout)
+        layout_widget = UiWidgetCreator.create_qwidget("connection_select", QtWidgets.QHBoxLayout)
         
-        group_button = UiWidgetCreator.create_qpush_button(group_to.name, 'group_select_button', is_checkable=True)
+        group_button = UiWidgetCreator.create_qpush_button(group_to.name, "group_select_button", is_checkable=True)
         
         group_button.clicked.connect(partial(self.show_connection_properties, group_from, group_to))
         
@@ -66,7 +66,7 @@ class UiConnectionEdit(QObject):
         self.save_connection_prop_button.show()
         self.main_window.deselect_other_buttons(group_to.id, self.connection_buttons)
 
-        properties = {'average edge amount': group_from.avrg_ext_con.get(group_to.id, 0),
+        properties = {"average edge amount": group_from.avrg_ext_con.get(group_to.id, 0),
                       "delta edge amount": group_from.delta_ext_con.get(group_to.id, 0)}
         
         line_edits = self.load_properties_input(properties)
@@ -84,17 +84,17 @@ class UiConnectionEdit(QObject):
     def save_connection_properties(self, group_from: NodeGroup, group_to: NodeGroup, line_edits: dict):
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         try:
-            if updated_dict.get('average edge amount') == '' or updated_dict.get('delta edge amount') == '':
+            if updated_dict.get("average edge amount") == "" or updated_dict.get("delta edge amount") == "":
                 raise TypeError
-            con_avrg = int(updated_dict.get('average edge amount'))
-            con_dc = int(updated_dict.get('delta edge amount'))
+            con_avrg = int(updated_dict.get("average edge amount"))
+            con_dc = int(updated_dict.get("delta edge amount"))
             if con_dc > con_avrg:
                 raise ValueError
         except TypeError:
-            UiWidgetCreator.show_message(self.save_status, "Please fill out every input.", 'error_message', True, is_row=False)
+            UiWidgetCreator.show_message(self.save_status, "Please fill out every input.", "error_message", True, is_row=False)
             return
         except ValueError:
-            UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", 'error_message', True, is_row=False)
+            UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", "error_message", True, is_row=False)
             return
         if not group_from.add_external_connection(group_to.id, con_avrg, con_dc):
             group_from.delete_external_connection(group_to.id)
@@ -110,7 +110,7 @@ class UiConnectionEdit(QObject):
             i += 1
             label = UiWidgetCreator.create_input_label(key, color)
             widget = UiWidgetCreator.create_input_field_widget(color)
-            line_edit = UiWidgetCreator.create_input_line_edit(value, '^(?!10000001$)[0-9]{1,8}$', color)
+            line_edit = UiWidgetCreator.create_input_line_edit(value, "^(?!10000001$)[0-9]{1,8}$", color)
             widget.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
             label.mousePressEvent = partial(UiWidgetCreator.label_clicked, line_edit, False)
             widget.layout().addWidget(line_edit)
@@ -131,6 +131,6 @@ class UiConnectionEdit(QObject):
         self.main_window.unload_items_from_layout(self.connection_list.layout())
         
     def unload(self):
-        self.con_label.setText(f'Connections')
+        self.con_label.setText(f"Connections")
         self.unload_properties()
         self.unload_connection_list()

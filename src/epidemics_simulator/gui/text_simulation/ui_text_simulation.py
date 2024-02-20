@@ -9,16 +9,15 @@ from src.epidemics_simulator.simulation import Simulation
 from src.epidemics_simulator.storage.sim_stats import SimStats
 from src.epidemics_simulator.gui.flowlayout import FlowLayout
 
-INCREASE_SPEED = '+'
-START_STOP_SIMULATION = 's'
-DECREASE_SPEED = '-'
-RESET_SIMULATION = 'r'
-STOP_SIMULATION = 'p'
+INCREASE_SPEED = "+"
+START_STOP_SIMULATION = "s"
+DECREASE_SPEED = "-"
+RESET_SIMULATION = "r"
+STOP_SIMULATION = "p"
 
 class WorkerSignals(QObject):
     simulation_finished: pyqtSignal = pyqtSignal()
     update_speed: pyqtSignal = pyqtSignal(str)
-    no_groups_signal: pyqtSignal = pyqtSignal()
     update_control_label_signal: pyqtSignal = pyqtSignal(float)
     update_label_signal: pyqtSignal = pyqtSignal(dict, int)
     no_network_groups: pyqtSignal = pyqtSignal()
@@ -93,7 +92,7 @@ class SimulationWorker(QThread):
         elif action == RESET_SIMULATION:
             self.reset()
         else:
-            print('Wrong simulation action')
+            print("Wrong simulation action")
             return
         self.signals.update_control_label_signal.emit(self.simulation_speed)
 
@@ -127,7 +126,6 @@ class UiTextSimulationTab:
         self.decrease_button = self.parent.decrease_button
         self.reset_button = self.parent.reset_button
         self.save_button = self.parent.save_button
-        self.tab_widget = self.parent.simulation_stats
         self.speed_label = self.parent.speed_label
         
         self.stats_content = self.parent.stats_content
@@ -173,14 +171,14 @@ class UiTextSimulationTab:
         self.worker_signals.update_speed.emit(STOP_SIMULATION)
         
     def no_network_group(self):
-        message = UiWidgetCreator.show_qmessagebox(f'Network currently has no groups.', 'No Network Groups', only_ok=True)
+        message = UiWidgetCreator.show_qmessagebox(f"The network has no groups.\nCreate network groups to start a simulation.", "No Network Groups", only_ok=True)
         _ = message.exec_()
         return
     def simulation_was_run(self):
         self.simulation_started = True
         
     def update_stat_labels(self, group_stats: dict, current_step: int):
-        self.step_label.setText(f'Step: {current_step}')
+        self.step_label.setText(f"Step: {current_step}")
         for group, stat in group_stats.items():
             properties = self.log_text_to_json(stat.get_log_text())
             if group not in self.stat_labels.keys():
@@ -208,9 +206,9 @@ class UiTextSimulationTab:
             
     def update_control_labels(self, simulation_speed: float):
         if simulation_speed >= 1 or simulation_speed == 0:
-            self.speed_label.setText(f'Simulation speed: {int(simulation_speed)} t/s')
+            self.speed_label.setText(f"Simulation speed: {int(simulation_speed)} t/s")
         else:
-            self.speed_label.setText(f'Simulation speed: {simulation_speed} t/s')
+            self.speed_label.setText(f"Simulation speed: {simulation_speed} t/s")
         if simulation_speed == 0:
             self.start_stop_button.setIcon(self.parent.start_icon)
         else:
@@ -218,11 +216,11 @@ class UiTextSimulationTab:
             
     def log_text_to_json(self, log_text: str):
         stat = {}
-        for line in log_text.split('\n'):
+        for line in log_text.split("\n"):
             line = line.strip()
             if not line:
                 continue
-            split_line = line.split(':')
+            split_line = line.split(":")
             if len(split_line) != 2:
                 continue
             stat[split_line[0].strip()] = split_line[1].strip()
@@ -237,7 +235,7 @@ class UiTextSimulationTab:
             return
         is_valid, reason = SimStats.is_valid_file_name(name)
         if not is_valid:
-            msg_box = UiWidgetCreator.show_qmessagebox(reason, 'Invalid Filename', only_ok=True)
+            msg_box = UiWidgetCreator.show_qmessagebox(reason, "Invalid Filename", only_ok=True)
             msg_box.exec_()
             return
             
@@ -245,14 +243,14 @@ class UiTextSimulationTab:
         self.stats_update(name, simulation_stats)
         
     def stats_update(self, filename, stats):
-        self.popup = UiWidgetCreator.create_generate_popup(self.parent, content='Saving...')
-        thread = SaveStats(os.path.join(self.parent.project.file_location, 'stats'), filename, stats, self.worker_signals)
+        self.popup = UiWidgetCreator.create_generate_popup(self.parent, content="Saving...")
+        thread = SaveStats(os.path.join(self.parent.project.file_location, "stats"), filename, stats, self.worker_signals)
         self.thread_pool.start(thread)
         self.popup.exec_()
     
     def save_finsihed(self):
         self.parent.push_to_dash(reset_view=True)
-        print('Saving finished')
+        print("Saving finished")
         self.popup.deleteLater()
         
     def kill_worker(self):
