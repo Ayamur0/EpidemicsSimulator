@@ -92,7 +92,7 @@ class UiConnectionEdit(QObject):
             UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", "error_message", True, is_row=False)
             return
         if con_avrg + con_dc > group_from.size and con_avrg + con_dc > group_to.size:
-            UiWidgetCreator.show_message(self.save_status, "Average + delta has to be smaller or equal \nto the member count of one of the groups.", "error_message", True, is_row=False)
+            UiWidgetCreator.show_message(self.save_status, "Delta + average has to be smaller or equal \nto the member count of one of the groups.", "error_message", True, is_row=False)
             return
         if not group_from.add_external_connection(group_to.id, con_avrg, con_dc):
             group_from.delete_external_connection(group_to.id)
