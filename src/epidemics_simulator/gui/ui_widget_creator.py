@@ -263,7 +263,6 @@ class UiWidgetCreator:
         return label
     
     def label_clicked(input: Union[Type[QtWidgets.QLineEdit], Type[QtWidgets.QPushButton]], is_button: bool, event):
-        print(event)
         if is_button:
             input.click()
         else:

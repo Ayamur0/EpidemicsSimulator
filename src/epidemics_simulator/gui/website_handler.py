@@ -47,15 +47,12 @@ class StartServer(QRunnable):
             else:
                 print('Starting server from .py')
                 activate_script = os.path.join(
-                "venv", "Scripts" if sys.platform == "win32" else "bin", "activate"
+                "venv", "Scripts" if sys.platform == "win32" else "bin", "python"
                 )
-                execution_command = [activate_script, "&&", "python", "launch_webview.py"]
-
+                execution_command = [activate_script, "launch_webview.py"]
             process = subprocess.Popen(
                 execution_command,
                 stdout=subprocess.PIPE,
-                shell=True,
-                executable=os.environ.get("SHELL"),
                 creationflags=creation_flags,
             )
 

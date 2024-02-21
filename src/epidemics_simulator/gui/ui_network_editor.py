@@ -136,13 +136,13 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         return False
     
     @pyqtSlot(int)
-    def new_network(self, template_id=None):        
+    def new_network(self, template_id=-1):        
         if self.unsaved_changes and self.ask_to_save():
             return
         folder_path, folder_name = UiWidgetCreator.open_folder(self, "Select New Project Folder")
         if not folder_path:
             return False
-        if template_id is not None:
+        if template_id != -1:
             network = templates[template_id]
         else:
             network = Network()
@@ -174,12 +174,19 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if not folder_path:
             return False
         if not self.does_network_exist(folder_path):
-            msg_box  = UiWidgetCreator.show_qmessagebox("No network found in the directory.",  "No Network Found", only_ok=True)
+            msg_box  = UiWidgetCreator.show_qmessagebox("No network was found in the directory.",  "No Network Found", only_ok=True)
             _ = msg_box.exec_()
             return
-        
-        self.project = Project.load_from_file(folder_path)
-        
+        try:
+            self.project = Project.load_from_file(folder_path)
+        except:
+            msg_box  = UiWidgetCreator.show_qmessagebox("The file does not contain a valid JSON file.",  "Invalid Network File", only_ok=True)
+            _ = msg_box.exec_()
+            return
+        if not self.project.network:
+            msg_box  = UiWidgetCreator.show_qmessagebox("The file does not contain a valid network.",  "Invalid Network", only_ok=True)
+            _ = msg_box.exec_()
+            return
         self.reset_ui.emit()
         try:
             self.startup.close_startup.emit()
@@ -260,9 +267,9 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if len(self.project.network.groups) == 0:
             return False
         if self.network_edit_tab.group_display.generated_once:
-            msg_string = "Changed network has not been built yet.\nDo you want to build the network?"
+            msg_string = "The changed network has not been built yet.\nDo you want to build the network?"
         else:
-            msg_string = "Network has not been built yet.\nDo you want to build the network?"
+            msg_string = "The network has not been built yet.\nDo you want to build the network?"
         
         msg_box  = UiWidgetCreator.show_qmessagebox(msg_string, "Build the Network", default_button=0)
         result = msg_box.exec_()

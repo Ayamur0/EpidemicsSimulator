@@ -90,7 +90,7 @@
                  <item>
                   <widget class="QLabel" name="network_stats">
                    <property name="text">
-                    <string>Graph creating stats
+                    <string>Graph-building stats
 Total nodes 0
 Total connections 0
 Generation time 0s</string>

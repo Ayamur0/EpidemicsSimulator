@@ -638,7 +638,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Epidemic Simulator"))
-        self.network_stats.setText(_translate("MainWindow", "Graph creating stats\n"
+        self.network_stats.setText(_translate("MainWindow", "Graph-building stats\n"
 "Total nodes 0\n"
 "Total connections 0\n"
 "Generation time 0s"))

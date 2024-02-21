@@ -205,7 +205,6 @@ class UiGroupEdit(QObject):
     def unload_group_list(self):
         self.group_buttons.clear()
         self.main_window.unload_items_from_layout(self.group_list.layout())
-        # self.parent.connection_edit.unload()
            
     def unload_group_properties(self):
         self.save_group_prop_button.hide()
