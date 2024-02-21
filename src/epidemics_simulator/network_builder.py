@@ -47,8 +47,8 @@ class NetworkBuilder:
                 self._add_ext_conn(
                     _from=self.network.get_group_by_id(from_id),
                     to=self.network.get_group_by_id(target_id),
-                    min=max(0, avrg - delta),
-                    max=avrg + delta,
+                    _min=max(0, avrg - delta),
+                    _max=avrg + delta,
                 )
                 # remove connections from target -> source so it isn't created twice
                 all[target_id] = [i for i in all[target_id] if i[0] != from_id]
