@@ -162,7 +162,7 @@ class WebsiteHandler(QObject):
     def check_server_connection_thread(self):
         if (
             self.is_checking_connection 
-            or self.parent.network_edit_tab.group_display.generation_in_progressor 
+            or self.parent.network_edit_tab.group_display.generation_in_progress
         ): # Building on the server might cause the server to not respond and loose connection. 
             return
         self.parent.network_edit_tab.group_display.server_finished() # If we wait for the server and loosing connection do like the server is finished
