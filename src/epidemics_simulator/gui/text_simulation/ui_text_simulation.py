@@ -171,6 +171,8 @@ class UiTextSimulationTab:
         self.worker_signals.update_speed.emit(STOP_SIMULATION)
         
     def no_network_group(self):
+        if self.parent.tabWidget.currentIndex() != 3:
+            return
         message = UiWidgetCreator.show_qmessagebox(f"The network has no groups.\nCreate network groups to start a simulation.", "No Network Groups", only_ok=True)
         _ = message.exec_()
         return

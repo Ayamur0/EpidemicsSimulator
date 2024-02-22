@@ -162,11 +162,23 @@ class UiDiseaseEditTab(QObject):
             "initial infection count": 10,
             "cure chance": 0.2,
             "immunity period": 8,
-            "infectiousness factor": 1
+            "infectiousness factor": 1.0
         }
         self.load_disease(None, default_properties=default_dict)
         
+    def change_wrong_float_inputs(self, line_edits: dict):
+        not_float_keys = ["name", "color", "duration", "initial infection count", "immunity period"]
+        for key in line_edits:
+            if key in not_float_keys:
+                continue
+            line_string = line_edits[key].text()
+            if "." in line_string and not line_string.endswith("."):
+                continue
+            float_value = float(line_string)
+            line_edits[key].setText("{:.1f}".format(float_value))
+        
     def save_disease(self, disease: Disease, line_edits: dict, save_widget):
+        self.change_wrong_float_inputs(line_edits)
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         if any(value == "" for value in updated_dict.values()):
             UiWidgetCreator.show_message(save_widget, "Please fill out every input.", "error_message", True, is_row=False)

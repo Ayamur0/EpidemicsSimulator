@@ -25,7 +25,7 @@ class NetworkGenerator(QRunnable):
     def run(self):
         self.signal.push_generate_to_dash.emit(False, True)
         self.project.network.build()    
-        print("Local building finished.")
+        print("Local build finished.")
         while not self.server_finished:
             time.sleep(0.5)
         self.signal.generation_finished.emit()

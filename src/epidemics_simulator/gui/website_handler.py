@@ -21,8 +21,8 @@ class StartServer(QRunnable):
         self.server_url = url
         self.signal = signal
         
-        self.exe_path = os.path.join(os.getcwd(), 'webview', 'launch_webview.exe')    
-        self.bin_path = os.path.join(os.getcwd(), 'webview', 'launch_webview')   
+        self.exe_path = os.path.join(os.getcwd(), 'webview', 'webview.exe')    
+        self.bin_path = os.path.join(os.getcwd(), 'webview', 'webview')   
         
     def run(self):
         try:
@@ -49,7 +49,7 @@ class StartServer(QRunnable):
                 activate_script = os.path.join(
                 "venv", "Scripts" if sys.platform == "win32" else "bin", "python"
                 )
-                execution_command = [activate_script, "launch_webview.py"]
+                execution_command = [activate_script, "webview.py"]
             process = subprocess.Popen(
                 execution_command,
                 stdout=subprocess.PIPE,
