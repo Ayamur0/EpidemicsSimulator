@@ -9,17 +9,29 @@ from PyQt5.QtGui import QDesktopServices
 class WorkerSignals(QObject):
     push_generate_to_dash: pyqtSignal = pyqtSignal(bool, bool)
     generation_finished: pyqtSignal = pyqtSignal()
+    server_finshed: pyqtSignal = pyqtSignal()
     
 class NetworkGenerator(QRunnable):
-    def __init__(self, project: Project, signals: WorkerSignals):
+    def __init__(self, project: Project, signals: WorkerSignals, wait_for_server: bool):
         super(NetworkGenerator, self).__init__()
         self.project = project
         self.signal = signals
+        self.server_finished = not wait_for_server # If we should not wait for the server it will be true and the while in the run will be instantly be canceld
+        self.connect_signals()
+        
+    def connect_signals(self):
+        self.signal.server_finshed.connect(self.set_server_finished)
         
     def run(self):
         self.signal.push_generate_to_dash.emit(False, True)
         self.project.network.build()    
+        print("Local building finished.")
+        while not self.server_finished:
+            time.sleep(0.5)
         self.signal.generation_finished.emit()
+        
+    def set_server_finished(self):
+        self.server_finished = True
 class UiDisplayGroup(QObject):
     def __init__(self, parent: QObject, main_window: QtWidgets.QMainWindow):
         super(UiDisplayGroup, self).__init__()
@@ -83,7 +95,7 @@ class UiDisplayGroup(QObject):
                 return
         print("Started local building.")
         self.generation_in_progress = True
-        thread = NetworkGenerator(self.project, self.worker_signals)
+        thread = NetworkGenerator(self.project, self.worker_signals, self.main_window.website_handler.is_connected) # Only wait for server if it is connected
         self.popup = UiWidgetCreator.create_generate_popup(self.main_window)
         self.start_time = time.time()
         self.thread_pool.start(thread)
@@ -101,6 +113,9 @@ class UiDisplayGroup(QObject):
         self.parent.changes_in_network = False
         self.main_window.disease_edit_tab.disease_changed = False
         self.popup.deleteLater()
+        
+    def server_finished(self):
+        self.worker_signals.server_finshed.emit()
         
     def hide_webview(self):
         if self.generated_once:

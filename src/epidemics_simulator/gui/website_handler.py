@@ -79,9 +79,7 @@ class CheckConnection(QRunnable):
                 # Check if the response status code is in the 2xx range (success)
                 if response.status_code // 100 == 2:
                     connected = True
-            except (
-                requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout
-            ):  # or urllib3.exceptions.ReadTimeoutError:
+            except:  # requests.exceptions.ReadTimeout does not get properly caught
                 print("Error Connecting")
                 time.sleep(1)
         
@@ -163,10 +161,11 @@ class WebsiteHandler(QObject):
     @pyqtSlot()
     def check_server_connection_thread(self):
         if (
-            self.is_checking_connection
+            self.is_checking_connection 
             or self.parent.network_edit_tab.group_display.generation_in_progress
-        ):
+        ): # Building on the server might cause the server to not respond and loose connection. 
             return
+        self.parent.network_edit_tab.group_display.server_finished() # If we wait for the server and loosing connection do like the server is finished
         self.parent.show_webviews.emit(False)
         print("Checking server connection.")
         self.is_checking_connection = True
@@ -180,7 +179,7 @@ class WebsiteHandler(QObject):
         print("Connection established.")
         self.is_checking_connection = False
         self.is_connected = True
-        self.parent.enable_webviews(True)
+        self.parent.show_webviews.emit(True)
         self.parent.push_to_dash(build=False) 
         self.parent.remove_sender_from_threads(self.sender())
 
@@ -198,6 +197,7 @@ class WebsiteHandler(QObject):
 
     @pyqtSlot()
     def data_updated(self):
+        self.parent.network_edit_tab.group_display.server_finished()
         print("Finshed pushing to dash.")
 
     @pyqtSlot()

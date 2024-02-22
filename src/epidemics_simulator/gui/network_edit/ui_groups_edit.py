@@ -106,6 +106,7 @@ class UiGroupEdit(QObject):
         self.parent.network_changed.emit()
         
     def show_group_properties(self, group: NodeGroup=None, default_properties: dict=None):
+        # self.clear_save_status()
         self.unload_group_properties()
         if group:
             self.parent.open_group_connections.emit(group)
@@ -161,8 +162,15 @@ class UiGroupEdit(QObject):
         update_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         if update_dict["average intra group edges"] < update_dict["delta intra group edges"]:
             UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", "error_message", True, is_row=False)
+            return
         if any(value == "" for value in update_dict.values()):
             UiWidgetCreator.show_message(self.save_status, "Please fill out every input.", "error_message", True, is_row=False)
+            return
+        members = int(update_dict["member count"])
+        aic = int(update_dict["average intra group edges"])
+        dic = int(update_dict["delta intra group edges"])
+        if aic + dic > members:
+            UiWidgetCreator.show_message(self.save_status, "Delta + average has to be smaller or equal\n to the member count of the group.", "error_message", True, is_row=False)
             return
         if not group:
             group = self.parent.change_network(self.network, ADD_ACTION, group, update_dict)
@@ -200,7 +208,8 @@ class UiGroupEdit(QObject):
         self.show_group_properties(default_properties=default_dict)
         
         
-        
+    #def clear_save_status(self):
+    #    self.main_window.unload_items_from_layout(self.save_status.layout())
         
     def unload_group_list(self):
         self.group_buttons.clear()
@@ -208,6 +217,7 @@ class UiGroupEdit(QObject):
            
     def unload_group_properties(self):
         self.save_group_prop_button.hide()
+        self.main_window.unload_items_from_layout(self.save_status.layout())
         self.main_window.unload_items_from_layout(self.porp_label.layout())
         self.main_window.unload_items_from_layout(self.prop_input.layout())
 

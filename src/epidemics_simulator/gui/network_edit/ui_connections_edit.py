@@ -82,19 +82,17 @@ class UiConnectionEdit(QObject):
         
         
     def save_connection_properties(self, group_from: NodeGroup, group_to: NodeGroup, line_edits: dict):
-        updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
-        try:
-            if updated_dict.get("average edge amount") == "" or updated_dict.get("delta edge amount") == "":
-                raise TypeError
-            con_avrg = int(updated_dict.get("average edge amount"))
-            con_dc = int(updated_dict.get("delta edge amount"))
-            if con_dc > con_avrg:
-                raise ValueError
-        except TypeError:
+        update_dict = {key: line_edits[key].text() for key in line_edits.keys()}
+        if any(value == "" for value in update_dict.values()):
             UiWidgetCreator.show_message(self.save_status, "Please fill out every input.", "error_message", True, is_row=False)
             return
-        except ValueError:
+        con_avrg = int(update_dict.get("average edge amount"))
+        con_dc = int(update_dict.get("delta edge amount"))
+        if con_avrg < con_dc:
             UiWidgetCreator.show_message(self.save_status, "Delta has to be smaller than average.", "error_message", True, is_row=False)
+            return
+        if con_avrg + con_dc > group_from.size and con_avrg + con_dc > group_to.size:
+            UiWidgetCreator.show_message(self.save_status, "Delta + average has to be smaller or equal \nto the member count of one of the groups.", "error_message", True, is_row=False)
             return
         if not group_from.add_external_connection(group_to.id, con_avrg, con_dc):
             group_from.delete_external_connection(group_to.id)
@@ -124,6 +122,7 @@ class UiConnectionEdit(QObject):
         self.save_connection_prop_button.hide()   
         self.main_window.unload_items_from_layout(self.prop_label_con.layout())
         self.main_window.unload_items_from_layout(self.con_input.layout())
+        self.main_window.unload_items_from_layout(self.save_status.layout())
         # self.main_window.unload_items_from_layout(self.connection_prop.layout())
         
     def unload_connection_list(self):
