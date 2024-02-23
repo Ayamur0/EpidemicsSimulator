@@ -162,11 +162,23 @@ class UiDiseaseEditTab(QObject):
             "initial infection count": 10,
             "cure chance": 0.2,
             "immunity period": 8,
-            "infectiousness factor": 1
+            "infectiousness factor": 1.0
         }
         self.load_disease(None, default_properties=default_dict)
         
+    def change_wrong_float_inputs(self, line_edits: dict):
+        not_float_keys = ["name", "color", "duration", "initial infection count", "immunity period"]
+        for key in line_edits:
+            if key in not_float_keys:
+                continue
+            line_string = line_edits[key].text()
+            if "." in line_string and not line_string.endswith("."):
+                continue
+            float_value = float(line_string)
+            line_edits[key].setText("{:.1f}".format(float_value))
+        
     def save_disease(self, disease: Disease, line_edits: dict, save_widget):
+        self.change_wrong_float_inputs(line_edits)
         updated_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         if any(value == "" for value in updated_dict.values()):
             UiWidgetCreator.show_message(save_widget, "Please fill out every input.", "error_message", True, is_row=False)
@@ -185,8 +197,12 @@ class UiDiseaseEditTab(QObject):
         self.load_disease(disease, is_success_save=True)
         self.disease_change_singal.emit()
         
+    def create_disease_name_list(self):
+        return [d.name for d in self.network.diseases]
+        
     def duplicate_disease(self, disease: Disease):
-        new_disease = Disease(disease.name, disease.color, disease.fatality_rate, disease.vaccinated_fatality_rate, disease.infection_rate, disease.reinfection_rate, disease.vaccinated_infection_rate, disease.duration, disease.initial_infection_count)
+        new_group_name = self.parent.generate_next_name(disease.name, self.create_disease_name_list())
+        new_disease = Disease(new_group_name, disease.color, disease.fatality_rate, disease.vaccinated_fatality_rate, disease.infection_rate, disease.reinfection_rate, disease.vaccinated_infection_rate, disease.duration, disease.initial_infection_count)
         self.network.add_disease(new_disease)
         self.load_disease(new_disease)
         self.disease_change_singal.emit()

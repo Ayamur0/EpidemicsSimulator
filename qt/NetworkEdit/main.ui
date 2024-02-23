@@ -207,7 +207,7 @@ Generation time 0s</string>
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="7,0,0,10">
+          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0" columnstretch="8,0,0,10">
            <item row="1" column="3">
             <widget class="QFrame" name="connection_properties_frame">
              <property name="frameShape">
@@ -252,7 +252,7 @@ Generation time 0s</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>437</width>
+                   <width>413</width>
                    <height>368</height>
                   </rect>
                  </property>
@@ -413,7 +413,7 @@ margin-right: 9;</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>287</width>
+                   <width>311</width>
                    <height>369</height>
                   </rect>
                  </property>
@@ -507,7 +507,7 @@ margin-right: 9;</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>287</width>
+                   <width>311</width>
                    <height>399</height>
                   </rect>
                  </property>
@@ -562,7 +562,7 @@ margin-right: 9;</string>
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>437</width>
+                   <width>413</width>
                    <height>369</height>
                   </rect>
                  </property>
@@ -729,8 +729,8 @@ margin-right: 9;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1537</width>
-                <height>885</height>
+                <width>98</width>
+                <height>28</height>
                </rect>
               </property>
              </widget>
@@ -869,8 +869,8 @@ margin-right: 9;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>1537</width>
-                <height>756</height>
+                <width>98</width>
+                <height>28</height>
                </rect>
               </property>
              </widget>

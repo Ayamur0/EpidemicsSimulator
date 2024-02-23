@@ -301,6 +301,14 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
     def remove_sender_from_threads(self, sender):
         if sender in self.threads:
             self.threads.remove(sender)
+            
+    def generate_next_name(self, original_name: str, list_of_strings: list):
+        i = 0
+        next_name = f"{original_name}"
+        while next_name in list_of_strings:
+            i += 1
+            next_name = f"{original_name} - ({i})"
+        return next_name
         
     def closeEvent(self, event):
         if self.unsaved_changes and self.ask_to_save():
