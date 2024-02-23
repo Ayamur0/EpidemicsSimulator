@@ -76,20 +76,27 @@ class UiGroupEdit(QObject):
         group_button.clicked.connect(partial(self.show_group_properties, group))
         
         self.group_buttons[group.id] = group_button
-        
+        # TODO tim fragen wegen looks
         layout_widget.layout().addWidget(checkbox)
-        layout_widget.layout().addWidget(duplicate_button)
         layout_widget.layout().addWidget(remove_button)
-        layout_widget.layout().addWidget(group_label)
+        layout_widget.layout().addWidget(duplicate_button)
         layout_widget.layout().addWidget(group_button)
+        layout_widget.layout().addWidget(group_label)
+        
         self.group_list.layout().addWidget(layout_widget,alignment=Qt.AlignLeft|Qt.AlignTop)
         
     def set_group_activity(self, checkbox: QtWidgets.QCheckBox, group: NodeGroup):
         group.active = checkbox.isChecked()
         self.parent.network_changed.emit()
         
+    def create_group_name_list(self):
+        return [g.name for g in self.network.groups]
+            
+        
     def dupliacte_group(self, group: NodeGroup):
+        new_group_name = self.main_window.generate_next_name(group.name, self.create_group_name_list())
         new_group = self.parent.change_network(self.network, DUPLICATE_ACTION, group)
+        new_group.name = new_group_name
         self.unload()
         self.load_groups()
         self.parent.network_changed.emit()
@@ -106,7 +113,6 @@ class UiGroupEdit(QObject):
         self.parent.network_changed.emit()
         
     def show_group_properties(self, group: NodeGroup=None, default_properties: dict=None):
-        # self.clear_save_status()
         self.unload_group_properties()
         if group:
             self.parent.open_group_connections.emit(group)
@@ -158,6 +164,7 @@ class UiGroupEdit(QObject):
             widget.layout().addWidget(line_edit)
             self.prop_input.layout().addWidget(widget)
         return line_edits
+    
     def save_group_properties(self, group: Union[NodeGroup, None], line_edits: dict):
         update_dict = {key: line_edits[key].text() for key in line_edits.keys()}
         if update_dict["average intra group edges"] < update_dict["delta intra group edges"]:
@@ -206,10 +213,6 @@ class UiGroupEdit(QObject):
             "max vaccination rate": 0.7
         }
         self.show_group_properties(default_properties=default_dict)
-        
-        
-    #def clear_save_status(self):
-    #    self.main_window.unload_items_from_layout(self.save_status.layout())
         
     def unload_group_list(self):
         self.group_buttons.clear()

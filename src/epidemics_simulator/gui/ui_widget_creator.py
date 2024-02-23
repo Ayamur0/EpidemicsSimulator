@@ -240,7 +240,7 @@ class UiWidgetCreator:
     def create_input_field_widget(color: str, object_name: str = "input"):
         widget: QtWidgets.QWidget = UiWidgetCreator.create_qwidget(object_name, QtWidgets.QVBoxLayout)
         widget.layout().setContentsMargins(0, 0, 0, 0)
-        widget.setMinimumSize(100, 35)
+        widget.setMinimumSize(150, 35)
         widget.layout().setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         widget.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed) 
         widget.setStyleSheet(f"border-radius: none;background: {color};")
@@ -274,7 +274,7 @@ class UiWidgetCreator:
         line_edit.setMinimumSize(10, 20)
         line_edit.setStyleSheet(f"border-radius: 5px;background: {color};")
         line_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed) 
-        line_edit.setMaximumSize(100, 35)
+        line_edit.setMaximumSize(125, 35)
         return line_edit
     
     def create_input_layout_widgets(object_name: str = "input"):

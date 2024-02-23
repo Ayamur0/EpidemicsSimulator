@@ -197,8 +197,12 @@ class UiDiseaseEditTab(QObject):
         self.load_disease(disease, is_success_save=True)
         self.disease_change_singal.emit()
         
+    def create_disease_name_list(self):
+        return [d.name for d in self.network.diseases]
+        
     def duplicate_disease(self, disease: Disease):
-        new_disease = Disease(disease.name, disease.color, disease.fatality_rate, disease.vaccinated_fatality_rate, disease.infection_rate, disease.reinfection_rate, disease.vaccinated_infection_rate, disease.duration, disease.initial_infection_count)
+        new_group_name = self.parent.generate_next_name(disease.name, self.create_disease_name_list())
+        new_disease = Disease(new_group_name, disease.color, disease.fatality_rate, disease.vaccinated_fatality_rate, disease.infection_rate, disease.reinfection_rate, disease.vaccinated_infection_rate, disease.duration, disease.initial_infection_count)
         self.network.add_disease(new_disease)
         self.load_disease(new_disease)
         self.disease_change_singal.emit()
