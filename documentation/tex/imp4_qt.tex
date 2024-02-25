@@ -59,7 +59,7 @@ Each signal has a \textit{.connect(Slot slot)} function that is used to connect 
 
 %TODO ein bsp aus dem code mit signal/slot aber halt nur für die buttons, weil ja danach erst die thread safety kommt
 % TODO hopfully not shit
-In this project, the Signals and Slots feature was mainly used to connect button presses and allow different objects to communicate with each other. The reason signals should be used for objects to communicate with each other is explained in section \ref{sub:thread_communication}. Listing \ref{lst:signal_slot_example} contains a simple example from the project, that allows the user to start the network generation with a button press. To be able to start the generation process, the \textit{clicked} signal from the button \textit{generate\_button} is connected to the method \textit{start\_generating}. If a user presses the button, the slot is executed and therefore the generation process is started.
+In this project, the signals and slots feature is mainly used to connect button presses and allow different objects to communicate with each other. The reason why signals should be used for objects to communicate with each other is explained in section \ref{sub:thread_communication}. Listing \ref{lst:signal_slot_example} contains a simple example from the project, that allows the user to start the network generation with a button press. To be able to start the generation process, the \textit{clicked} signal of the button \textit{generate\_button} is connected to the method \textit{start\_generating}. When the user presses the button, the slot is executed and therefore the generation process is started.
 \begin{lstlisting}[language=python, caption={Signals and Slots example from the project.}, label={lst:signal_slot_example}]
 class UiDisplayGroup(QObject):
     ...
@@ -78,11 +78,11 @@ In general, it is bad practice to have a thread modify GUI widgets to ensure sep
 % TODO hopfully not shit
 An example of this approach is shown in listing \ref{lst:pyqt_thread_comm}. It demonstrates how the text simulation updates the label showing the current simulation speed. To achieve this functionality, three different classes were used:
 \begin{description}
-    \item[UiTextSimulationTab:] This will run in the main thread and should change the widgets.
-    \item[SimulationWorker:] This class that will simulate the spread in a separate thread.
+    \item[UiTextSimulationTab:] This runs in the main thread and changes the widgets.
+    \item[SimulationWorker:] This class executes the simulation in a separate thread.
     \item[WorkerSignals:] This class only holds the signals that the threads can send.
 \end{description}
-First, an object for the class \textit{WorkerSignals} is created and saved as \textit{worker\_signals} in the \textit{UiTextSimulationTab}. The signals from this class will be assigned to slots in the \textit{connect\_signals} method. Here, the \textit{update\_control\_label\_signal} is connected to the method \textit{update\_control\_labels}. If a user presses the buttons that change the simulation speed, a signal is sent out that will execute the \textit{change\_speed} method. This method changes the simulation speed according to the action that is sent along. After changing the speed, this method sends out the signal \textit{update\_control\_label\_signal}. This signal contains the current simulation speed. The simulation speed sent by the signal will be received by \textit{update\_control\_labels}, which is executed in the main thread and can safely update the label containing the information. That way, only the main thread will change widgets.
+First, an object for the class \textit{WorkerSignals} is created and stored as \textit{worker\_signals} in the \textit{UiTextSimulationTab}. The signals of this class are assigned to slots in the \textit{connect\_signals} method. Here, the \textit{update\_control\_label\_signal} is connected to the method \textit{update\_control\_labels}. When a user presses the buttons that changes the simulation speed, a signal is sent that executes the \textit{change\_speed} method that has been connected to the slot. This method changes the simulation speed according to the action sent as parameter. After changing the speed, this method sends the signal \textit{update\_control\_label\_signal}. This signal contains the current simulation speed. The simulation speed sent by the signal is received by \textit{update\_control\_labels}, which is executed in the main thread and can safely update the label containing the information. This way, only the main thread will change widgets.
 \begin{lstlisting}[language=python, caption={Thread safety example}, label={lst:pyqt_thread_comm}]
 class WorkerSignals(QObject):
     update_control_label_signal: pyqtSignal = pyqtSignal(float)
@@ -106,7 +106,7 @@ class UiTextSimulationTab:
 
 \section{QSS}
 % TODO hopfully not shit
-Like HTML, Qt supports a style sheet to dictate how widgets should look. QSS was inspired by CSS (Cascading Style Sheets) and therefore is very similar in terminology and syntax. A style sheet can either be directly set for each widget in the Qt Designer, in the code directly or in a separate file. When widgets are created dynamically and are not present in the Qt Designer, it is not directly possible for the Qt Designer to set the style for these widgets. In this case, either a style sheet file is needed, or the style needs to be set in the program itself \cite{qt}. The style sheet file has the advantage because it contains all the styles in one place rather than spread around in the program, which helps maintainability. The syntax for a style sheet is shown in listing \ref{lst:qss_example}. In this example, the padding and spacing for the \textit{QCheckBox} is changed. If a \textit{QCheckBox} is checked, it will show an image with the specific width and height.
+Like HTML, Qt supports a style sheet to specify how widgets should look. QSS was inspired by CSS (Cascading Style Sheets) and is therefore very similar in terminology and syntax. A style sheet can be set for each widget either directly in the Qt Designer, in the code or in a separate file. If widgets are created dynamically and are not present in the Qt Designer, it is not possible for the Qt Designer to set the style for these widgets. In this case, either a style sheet file is needed, or the style must be set in the program itself \cite{qt}. The style sheet file has the advantage that it contains all the styles in one place rather than scattered throughout the program, which improves maintainability. The syntax for a style sheet is shown in listing \ref{lst:qss_example}. In this example, the padding and spacing for the \textit{QCheckBox} are changed. When a \textit{QCheckBox} is checked, it will display an image with the specified width and height.
 \begin{lstlisting}[language=python, caption={QSS example}, label={lst:qss_example}]
 QCheckBox{
     padding: 0px;
@@ -119,7 +119,8 @@ QCheckBox::indicator:checked {
 }
 \end{lstlisting}
 % TODO hopfully not shit
-To load a style sheet, it has to be read first and then set in the main application as its style. PyQt5 has the method \textit{setStyleSheet} for every widget in Qt, and can also set the style for the main application. In Listing \ref{lst:load_qss}, it is shown how the style sheet is set as the style after reading it successfully \cite{pyqt}.\begin{lstlisting}[language=python, caption={Loading of the QSS}, label={lst:load_qss}]
+To load a style sheet, it must first be loaded and then set as the style in the main application. PyQt5 has a method \textit{setStyleSheet} for every widget in Qt, which can be used to set individual styles for different widgets. It is also possible to set the style for the main application, which is used by all widgets in that application but is overridden by individual widget styles. Listing \ref{lst:load_qss}, shows how to set the style sheet as the main window style after successfully reading it \cite{pyqt}.
+\begin{lstlisting}[language=python, caption={Loading of the QSS}, label={lst:load_qss}]
 class UiNetworkEditor(QtWidgets.QMainWindow):
     ...
     def load_window(self):
