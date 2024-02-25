@@ -93,7 +93,7 @@ d1 = Disease("Disease 1", color="rgb(0.996, 0.000, 0.016)", fatality_rate=0.0, v
 small.add_disease(d1)
 
 
-corona = Network() # TODO
+corona = Network()
 corona.name = "Corona"
 g1 = NodeGroup(corona, "Students", 3000, 16, 0.012, 0.2, 5, 2, "rgb(0.992, 0.106, 0.416)")
 g2 = NodeGroup(corona, "Worker", 6000, 45, 0.007, 0.15, 3, 1, "rgb(0.999, 0.761, 0.906)")
@@ -109,7 +109,7 @@ corona.add_disease(d1)
 
 
 
-influenza = Network() # TODO
+influenza = Network()
 influenza.name = "Influenza"
 g1 = NodeGroup(influenza, "Students", 3000, 16, 0.02, 0.32, 5, 2, "rgb(0.992, 0.106, 0.416)")
 g2 = NodeGroup(influenza, "Worker", 6000, 45, 0.03, 0.45, 3, 1, "rgb(0.999, 0.761, 0.906)")

@@ -82,11 +82,12 @@ class UiDisplayGroup(QObject):
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
-        if len(self.network.groups) == 0: # TODO or if total nodes are 0.
-            msg_box = UiWidgetCreator.show_qmessagebox("No groups to build the network.\nCreate network groups to build the network.", "No Network to Build", only_ok=True)
+        total_nodes = self.get_node_count()
+        if total_nodes == 0:
+            msg_box = UiWidgetCreator.show_qmessagebox("No nodes to build the network.\nCreate network groups to build the network.", "No Network to Build", only_ok=True)
             _ = msg_box.exec_()
             return
-        total_nodes = self.get_node_count()
+        
         if total_nodes >= 20000:
             msg_box = UiWidgetCreator.show_qmessagebox("Building a network with more than 20,000 nodes may take a while.\nDo you want to continue?", "Building Network")
             result = msg_box.exec_()
