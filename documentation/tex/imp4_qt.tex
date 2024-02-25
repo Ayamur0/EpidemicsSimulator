@@ -8,7 +8,7 @@ The feature-rich and vast knowledge base, coupled with its user-friendly design,
 \section{Qt Designer}
 \label{sub:qt_designer}
 
-This is a tool from the Qt framework that allows designing and building your GUI via drag-and-drop. It uses the what-you-see-is-what-you-get approach, where how it looks in the designer will be the same in the real application \cite{qt}.
+This is a tool from the Qt framework that allows designing and building a GUI via drag-and-drop. It uses the what-you-see-is-what-you-get approach, where how it looks in the designer will be the same in the real application \cite{qt}.
 
 Figure \ref{fig:qt_designer} shows the Qt Designer application, which consists of a main window to which widgets can be dragged from the left sidebar to place them in the application. If a layout is selected for the widgets, Qt will automatically fit them according to the layout, so ensuring that the widgets are properly aligned. In applications, it is important to know the hierarchy of the widgets. Qt Designer makes this process easy to figure out, the object window (on the top right) shows the hierarchy tree of the widgets. Making a widget a child of another widget can be achieved by dragging it into the parent widget. 
 
@@ -29,7 +29,7 @@ Qt Designer makes Qt an attractive choice for developers looking to create a GUI
 
 Qt supports multiple programming languages to allow developers to choose their preferred language. This project was developed in Python, so PyQt was used. PyQt is a module that can be easily installed into the Python environment using pip. It contains all the add-ons that the C++ version of Qt also has. The add-ons can be used by importing the corresponding Python module. 
 
-To develop an application in PyQt, the GUI can either be created using only the Python commands or with the help of the Qt Designer. The GUI created in the Qt Designer is saved in a \textt{.ui} file that can be loaded in the PyQt application \cite{pyqt}. Listing \ref{lst:pyqt_gui} shows how to load a \texttt{.ui} file into a simple application. 
+To develop an application in PyQt, the GUI can either be created using only the Python commands or with the help of the Qt Designer. The GUI created in the Qt Designer is saved in a \textit{.ui} file that can be loaded in the PyQt application \cite{pyqt}. Listing \ref{lst:pyqt_gui} shows how to load a \texttt{.ui} file into a simple application. 
 
 Once a design is loaded into the application, it is easy to access the widgets that were created in the Qt Designer. To access and modify widgets created in the Qt Designer, they can be referenced using the ID associated with the widget in the designer. In Listing \ref{lst:pyqt_gui}, the widget created in the Qt Designer has the ID \textit{myLabel}. Depending on the type of widget, different functions are available, in this case the widget is a label, which contains the \textit{setText} function to change the text it displays. Other widgets, such as a frame widget, offer different functions. 
 
@@ -57,32 +57,78 @@ In GUI programming, it is often necessary to execute functions when, for example
 
 Each signal has a \textit{.connect(Slot slot)} function that is used to connect the signal to a slot. For example, a button in Qt has three signals: \textit{clicked}, \textit{pressed}, and \textit{released}. In order to connect a function to the button, the following command has to be used: \textit{example\_button.clicked.connect(slot\_function)}. Now, when the button is clicked by the user in the GUI, the \textit{slot\_function} is executed \cite{pyqt}.
 
-%TODO ein bsp aus dem code mit signal/slot
+%TODO ein bsp aus dem code mit signal/slot aber halt nur für die buttons, weil ja danach erst die thread safety kommt
+% TODO hopfully not shit
+In this project, the Signals and Slots feature was mainly used to connect button presses and allow different objects to communicate with each other. The reason signals should be used for objects to communicate with each other is explained in section \ref{sub:thread_communication}. Listing \ref{lst:signal_slot_example} contains a simple example from the project, that allows the user to start the network generation with a button press. To be able to start the generation process, the \textit{clicked} signal from the button \textit{generate\_button} is connected to the method \textit{start\_generating}. If a user presses the button, the slot is executed and therefore the generation process is started.
+\begin{lstlisting}[language=python, caption={Signals and Slots example from the project.}, label={lst:signal_slot_example}]
+class UiDisplayGroup(QObject):
+    ...
+    def connect_signals(self):
+        self.generate_button.clicked.connect(self.start_generating)
+        ...
+    def start_generating(self):
+        # Start the thread to generate the network.
+\end{lstlisting}
 
 \subsection{Thread communication}
 \label{sub:thread_communication}
 
 In general, it is bad practice to have a thread modify GUI widgets to ensure separation of concerns. If this thread were killed prematurely, it could result in an unexpected GUI state that could lead to errors. Or, if the main thread changed the structure of the GUI widgets before the thread could add the desired widgets, this would also lead to errors. To solve this issue, the signals and slots mechanism is ideal for this situation. Instead of letting a thread handle the widget creation, the thread just sends the widget data back to the main thread, which then adds or modifies the widgets. This way, the integrity of the GUI can be maintained because the main thread retains control over widget manipulation, ensuring consistent and expected behavior \cite{qt}.
 
-In listing \ref{lst:pyqt_thread_comm}, a simple thread is displayed. It has two signals: the finished signal and the result signal. The result signal has a string as a parameter that is sent along with the signal to the slot that will be executed. The thread creates a string that should be displayed using labels, to change the text property of the label the string is emitted using the result signal. This way, the widget modification is done only in the main thread \cite{pyqt}.
-
-\begin{lstlisting}[language=python, caption={Thread example}, label={lst:pyqt_thread_comm}]
-import sys
-import time
-from PyQt5.QtCore import pyqtSignal, QThread
-class Worker(QThread):
-    finished = pyqtSignal()
-    result = pyqtSignal(str)
-
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
-        time.sleep(2)
-        result_data = "My Custom Data"
-        self.result.emit(result_data)
-        self.finished.emit()
+% TODO hopfully not shit
+An example of this approach is shown in listing \ref{lst:pyqt_thread_comm}. It demonstrates how the text simulation updates the label showing the current simulation speed. To achieve this functionality, three different classes were used:
+\begin{description}
+    \item[UiTextSimulationTab:] This will run in the main thread and should change the widgets.
+    \item[SimulationWorker:] This class that will simulate the spread in a separate thread.
+    \item[WorkerSignals:] This class only holds the signals that the threads can send.
+\end{description}
+First, an object for the class \textit{WorkerSignals} is created and saved as \textit{worker\_signals} in the \textit{UiTextSimulationTab}. The signals from this class will be assigned to slots in the \textit{connect\_signals} method. Here, the \textit{update\_control\_label\_signal} is connected to the method \textit{update\_control\_labels}. If a user presses the buttons that change the simulation speed, a signal is sent out that will execute the \textit{change\_speed} method. This method changes the simulation speed according to the action that is sent along. After changing the speed, this method sends out the signal \textit{update\_control\_label\_signal}. This signal contains the current simulation speed. The simulation speed sent by the signal will be received by \textit{update\_control\_labels}, which is executed in the main thread and can safely update the label containing the information. That way, only the main thread will change widgets.
+\begin{lstlisting}[language=python, caption={Thread safety example}, label={lst:pyqt_thread_comm}]
+class WorkerSignals(QObject):
+    update_control_label_signal: pyqtSignal = pyqtSignal(float)
+    ...
+class SimulationWorker(QThread):
+    ...
+    def change_speed(self, action: str):
+        # Changes the simulation speed according to the received action.
+        self.signals.update_control_label_signal.emit(self.simulation_speed)
+class UiTextSimulationTab:
+    def __init__(self, parent: QtWidgets.QMainWindow):
+        ... 
+        self.worker_signals = WorkerSignals()
+        ...
+    def connect_signals(self):
+        # Connecting the button Signals and other signals from the worker_signals
+        self.worker_signals.update_control_label_signal.connect(self.update_control_labels)
+    def update_control_labels(self, simulation_speed: float):
+        # Updating the labels containing the simulation speed information.
 \end{lstlisting}
+
+\section{QSS}
+% TODO hopfully not shit
+Like HTML, Qt supports a style sheet to dictate how widgets should look. QSS was inspired by CSS (Cascading Style Sheets) and therefore is very similar in terminology and syntax. A style sheet can either be directly set for each widget in the Qt Designer, in the code directly or in a separate file. When widgets are created dynamically and are not present in the Qt Designer, it is not directly possible for the Qt Designer to set the style for these widgets. In this case, either a style sheet file is needed, or the style needs to be set in the program itself \cite{qt}. The style sheet file has the advantage because it contains all the styles in one place rather than spread around in the program, which helps maintainability. The syntax for a style sheet is shown in listing \ref{lst:qss_example}. In this example, the padding and spacing for the \textit{QCheckBox} is changed. If a \textit{QCheckBox} is checked, it will show an image with the specific width and height.
+\begin{lstlisting}[language=python, caption={QSS example}, label={lst:qss_example}]
+QCheckBox{
+    padding: 0px;
+    spacing: 0px;
+}
+QCheckBox::indicator:checked {
+    image: url(assets:selected.png);
+    width: 24px;
+    height: 24px;
+}
+\end{lstlisting}
+% TODO hopfully not shit
+To load a style sheet, it has to be read first and then set in the main application as its style. PyQt5 has the method \textit{setStyleSheet} for every widget in Qt, and can also set the style for the main application. In Listing \ref{lst:load_qss}, it is shown how the style sheet is set as the style after reading it successfully \cite{pyqt}.\begin{lstlisting}[language=python, caption={Loading of the QSS}, label={lst:load_qss}]
+class UiNetworkEditor(QtWidgets.QMainWindow):
+    ...
+    def load_window(self):
+        ...
+        with open("qt/NetworkEdit/style_sheet.qss", mode="r", encoding="utf-8") as fp:
+            self.stylesheet = fp.read()
+        self.setStyleSheet(self.stylesheet)
+\end{lstlisting}
+
 
 
 \section{Abblication views}
@@ -95,5 +141,3 @@ The GUI application of the created app, contains five tabs/views, each with a di
     \item[Text Simulation] If the network is too big or a large number of simulation cycles are required, which makes using the visual simulation impractical, this text-based simulation can be used instead. It provides the same functionality for controlling the simulation and saving statistics as the visual simulation.
     \item[Statistics] This view embeds the webpage used to display the saved statistics. It can be used to view graphs for the various stats saved during simulations to help analyze the results.
 \end{description}
-
-%TODO mention custom QSS?
