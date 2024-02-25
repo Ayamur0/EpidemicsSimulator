@@ -73,6 +73,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_21.setObjectName("verticalLayout_21")
         self.generate_button = QtWidgets.QPushButton(self.info_buttons)
         self.generate_button.setMinimumSize(QtCore.QSize(0, 30))
+        self.generate_button.setToolTip("")
         self.generate_button.setStyleSheet("")
         self.generate_button.setAutoDefault(False)
         self.generate_button.setDefault(False)
@@ -642,7 +643,6 @@ class Ui_MainWindow(object):
 "Total nodes 0\n"
 "Total connections 0\n"
 "Generation time 0s"))
-        self.generate_button.setToolTip(_translate("MainWindow", "<html><head/><body><p>(Re-)Generate the network image</p></body></html>"))
         self.generate_button.setText(_translate("MainWindow", "Build"))
         self.con_prop_label.setText(_translate("MainWindow", "Connection Properties"))
         self.group_label.setText(_translate("MainWindow", "Groups"))
@@ -656,6 +656,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.simulation_stats), _translate("MainWindow", "Text Simulation"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.stats_view), _translate("MainWindow", "Statistics"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuNew_from_template.setToolTip(_translate("MainWindow", "New from Template"))
         self.menuNew_from_template.setTitle(_translate("MainWindow", "New from template"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionSave.setIconText(_translate("MainWindow", "Save"))

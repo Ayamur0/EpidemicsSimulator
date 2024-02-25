@@ -76,7 +76,7 @@ class UiGroupEdit(QObject):
         group_button.clicked.connect(partial(self.show_group_properties, group))
         
         self.group_buttons[group.id] = group_button
-        # TODO tim fragen wegen looks
+        
         layout_widget.layout().addWidget(checkbox)
         layout_widget.layout().addWidget(remove_button)
         layout_widget.layout().addWidget(duplicate_button)

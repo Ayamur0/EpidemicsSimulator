@@ -143,10 +143,10 @@ class UiTextSimulationTab:
         
     def connect_signals(self):  
         self.save_button.clicked.connect(lambda: self.save_simulation())
-        self.start_stop_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(START_STOP_SIMULATION))#self.start_stop_simulation())
-        self.increase_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(INCREASE_SPEED))#self.increase_simulation_speed())
-        self.decrease_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(DECREASE_SPEED))#self.decrease_simulation_speed())
-        self.reset_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(RESET_SIMULATION))#self.reset_simulation())
+        self.start_stop_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(START_STOP_SIMULATION))
+        self.increase_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(INCREASE_SPEED))
+        self.decrease_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(DECREASE_SPEED))
+        self.reset_button.clicked.connect(lambda: self.worker_signals.update_speed.emit(RESET_SIMULATION))
         
         self.worker_signals.update_label_signal.connect(self.update_stat_labels)
         self.worker_signals.update_control_label_signal.connect(self.update_control_labels)
@@ -178,7 +178,7 @@ class UiTextSimulationTab:
         return
     def simulation_was_run(self):
         self.simulation_started = True
-        
+
     def update_stat_labels(self, group_stats: dict, current_step: int):
         self.step_label.setText(f"Step: {current_step}")
         for group, stat in group_stats.items():
@@ -205,7 +205,7 @@ class UiTextSimulationTab:
     def update_widgets(self, widgets: dict, properties: dict):
         for key, widget in widgets.items():
             widget.setText(str(properties[key]))
-            
+
     def update_control_labels(self, simulation_speed: float):
         if simulation_speed >= 1 or simulation_speed == 0:
             self.speed_label.setText(f"Simulation speed: {int(simulation_speed)} t/s")
@@ -227,7 +227,7 @@ class UiTextSimulationTab:
                 continue
             stat[split_line[0].strip()] = split_line[1].strip()
         return stat
-    
+
     def save_simulation(self):
         if not self.simulation_started:
             return

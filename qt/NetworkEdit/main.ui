@@ -122,7 +122,7 @@ Generation time 0s</string>
                        </size>
                       </property>
                       <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(Re-)Generate the network image&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string/>
                       </property>
                       <property name="styleSheet">
                        <string notr="true"/>
@@ -1229,6 +1229,9 @@ margin-right: 9;</string>
      <string>File</string>
     </property>
     <widget class="QMenu" name="menuNew_from_template">
+     <property name="toolTip">
+      <string>New from Template</string>
+     </property>
      <property name="title">
       <string>New from template</string>
      </property>

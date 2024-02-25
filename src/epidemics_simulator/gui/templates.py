@@ -95,32 +95,32 @@ small.add_disease(d1)
 
 corona = Network() # TODO
 corona.name = "Corona"
-g1 = NodeGroup(corona, "Group 1", group_size, group_age, group_vac_rate, group_max_vac_rate, 5, 0, "rgb(0.992, 0.106, 0.416)")
-g2 = NodeGroup(corona, "Group 2", group_size, group_age, group_vac_rate, group_max_vac_rate, 4, 0, "rgb(0.999, 0.761, 0.906)")
-g3 = NodeGroup(corona, "Group 3", group_size, group_age, group_vac_rate, group_max_vac_rate, 3, 0, "rgb(0.439, 0.999, 0.878)")
+g1 = NodeGroup(corona, "Students", 3000, 16, 0.012, 0.2, 5, 2, "rgb(0.992, 0.106, 0.416)")
+g2 = NodeGroup(corona, "Worker", 6000, 45, 0.007, 0.15, 3, 1, "rgb(0.999, 0.761, 0.906)")
+g3 = NodeGroup(corona, "Retirees", 1000, 80, 0.005, 0.1, 2, 2, "rgb(0.439, 0.999, 0.878)")
 corona.add_group(g1)
 corona.add_group(g2)
 corona.add_group(g3)
-g1.add_external_connection(g2.id, 2, 0)
-g1.add_external_connection(g3.id, 2, 0)
-g2.add_external_connection(g3.id, 2, 0)
-d1 = Disease("Corona", color="rgb(0.996, 0.000, 0.016)", fatality_rate=0.0, vaccinated_fatality_rate=0.0, infection_rate=0.024, reinfection_rate=0.024, vaccinated_infection_rate=0.024, duration=5, cure_chance=1.0, immunity_period=0, infectiousness_factor=1.0, initial_infection_count=5)
+g1.add_external_connection(g2.id, 3, 2)
+g1.add_external_connection(g3.id, 1, 1)
+g2.add_external_connection(g3.id, 1, 1)
+d1 = Disease("Corona", color="rgb(0.996, 0.000, 0.016)", fatality_rate=0.024, vaccinated_fatality_rate=0.01, infection_rate=0.081, reinfection_rate=0.027, vaccinated_infection_rate=0.0272, duration=7, cure_chance=0.4, immunity_period=128, infectiousness_factor=0.8, initial_infection_count=50)
 corona.add_disease(d1)
 
 
 
 influenza = Network() # TODO
 influenza.name = "Influenza"
-g1 = NodeGroup(influenza, "Group 1", group_size, group_age, group_vac_rate, group_max_vac_rate, 5, 0, "rgb(0.992, 0.106, 0.416)")
-g2 = NodeGroup(influenza, "Group 2", group_size, group_age, group_vac_rate, group_max_vac_rate, 4, 0, "rgb(0.999, 0.761, 0.906)")
-g3 = NodeGroup(influenza, "Group 3", group_size, group_age, group_vac_rate, group_max_vac_rate, 3, 0, "rgb(0.439, 0.999, 0.878)")
+g1 = NodeGroup(influenza, "Students", 3000, 16, 0.02, 0.32, 5, 2, "rgb(0.992, 0.106, 0.416)")
+g2 = NodeGroup(influenza, "Worker", 6000, 45, 0.03, 0.45, 3, 1, "rgb(0.999, 0.761, 0.906)")
+g3 = NodeGroup(influenza, "Retirees", 1000, 80, 0.04, 0.7, 2, 2, "rgb(0.439, 0.999, 0.878)")
 influenza.add_group(g1)
 influenza.add_group(g2)
 influenza.add_group(g3)
-g1.add_external_connection(g2.id, 2, 0)
-g1.add_external_connection(g3.id, 2, 0)
-g2.add_external_connection(g3.id, 2, 0)
-d1 = Disease("Influenza", color="rgb(0.996, 0.000, 0.016)", fatality_rate=0.0, vaccinated_fatality_rate=0.0, infection_rate=0.024, reinfection_rate=0.024, vaccinated_infection_rate=0.024, duration=5, cure_chance=1.0, immunity_period=0, infectiousness_factor=1.0, initial_infection_count=5)
+g1.add_external_connection(g2.id, 3, 2)
+g1.add_external_connection(g3.id, 1, 1)
+g2.add_external_connection(g3.id, 1, 1)
+d1 = Disease("Influenza", color="rgb(0.996, 0.000, 0.016)", fatality_rate=0.006, vaccinated_fatality_rate=0.0005, infection_rate=0.09, reinfection_rate=0.02, vaccinated_infection_rate=0.04, duration=5, cure_chance=0.5, immunity_period=128, infectiousness_factor=0.7, initial_infection_count=50)
 influenza.add_disease(d1)
 
 

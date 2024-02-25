@@ -286,6 +286,7 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         if result != QtWidgets.QMessageBox.AcceptRole:
             return 
         self.text_simulation_tab.restart_simulation()
+        self.disease_edit_tab.disease_changed = False
 
     def push_to_dash(self, reset_view: bool = False, build: bool = False):
         if not self.project:

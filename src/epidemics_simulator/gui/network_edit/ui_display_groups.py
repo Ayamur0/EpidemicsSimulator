@@ -63,6 +63,7 @@ class UiDisplayGroup(QObject):
         self.network_graph.layout().addWidget(self.webview)
         
     def connect_signals(self):
+        self.generate_button.clicked.connect(self.start_generating)
         self.open_browser_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(self.url)))
         self.reload_view.clicked.connect(lambda: self.webview.reload())
         
@@ -73,13 +74,7 @@ class UiDisplayGroup(QObject):
         self.project = project
         self.network = project.network
         self.stat_label.setText("Graph-building stats\nTotal nodes 0\nTotal connections 0\nGeneration time 0s")
-        self.webview.hide()
-        try:
-            self.generate_button.clicked.disconnect()
-        except TypeError:
-            pass
-        self.generate_button.clicked.connect(self.start_generating)
-        
+        self.webview.hide()    
         
     def start_generating(self):
         if self.generated_once and not self.parent.changes_in_network and not self.main_window.disease_edit_tab.disease_changed:
