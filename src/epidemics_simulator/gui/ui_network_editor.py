@@ -159,7 +159,6 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.project = Project(folder_path)
         self.project.network = network
         self.project.save_to_file()
-        
         self.reset_ui.emit()
         try:
             self.startup.close_startup.emit()
@@ -223,6 +222,8 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         
     @pyqtSlot()
     def reset(self):
+        self.push_to_dash(clear_old=True)
+        
         self.enable_webviews(False)
         self.unload()
         
@@ -288,12 +289,18 @@ class UiNetworkEditor(QtWidgets.QMainWindow):
         self.text_simulation_tab.restart_simulation()
         self.disease_edit_tab.disease_changed = False
 
-    def push_to_dash(self, reset_view: bool = False, build: bool = False):
+    def push_to_dash(self, reset_view: bool = False, build: bool = False, clear_old: bool = False):
         if not self.project:
             return
         if reset_view:
             data = {}
             sub_rul = "update-stats"
+        elif clear_old:
+            tmp_project = Project(self.project.file_location)
+            tmp_project.network = Network()
+            tmp_project.network.name = self.project.network.name
+            data = {"data": tmp_project.to_dict(), "generate": True}
+            sub_rul = "update-data"
         else:
             data = {"data": self.project.to_dict(), "generate": build}
             sub_rul = "update-data"
