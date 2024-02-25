@@ -78,11 +78,15 @@ class UiDisplayGroup(QObject):
         
     def start_generating(self):
         if self.generated_once and not self.parent.changes_in_network and not self.main_window.disease_edit_tab.disease_changed:
-            msg_box = UiWidgetCreator.show_qmessagebox("The network did not change.\nDo you want to build again??", "Building Betwork")
+            msg_box = UiWidgetCreator.show_qmessagebox("The network did not change.\nDo you want to build again?", "Building Betwork")
             result = msg_box.exec_()
             if result != QtWidgets.QMessageBox.AcceptRole:
                 return
         total_nodes = self.get_node_count()
+        if total_nodes == 0:
+            msg_box = UiWidgetCreator.show_qmessagebox("No groups to build the network.\nCreate network groups to build the network.", "No Network to Build", only_ok=True)
+            _ = msg_box.exec_()
+            return
         if total_nodes >= 20000:
             msg_box = UiWidgetCreator.show_qmessagebox("Building a network with more than 20,000 nodes may take a while.\nDo you want to continue?", "Building Network")
             result = msg_box.exec_()
