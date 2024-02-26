@@ -15,7 +15,7 @@ class UiStartup(QtWidgets.QDialog):
         self.setWindowTitle("Epidemic Simulator")
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.setStyleSheet(parent.styleSheet())
-        self.setFixedSize(300, 450)
+        self.setFixedSize(500, 550)
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(2)
