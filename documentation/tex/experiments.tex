@@ -34,7 +34,7 @@ The parameters for the disease of this experiment are:
     \item infectiousness factor: 1
 \end{itemize}
 
-Running the simulation shows that the disease is never able to spread to a large number of people and dies out after only \~9 steps. This can also be seen in the first graph of figure \ref{fig:exp_r0_small}, which shows the number of new infections per cycle. Increasing the initial number of infected nodes to 5,000 shows that even with such a large number of infections the disease still dies out after only \~40 steps
+Running the simulation shows that the disease is never able to spread to a large number of people and dies out after only \textasciitilde 9 steps. This can also be seen in the first graph of figure \ref{fig:exp_r0_small}, which shows the number of new infections per cycle. Increasing the initial number of infected nodes to 5,000 shows that even with such a large number of infections the disease still dies out after only \textasciitilde 40 steps
 
 % is now able to spread to a lot of nodes intially.
 % As the disease now has enough infected nodes to avoid dying out at random because of 
@@ -51,7 +51,7 @@ Running the simulation shows that the disease is never able to spread to a large
     \centering
     \subcaptionbox{Infection counts with 5 initial infections}{\includegraphics[width=0.475\textwidth]{images/exp_r0_small_1.png}}\hfill
     \subcaptionbox{Infection counts with 5000 initial infections, showing that the disease
-        still dies out after \~40 steps}{\includegraphics[width=0.475\textwidth]{images/exp_r0_success.png}}\hfill
+        still dies out after \textasciitilde 40 steps}{\includegraphics[width=0.475\textwidth]{images/exp_r0_success.png}}\hfill
     \caption[ Experiment with an estimated $R_0$ of 0.96 and $p = 0.024$ ]
     {\small Experiment with an estimated $R_0$ of 0.96 and $p = 0.024$} 
     \label{fig:exp_r0_small}
@@ -120,7 +120,7 @@ To support the theory from earlier that each group must also be viewed in isolat
 \section{Multiple Diseases}
 Interesting dynamics can be observed when multiple diseases are introduced into the same social network. Cases with two diseases, where one or both of the diseases have a $R_0 < 1$, do not present an interesting scenario, since once one disease has died out, the problem is reduced to one disease. But if both (or more) diseases have a $R_0 > 1$, then they will compete against each other for survival, assuming that a person can only be infected by one diseases at a time, e.g. because they stay at home until they are cured, so they cannot be infected by another disease during that time. Since a disease must constantly infect new nodes to stay alive, the diseases can wipe out other diseases by infecting all the nodes themselves, leaving no nodes available to infect for other diseases.
 
-For diseases with a similar $R_0$, the two diseases will each have \~50\% of infections. Now consider a case where one disease $d_1$ has $R_0^1=5$ and the second $d_2$ has $R_0^2=2$. Looking at the diseases in isolation, both are theoretically able to survive, since both $R_0^1 > 1$ and $R_0^2>1$. Looking at the situation where both diseases are in the same network, $d_1$ will infect significantly more people than $d_2$, about 2.5 times as many. This means that $d_1$ will have $~\frac{5}{7}$ of the total infections during the first wave. Since $d_1$ has many more infected nodes during the first wave, that makes it even easier for it to spread than $d_2$. At the boundaries where susceptible nodes have connections to nodes infected with $d_1$ and also to nodes infected with $d_2$, $d_1$ will infect $\frac{5}{7}$ of those nodes. This will slowly reduce the number of nodes infected with $d_2$ until none are left and $d_2$ has died out, even though its $R_0^1>1$. This means that in networks with more than one disease, the one  with the highest $R_0$ value is the most likely to survive.
+For diseases with a similar $R_0$, the two diseases will each have \textasciitilde 50\% of infections. Now consider a case where one disease $d_1$ has $R_0^1=5$ and the second $d_2$ has $R_0^2=2$. Looking at the diseases in isolation, both are theoretically able to survive, since both $R_0^1 > 1$ and $R_0^2>1$. Looking at the situation where both diseases are in the same network, $d_1$ will infect significantly more people than $d_2$, about 2.5 times as many. This means that $d_1$ will have $~\frac{5}{7}$ of the total infections during the first wave. Since $d_1$ has many more infected nodes during the first wave, that makes it even easier for it to spread than $d_2$. At the boundaries where susceptible nodes have connections to nodes infected with $d_1$ and also to nodes infected with $d_2$, $d_1$ will infect $\frac{5}{7}$ of those nodes. This will slowly reduce the number of nodes infected with $d_2$ until none are left and $d_2$ has died out, even though its $R_0^1>1$. This means that in networks with more than one disease, the one  with the highest $R_0$ value is the most likely to survive.
 
 \subsection{Experiment}
 This theory can again be supported by conducting an experiment using the developed simulation tool. The network will be the same as in the previous experiment, consisting of 3 groups with more intra-group connections than inter-group connections. The exact structure is explained in section \ref{sub:exp_network}.
@@ -197,7 +197,7 @@ To show that each node can be reached in only six steps, a disease with an infec
     \label{fig:small_world_network}
 \end{figure}
 
-After cycle 7, all nodes are infected, i.e. they could all be reached from the starting node in a maximum of 7 steps. The exact numbers of new infections per step are: 6, 30, 150, 717, 2893, 5306 and 897. Using these values, the average shortest path length can be calculated, which is \~5.5964. This coincides with the findings of Milgram \cite{smallWorld}, whose experiments showed that the average length is somewhere between 5 and 6.
+After cycle 7, all nodes are infected, i.e. they could all be reached from the starting node in a maximum of 7 steps. The exact numbers of new infections per step are: 6, 30, 150, 717, 2893, 5306 and 897. Using these values, the average shortest path length can be calculated, which is \textasciitilde 5.5964. This coincides with the findings of Milgram \cite{smallWorld}, whose experiments showed that the average length is somewhere between 5 and 6.
 
 To reduce the limitation of the used network in terms of random connections, another network structure could be used. This more closely models the existence of highly connected local friend groups, where everyone knows each other and a few random connections to people from other friend groups that are farther away. This network uses a large number of groups with relatively few members each. In this case, 100 groups of 5-10 people are used, where each node is connected to 4 others of the same group and each group of people is connected to 3-4 other groups, with only 0-1 edges per node. This again results in a network where each node has an average of 6 connections.
 
@@ -211,6 +211,6 @@ The same disease is used in this network and the state of the network after cycl
     \label{fig:small_world_groups}
 \end{figure}
 
-This shows that in this network it is also possible to reach all other nodes in only six steps, even though there are only a few long-distance connections and a lot of tightly coupled small groups. The average path length in this experiment was \~5.6621.
+This shows that in this network it is also possible to reach all other nodes in only six steps, even though there are only a few long-distance connections and a lot of tightly coupled small groups. The average path length in this experiment was \textasciitilde 5.6621.
 
 
