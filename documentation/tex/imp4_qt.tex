@@ -58,7 +58,7 @@ In GUI programming, it is often necessary to execute functions when, for example
 Each signal has a \textit{.connect(Slot slot)} function that is used to connect the signal to a slot. For example, a button in Qt has three signals: \textit{clicked}, \textit{pressed}, and \textit{released}. In order to connect a function to the button, the following command has to be used: \textit{example\_button.clicked.connect(slot\_function)}. Now, when the button is clicked by the user in the GUI, the \textit{slot\_function} is executed \cite{pyqt}.
 
 In this project, the signals and slots feature is mainly used to connect button presses and allow different objects to communicate with each other. The reason why signals should be used for objects to communicate with each other is explained in section \ref{sub:thread_communication}. Listing \ref{lst:signal_slot_example} contains a simple example from the project, that allows the user to start the network generation with a button press. To be able to start the generation process, the \textit{clicked} signal of the button \textit{generate\_button} is connected to the method \textit{start\_generating}. When the user presses the button, the slot is executed and therefore the generation process is started.
-\begin{lstlisting}[language=python, caption={Signals and Slots example from the project.}, label={lst:signal_slot_example}]
+\begin{lstlisting}[language=python, caption={Signals and Slots example from the project}, label={lst:signal_slot_example}]
 class UiDisplayGroup(QObject):
     ...
     def connect_signals(self):
@@ -117,7 +117,7 @@ QCheckBox::indicator:checked {
 \end{lstlisting}
 
 To load a style sheet, it must first be loaded and then set as the style in the main application. PyQt5 has a method \textit{setStyleSheet} for every widget in Qt, which can be used to set individual styles for different widgets. It is also possible to set the style for the main application, which is used by all widgets in that application but is overridden by individual widget styles. Listing \ref{lst:load_qss}, shows how to set the style sheet as the main window style after successfully reading it \cite{pyqt}.
-\begin{lstlisting}[language=python, caption={Loading of the QSS}, label={lst:load_qss}]
+\begin{lstlisting}[language=python, caption={Loading the QSS file}, label={lst:load_qss}]
 class UiNetworkEditor(QtWidgets.QMainWindow):
     ...
     def load_window(self):
