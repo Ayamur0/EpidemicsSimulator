@@ -1,8 +1,8 @@
 # EpidemicsSimulator
 
-This tool was designed to simulate an Epidemic. A network and its nodes and node groups can 
-be easily created and visualized. To simulate the epidemic, a disease can be created, and the 
-spread of it can be simulated and visualized in 3D space. To better understand its spread and 
+This tool was designed to simulate an Epidemic. A social network and its nodes and node groups can 
+be easily created and visualized. To simulate an epidemic, a disease with certain characeristics can be created, and the 
+spread of it can be simulated and visualized in the network in a 3D space. To better understand its spread and 
 outcomes, the result of a simulation can be analyzed using different graphs.
 
 ## Running from source
@@ -49,6 +49,6 @@ The GUI has five different tabs, each with a different functionality for creatin
 - **Network Editor:** In this tab you can create your network with its nodes and node groups and see it in a 3D space.
 > **Note:** After building the network, it may take a while to load the 3D visualization.
 - **Disease Editor:** Here you can create your diseases that will spread around in the network.
-- **Simulation:** In this tab, the spread is simulated and visualized in a 3D space.
-- **Text Simulation:** If only the numbers of the simulation matter, this simulation only shows the changes in text format.
+- **Simulation:** In this tab, the spreading of diseases is simulated and visualized in a 3D space.
+- **Text Simulation:** If only the numbers of the simulation matter, this simulation only shows the changes in text format. It should be used for large networks or high numbers of simulation steps, as the §D simulation can be slow in those cases.
 - **Statistics:** After simulating, the resulting stats can be analyzed using this tab.
