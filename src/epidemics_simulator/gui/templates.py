@@ -1,10 +1,39 @@
 
 from src.epidemics_simulator.storage import Network, NodeGroup, Disease
-
 group_size: int = 5000
 group_age: int = 20
 group_vac_rate: float = 0.0
 group_max_vac_rate: float = 0.0
+
+
+oscillating = Network()
+oscillating.name = "Oscillating disease"
+g1 = NodeGroup(oscillating, "Group 1", 2000, group_age, 0, 0, 5, 0, "rgb(0.992, 0.106, 0.416)")
+g2 = NodeGroup(oscillating, "Group 2", 2000, group_age, 0, 0, 5, 0, "rgb(0.999, 0.761, 0.906)")
+g3 = NodeGroup(oscillating, "Group 3", 2000, group_age, 0, 0, 5, 0, "rgb(0.439, 0.999, 0.878)")
+g4 = NodeGroup(oscillating, "Group 4", 2000, group_age, 0, 0, 5, 0, "rgb(0.008, 0.424, 0.647)")
+g5 = NodeGroup(oscillating, "Group 5", 2000, group_age, 0, 0, 5, 0, "rgb(0.847, 0.153, 0.659)")
+oscillating.add_group(g1)
+oscillating.add_group(g2)
+oscillating.add_group(g3)
+oscillating.add_group(g4)
+oscillating.add_group(g5)
+
+g1.add_external_connection(g2.id, 1, 0)
+
+g2.add_external_connection(g3.id, 1, 0)
+
+g3.add_external_connection(g4.id, 1, 0)
+
+g4.add_external_connection(g5.id, 1, 0)
+
+g5.add_external_connection(g1.id, 1, 0)
+
+d1 = Disease("Disease 1", color="rgb(0.996, 0.000, 0.016)", fatality_rate=0.0, vaccinated_fatality_rate=0.0, infection_rate=0.3, reinfection_rate=0.3, vaccinated_infection_rate=0.3, duration=5, cure_chance=1.0, immunity_period=3, infectiousness_factor=1.0, initial_infection_count=2)
+oscillating.add_disease(d1)
+
+
+
 r0s1 = Network()
 r0s1.name = "R0 < 1 Experiment"
 g1 = NodeGroup(r0s1, "Group 1", group_size, group_age, group_vac_rate, group_max_vac_rate, 5, 0, "rgb(0.992, 0.106, 0.416)")
@@ -124,4 +153,4 @@ d1 = Disease("Influenza", color="rgb(0.996, 0.000, 0.016)", fatality_rate=0.006,
 influenza.add_disease(d1)
 
 
-templates = [r0s1, r0g1, r0_die, r0_surv, mul, small, corona, influenza]
+templates = [oscillating, r0s1, r0g1, r0_die, r0_surv, mul, small, corona, influenza]
