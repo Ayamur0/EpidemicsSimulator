@@ -9,7 +9,7 @@ The network used in these experiments contains 3 groups of 5000 nodes each. Grou
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{images/experiment_r0_network.png}
+    \includegraphics[width=0.75\linewidth]{images/experiment_r0_network.png}
     \caption{Structure of the network used for the $R_0$ experiments}
     \label{fig:exp_r0_network}
 \end{figure}
@@ -49,20 +49,9 @@ Running the simulation shows that the disease is never able to spread to a large
 
 \begin{figure*}
     \centering
-    \begin{subfigure}[b]{0.475\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/exp_r0_small_1.png}
-        \caption[Network2]%
-        {{\small Infection counts with 5 initial infections}}   
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.475\textwidth}  
-        \centering 
-        \includegraphics[width=\textwidth]{images/exp_r0_success.png}
-        \caption[]%
-        {{\small Infection counts with 5000 initial infections, showing that the disease
-        still dies out after \~40 steps}}    
-    \end{subfigure}
+    \subcaptionbox{Infection counts with 5 initial infections}{\includegraphics[width=0.475\textwidth]{images/exp_r0_small_1.png}}\hfill
+    \subcaptionbox{Infection counts with 5000 initial infections, showing that the disease
+        still dies out after \~40 steps}{\includegraphics[width=0.475\textwidth]{images/exp_r0_success.png}}\hfill
     \caption[ Experiment with an estimated $R_0$ of 0.96 and $p = 0.024$ ]
     {\small Experiment with an estimated $R_0$ of 0.96 and $p = 0.024$} 
     \label{fig:exp_r0_small}

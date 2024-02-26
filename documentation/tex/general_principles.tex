@@ -16,7 +16,7 @@ Figure \ref{fig:tree_network} shows a possible network structure.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{images/network_tree.png}
+    \includegraphics[width=0.75\linewidth]{images/network_tree.png}
     \caption{Tree representation of a network showing the spread of a disease (source: \cite{networks})}
     \label{fig:tree_network}
 \end{figure}
@@ -176,9 +176,9 @@ with a very high infection probability $p\geq0.9$, a period of immunity $i > 0$ 
 fatality rate close to zero breaks out in such a network, the umber of infections will oscillate.
 An example of how the number of infections might evolve over time can be seen in figure 
 \ref{fig:oscillation}.
-\begin{figure}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/oscillation.png}
+    \includegraphics[width=0.75\linewidth]{images/oscillation.png}
     \caption{Amount of infections over time in a network of highly connected 
     groups. The disease has a high infection rate and low fatality. (source: \cite{networks})}
     \label{fig:oscillation}
@@ -197,8 +197,8 @@ other groups. Each group is connected to two other groups with 1 edge per node a
 all groups have a path to all other groups.
 
 The disease that will be simulated in this network has an infection rate of 0.2, a fatality
-rate of 0, a infection duration of 5 cycles and a immunity period of 3 cycles. For simplicity
-the reinfection rate is the same as the initial infection rate and no vaccinations are used.
+rate of 0, a infection duration of 5 cycles and a immunity period of 3 cycles. 
+\clearpage For simplicity the reinfection rate is the same as the initial infection rate and no vaccinations are used.
 
 \begin{figure*}
     \centering
@@ -206,7 +206,7 @@ the reinfection rate is the same as the initial infection rate and no vaccinatio
         \centering
         \includegraphics[width=\textwidth]{images/oscillation0.png}
         \caption[Network2]%
-        {{\small Network after 0 Steps}}    
+        {{\small Network after 0 Steps \newline}}    
         \label{fig:mean and std of net14}
     \end{subfigure}
     \hfill
@@ -238,8 +238,9 @@ the reinfection rate is the same as the initial infection rate and no vaccinatio
     light green ones were previously infected but have recovered and have immunity.} 
     \label{fig:osc_network}
 \end{figure*}
+\clearpage
 
-Initially, 2 random nodes are infected with the disease. Figure \ref{osc_network}
+Initially, 2 random nodes are infected with the disease. Figure \ref{fig:osc_network}
 shows the state of the network after 0, 12, 18 and 24 cycles.
 The number of infections over time can be seen in figure \ref{fig:oscillation_p02}
 which clearly shows the oscillatory nature of this disease. Over time, the amplitude of the
@@ -251,28 +252,29 @@ shifting their cure time and breaking the oscillation. Increasing the infection 
 to $p = 0.3$ prevents this, as the disease now spreads fast enough to infect every
 available node immediately. The result of this is shown in figure \ref{fig:oscillation_p03}.
 
-\begin{figure}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/oscillation_infections.png}
+    \includegraphics[width=0.75\linewidth]{images/oscillation_infections.png}
     \caption{Amount of infections over time showing the oscillating nature with $p = 0.2$}
     \label{fig:oscillation_p02}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/oscillation_infections3.png}
+    \includegraphics[width=0.75\linewidth]{images/oscillation_infections3.png}
     \caption{Amount of infections over time showing the oscillating nature with $p = 0.3$}
     \label{fig:oscillation_p03}
 \end{figure}
+\clearpage
 
 Now the same network is used but the infection rate of the disease is decreased to 0.1.
 Because the disease is now not spreading as explosively as before it always has enough targets
 to infect until the previously infected nodes become cured again. Thus the amount of new 
 infections is more consistent and does not oscillate as seen in figure \ref{fig:no_oscillation}.
 
-\begin{figure}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/no_oscillation.png}
+    \includegraphics[width=0.75\linewidth]{images/no_oscillation.png}
     \caption{Amount of infections over time showing that no oscillations occur if with $p = 0.1$}
     \label{fig:no_oscillation}
 \end{figure}
@@ -282,12 +284,13 @@ and remove the immunity period. Now the infected nodes become cured so fast that
 enough new nodes to infect for every cycle, again resulting in a relatively consistent
 amount of new infections as indicated in figure \ref{fig:no_oscillation2}
 
-\begin{figure}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{images/no_oscillation2.png}
+    \includegraphics[width=0.75\linewidth]{images/no_oscillation2.png}
     \caption{Amount of infections over time showing that no oscillations occur even with $p = 0.3$ if the duration is too short}
     \label{fig:no_oscillation2}
 \end{figure}
+\clearpage
 
 \subsection{Epidemics without diseases}
 Diseases are not the only thing that is capable of spreading through social networks. As

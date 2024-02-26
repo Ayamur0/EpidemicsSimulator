@@ -1,13 +1,18 @@
 Originally, it was intended to display the networks in 2D, with a 3D representation being considered a nice to have feature. During testing we found that a 2D representation does not provide a clear view of the network. Even for relatively small networks (\~200 nodes) the 2D representation was very confusing. For this reason, the 2D representation was scrapped and only the 3D one was implemented. In 3D, even networks with thousands of nodes provide a clear view of the different groups and nodes.
-%TODO add picture ref
 \newline
 
 The Python package plotly \cite{plotly} is used to display the networks in 3D. \texttt{plotly.graph\_objs} provides the \texttt{Scatter3d} function, which is used to draw both the nodes and edges. For the nodes the function takes in three lists of coordinates, one for each axis x, y and z. For the edges it also requires these three lists, but here the first coordinate is the start point for an edge, the second the end point, followed by a None entry and then the next edge coordinates. Currently, the only information that is generated for graphs is the number of nodes in each group and lists of which node ids must be connected with edges. This information must be translated into coordinates for plotly to be able to display the network.
 
 \section{Displaying the nodes}
 \label{sub:displayNodes}
-All nodes belonging to the same group should be arranged in a sphere. Each sphere thus represents one group and the spheres must have enough space between them so that the groups can be easily distinguished, as shown in Figure %TODO ref .
-%  TODO insert example image
+All nodes belonging to the same group should be arranged in a sphere. Each sphere thus represents one group and the spheres must have enough space between them so that the groups can be easily distinguished, as shown in Figure \ref{fig:groups}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/groups.png}
+    \caption{Network containing 4 groups with 2000 nodes per group}
+    \label{fig:groups}
+\end{figure}
 
 To distribute the spheres in the coordinate system, it is first divided into cubes. Let $n_{max}$ be the number of nodes in the biggest group. To determine the side length $s$ of the cubes, it is necessary to know the radius $r$ of the smallest sphere that can fit $n_{max}$ nodes.
 
